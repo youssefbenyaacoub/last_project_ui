@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard,
@@ -16,6 +16,14 @@ import {
 
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import {
+  clearAuthSession,
+  getClientId,
+  getFormData,
+  getFormSchema,
+  submitForm,
+} from "../api";
+import { FirstLoginFormModal } from "./FirstLoginFormModal";
 
 import logoExpanded from "../assets/BH_logo2.png";
 import logoCollapsed from "../assets/BH_logo3.png";
@@ -53,6 +61,49 @@ export function Layout() {
 
   // sidebar expand / collapse
   const [isExpanded, setIsExpanded] = useState(false);
+  const [onboardingSchema, setOnboardingSchema] = useState(null);
+  const [onboardingInitialData, setOnboardingInitialData] = useState({});
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [onboardingSaving, setOnboardingSaving] = useState(false);
+  const [onboardingError, setOnboardingError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadOnboardingStatus = async () => {
+      const clientId = getClientId();
+      if (!clientId) return;
+
+      try {
+        const [schemaData, formData] = await Promise.all([
+          getFormSchema(),
+          getFormData(clientId),
+        ]);
+
+        if (!isMounted) return;
+
+        const initialData = formData?.form_data || {};
+        const completed =
+          formData?.form_completed === true ||
+          String(formData?.form_completed || "").toLowerCase() === "true";
+
+        setOnboardingSchema(schemaData || null);
+        setOnboardingInitialData(initialData);
+        setOnboardingOpen(!completed);
+      } catch {
+        if (!isMounted) return;
+        setOnboardingSchema(null);
+        setOnboardingInitialData({});
+        setOnboardingOpen(false);
+      }
+    };
+
+    loadOnboardingStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const menuItems = [
     { path: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
@@ -66,7 +117,26 @@ export function Layout() {
   ];
 
   const handleLogout = () => {
+    clearAuthSession();
     navigate("/");
+  };
+
+  const handleOnboardingSubmit = async (payload) => {
+    const clientId = getClientId();
+    if (!clientId) return;
+
+    try {
+      setOnboardingSaving(true);
+      setOnboardingError("");
+      await submitForm(clientId, payload);
+      setOnboardingOpen(false);
+    } catch (error) {
+      setOnboardingError(
+        error?.message || "Impossible d'enregistrer le formulaire."
+      );
+    } finally {
+      setOnboardingSaving(false);
+    }
   };
 
   return (
@@ -190,6 +260,16 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
+
+      {onboardingOpen && (
+        <FirstLoginFormModal
+          schema={onboardingSchema}
+          initialData={onboardingInitialData}
+          isSaving={onboardingSaving}
+          error={onboardingError}
+          onSubmit={handleOnboardingSubmit}
+        />
+      )}
     </div>
   );
 }

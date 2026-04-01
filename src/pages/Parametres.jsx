@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  Bot,
   Bell,
   CreditCard,
   Globe,
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useUserPreferences } from "../contexts/UserPreferencesContext";
 import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
@@ -61,9 +63,25 @@ const uiByLanguage = {
       notifications: "Notifications",
       security: "Security",
       privacy: "Privacy",
+      accessibility: "Accessibility",
+      chatbot: "Chatbot personalization",
       support: "Support",
       account: "Account Information",
       quickHelp: "Need help?",
+    },
+    accessibility: {
+      lowVision: "Low-vision mode",
+      lowVisionDesc: "Increase text size and contrast for clearer reading.",
+    },
+    chatbot: {
+      nameLabel: "Chatbot name",
+      toneLabel: "Chatbot style",
+      userGenderLabel: "User profile",
+      colorsLabel: "Discussion colors",
+      female: "Female",
+      male: "Male",
+      userFemale: "Female user",
+      userMale: "Male user",
     },
     notifications: {
       email: "Email notifications",
@@ -123,9 +141,25 @@ const uiByLanguage = {
       notifications: "Notifications",
       security: "Securite",
       privacy: "Confidentialite",
+      accessibility: "Accessibilite",
+      chatbot: "Personnalisation chatbot",
       support: "Support",
       account: "Informations du compte",
       quickHelp: "Besoin d'aide ?",
+    },
+    accessibility: {
+      lowVision: "Mode basse vision",
+      lowVisionDesc: "Augmente la taille du texte et le contraste pour une lecture plus claire.",
+    },
+    chatbot: {
+      nameLabel: "Nom du chatbot",
+      toneLabel: "Style du chatbot",
+      userGenderLabel: "Profil utilisateur",
+      colorsLabel: "Couleurs de discussion",
+      female: "Feminin",
+      male: "Masculin",
+      userFemale: "Utilisatrice",
+      userMale: "Utilisateur homme",
     },
     notifications: {
       email: "Notifications par e-mail",
@@ -185,9 +219,25 @@ const uiByLanguage = {
       notifications: "الاشعارات",
       security: "الامان",
       privacy: "الخصوصية",
+      accessibility: "امكانية الوصول",
+      chatbot: "تخصيص المساعد",
       support: "الدعم",
       account: "معلومات الحساب",
       quickHelp: "هل تحتاج مساعدة؟",
+    },
+    accessibility: {
+      lowVision: "وضع ضعف البصر",
+      lowVisionDesc: "يزيد حجم الخط والتباين لقراءة اوضح.",
+    },
+    chatbot: {
+      nameLabel: "اسم المساعد",
+      toneLabel: "اسلوب المساعد",
+      userGenderLabel: "ملف المستخدم",
+      colorsLabel: "الوان المحادثة",
+      female: "انثى",
+      male: "ذكر",
+      userFemale: "مستخدمة",
+      userMale: "مستخدم ذكر",
     },
     notifications: {
       email: "اشعارات البريد الالكتروني",
@@ -284,6 +334,13 @@ const getLangKey = (language) => {
 export function Parametres() {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, isRTL } = useLanguage();
+  const {
+    chatbotName,
+    userGender,
+    setChatbotName,
+    setUserGender,
+    resetUserPreferences,
+  } = useUserPreferences();
 
   const langKey = getLangKey(language);
   const ui = uiByLanguage[langKey] || uiByLanguage.en;
@@ -334,6 +391,7 @@ export function Parametres() {
 
   const resetSettings = () => {
     setSettings(defaultSettings);
+    resetUserPreferences();
     setFeedback(ui.feedback.reset);
   };
 
@@ -512,6 +570,60 @@ export function Parametres() {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          <div className={`${cardClass} border rounded-xl p-6 space-y-4`}>
+            <div
+              className={`flex items-center gap-3 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <div
+                className={`w-10 h-10 rounded-lg flex items-center justify-center ${softCardClass}`}
+              >
+                <Bot className="w-5 h-5 text-cyan-600" />
+              </div>
+              <h2 className={`text-lg font-semibold ${textMainClass}`}>
+                {ui.sections.chatbot}
+              </h2>
+            </div>
+
+            <label className="space-y-1 block">
+              <span className={`text-sm ${textMutedClass}`}>{ui.chatbot.nameLabel}</span>
+              <input
+                value={chatbotName}
+                onChange={(event) => {
+                  setChatbotName(event.target.value);
+                  setFeedback(ui.feedback.updated);
+                }}
+                className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${
+                  theme === "dark"
+                    ? "border-gray-600 bg-gray-700 text-white"
+                    : "border-gray-300 bg-white text-gray-900"
+                }`}
+              />
+            </label>
+
+            <div className="grid gap-3 md:grid-cols-1">
+              <label className="space-y-1 block">
+                <span className={`text-sm ${textMutedClass}`}>{ui.chatbot.userGenderLabel}</span>
+                <select
+                  value={userGender}
+                  onChange={(event) => {
+                    setUserGender(event.target.value);
+                    setFeedback(ui.feedback.updated);
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${
+                    theme === "dark"
+                      ? "border-gray-600 bg-gray-700 text-white"
+                      : "border-gray-300 bg-white text-gray-900"
+                  }`}
+                >
+                  <option value="female">{ui.chatbot.userFemale}</option>
+                  <option value="male">{ui.chatbot.userMale}</option>
+                </select>
+              </label>
             </div>
           </div>
 

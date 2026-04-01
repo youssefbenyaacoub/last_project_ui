@@ -16,6 +16,7 @@ import logoDark from "../assets/BH_logo2.png";
 import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
+import { loginUser, setAuthSession } from "../api";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ export function LoginPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Step 1: Login
   const [cinNumber, setCinNumber] = useState("");
@@ -67,8 +70,8 @@ export function LoginPage() {
       loginTitle: "Login",
       loginSubtitle: "Sign in to your account",
       home: "Home",
-      cinLabel: "CIN Number",
-      cinPlaceholder: "Enter your CIN number",
+      cinLabel: "Email",
+      cinPlaceholder: "Enter your email",
       passwordLabel: "Password",
       passwordPlaceholder: "Enter your password",
       forgotPassword: "Forgot password?",
@@ -87,8 +90,8 @@ export function LoginPage() {
       loginTitle: "Connexion",
       loginSubtitle: "Connectez-vous a votre compte",
       home: "Accueil",
-      cinLabel: "Numero CIN",
-      cinPlaceholder: "Entrez votre numero CIN",
+      cinLabel: "Email",
+      cinPlaceholder: "Entrez votre email",
       passwordLabel: "Mot de passe",
       passwordPlaceholder: "Entrez votre mot de passe",
       forgotPassword: "Mot de passe oublie?",
@@ -107,8 +110,8 @@ export function LoginPage() {
       loginTitle: "تسجيل الدخول",
       loginSubtitle: "قم بتسجيل الدخول إلى حسابك",
       home: "الرئيسية",
-      cinLabel: "رقم بطاقة التعريف",
-      cinPlaceholder: "أدخل رقم بطاقة التعريف",
+      cinLabel: "البريد الإلكتروني",
+      cinPlaceholder: "أدخل البريد الإلكتروني",
       passwordLabel: "كلمة المرور",
       passwordPlaceholder: "أدخل كلمة المرور",
       forgotPassword: "هل نسيت كلمة المرور؟",
@@ -148,11 +151,27 @@ export function LoginPage() {
     }
   };
 
-  const handleNextStep = () => {
-    if (currentStep === 1) {
-      setCurrentStep(2);
-    } else {
-      navigate("/client");
+  const handleNextStep = async () => {
+    if (currentStep !== 1) {
+      navigate("/dashboard");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrorMessage("");
+
+      const payload = await loginUser({
+        email: cinNumber.trim().toLowerCase(),
+        password,
+      });
+
+      setAuthSession(payload);
+      navigate("/dashboard");
+    } catch (error) {
+      setErrorMessage(error.message || "Login failed.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -246,10 +265,11 @@ export function LoginPage() {
                         <CreditCard size={20} />
                       </div>
                       <input
-                        type="text"
+                        type="email"
                         value={cinNumber}
                         onChange={(e) => setCinNumber(e.target.value)}
                         placeholder={ui.cinPlaceholder}
+                        autoComplete="email"
                         className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
                           theme === "dark"
                             ? "bg-gray-800 border-gray-700 text-white"
@@ -313,13 +333,24 @@ export function LoginPage() {
                     </button>
                   </div>
 
+                  {errorMessage && (
+                    <p
+                      className={`text-sm ${
+                        theme === "dark" ? "text-red-400" : "text-red-600"
+                      } ${isRTL ? "text-right" : "text-left"}`}
+                    >
+                      {errorMessage}
+                    </p>
+                  )}
+
                   {/* Submit Button */}
                   <button
                     type="button"
                     onClick={handleNextStep}
-                    className="w-full bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {ui.signIn}
+                    {isSubmitting ? "..." : ui.signIn}
                   </button>
                 </form>
               </Motion.div>
