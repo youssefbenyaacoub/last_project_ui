@@ -2,12 +2,18 @@ import { useMemo, useState } from "react";
 import {
   AlertCircle,
   BadgePercent,
+  BarChart3,
+  Building2,
+  CarFront,
   Calculator,
-  Clock3,
+  Landmark,
+  Package,
   PiggyBank,
   ShieldCheck,
   TrendingUp,
+  User,
   Wallet,
+  Wrench,
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -55,6 +61,7 @@ const SOCIO_CATEGORIES = [
 const LOAN_TYPE_OPTIONS = [
   {
     value: "consommation",
+    iconKey: "consommation",
     labels: {
       en: "Consumer Loan",
       fr: "Credit Consommation",
@@ -63,6 +70,7 @@ const LOAN_TYPE_OPTIONS = [
   },
   {
     value: "amenagement",
+    iconKey: "amenagement",
     labels: {
       en: "Renovation Loan",
       fr: "Credit Amenagement",
@@ -71,6 +79,7 @@ const LOAN_TYPE_OPTIONS = [
   },
   {
     value: "auto",
+    iconKey: "auto",
     labels: {
       en: "Auto Loan",
       fr: "Credit Auto",
@@ -79,6 +88,7 @@ const LOAN_TYPE_OPTIONS = [
   },
   {
     value: "habitat",
+    iconKey: "habitat",
     labels: {
       en: "Housing Loan",
       fr: "Credit Habitat",
@@ -174,6 +184,7 @@ const HABITAT_OPTIONS = [
 const RATE_RECAP = [
   {
     value: "consommation",
+    iconKey: "consommation",
     rate: 11.99,
     labels: {
       en: "Consumer Loan",
@@ -183,6 +194,7 @@ const RATE_RECAP = [
   },
   {
     value: "amenagement",
+    iconKey: "amenagement",
     rate: 10.74,
     labels: {
       en: "Renovation Loan",
@@ -192,6 +204,7 @@ const RATE_RECAP = [
   },
   {
     value: "auto-neuve-gt4",
+    iconKey: "auto",
     rate: 10.49,
     labels: {
       en: "Auto Loan New (>4 hp)",
@@ -201,6 +214,7 @@ const RATE_RECAP = [
   },
   {
     value: "auto-occasion-lte4",
+    iconKey: "auto",
     rate: 10.74,
     labels: {
       en: "Auto Loan Used (<=4 hp)",
@@ -210,6 +224,7 @@ const RATE_RECAP = [
   },
   {
     value: "auto-occasion-gt4",
+    iconKey: "auto",
     rate: 10.74,
     labels: {
       en: "Auto Loan Used (>4 hp)",
@@ -219,6 +234,7 @@ const RATE_RECAP = [
   },
   {
     value: "habitat",
+    iconKey: "habitat",
     rate: 10.24,
     labels: {
       en: "Housing Loan",
@@ -469,6 +485,51 @@ const formatAmount = (value) =>
 
 const formatRate = (value) => `${Number(value || 0).toFixed(2)} %`;
 
+const LOAN_CATEGORY_ICONS = {
+  consommation: Package,
+  amenagement: Wrench,
+  auto: CarFront,
+  habitat: Building2,
+};
+
+const CATEGORY_ICON_TONES = {
+  consommation: {
+    light: "border-blue-200 bg-blue-100 text-blue-600",
+    dark: "border-blue-800/70 bg-blue-900/30 text-blue-200",
+  },
+  amenagement: {
+    light: "border-violet-200 bg-violet-100 text-violet-600",
+    dark: "border-violet-800/70 bg-violet-900/30 text-violet-200",
+  },
+  auto: {
+    light: "border-emerald-200 bg-emerald-100 text-emerald-600",
+    dark: "border-emerald-800/70 bg-emerald-900/30 text-emerald-200",
+  },
+  habitat: {
+    light: "border-purple-200 bg-purple-100 text-purple-600",
+    dark: "border-purple-800/70 bg-purple-900/30 text-purple-200",
+  },
+};
+
+const categoryIconBadgeClass = (isDark, iconKey) => {
+  const tone = CATEGORY_ICON_TONES[iconKey] || CATEGORY_ICON_TONES.consommation;
+  return `inline-flex h-10 w-10 items-center justify-center rounded-2xl border shadow-sm ${
+    isDark ? tone.dark : tone.light
+  }`;
+};
+
+const categorySelectorCardClass = (isDark, active) => {
+  if (active) {
+    return isDark
+      ? "border-[#3b82f6]/70 bg-gray-900 text-white shadow-[0_0_0_2px_rgba(59,130,246,0.18)]"
+      : "border-[#3b82f6]/50 bg-white text-gray-900 shadow-[0_0_0_2px_rgba(59,130,246,0.14)]";
+  }
+
+  return isDark
+    ? "border-gray-600 bg-gray-800 text-gray-200 hover:border-gray-500"
+    : "border-gray-300 bg-white text-gray-700 hover:border-gray-400";
+};
+
 const SECTION_TONES = {
   neutral: {
     dark: "border-gray-700 bg-gray-800/80",
@@ -521,14 +582,14 @@ const ICON_TONES = {
 
 const sectionCardClass = (isDark, tone = "neutral") => {
   const resolvedTone = SECTION_TONES[tone] || SECTION_TONES.neutral;
-  return `rounded-2xl border ${isDark ? resolvedTone.dark : resolvedTone.light}`;
+  return `rounded-2xl border shadow-sm ${isDark ? resolvedTone.dark : resolvedTone.light}`;
 };
 
 const sectionIconClass = (isDark, tone = "blue") => {
   const resolvedTone = ICON_TONES[tone] || ICON_TONES.blue;
-  return `inline-flex h-9 w-9 items-center justify-center rounded-xl ${
+  return `inline-flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm ${
     isDark ? resolvedTone.dark : resolvedTone.light
-  }`;
+  } ${isDark ? "border-white/10" : "border-black/10"}`;
 };
 
 const miniStatCardClass = (isDark, tone = "blue") => {
@@ -669,6 +730,7 @@ export function Simulator() {
     monthlyGrossIncome > 0 ? (toNumber(otherMonthlyLoans) / monthlyGrossIncome) * 100 : 0;
 
   const loanLabelPreview = getLoanLabel(loanType, autoVariant, language);
+  const SelectedLoanIcon = LOAN_CATEGORY_ICONS[loanType] || Landmark;
 
   const debtRatioResult = toNumber(result?.simulation_meta?.debtRatio);
   const debtStatus = getDebtRatioStatus(debtRatioResult, ui);
@@ -871,7 +933,7 @@ export function Simulator() {
                     : "text-gray-700 hover:bg-white"
               } ${isRTL ? "flex-row-reverse" : ""}`}
             >
-              <TrendingUp className="h-4 w-4" />
+              <Landmark className="h-4 w-4" />
               {ui.creditMode}
             </button>
             <button
@@ -898,26 +960,37 @@ export function Simulator() {
                 <section className={`${sectionCardClass(isDark, "blue")} p-5`}>
                   <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <span className={sectionIconClass(isDark, "blue")}>
-                      <BadgePercent className="h-4 w-4" />
+                      <Landmark className="h-4 w-4" />
                     </span>
                     <h2 className="text-lg font-semibold">{ui.stepProduct}</h2>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                    <label className="block text-sm">
+                    <div className="text-sm md:col-span-2">
                       <span className="mb-1 block">{ui.loanType}</span>
-                      <select
-                        value={loanType}
-                        onChange={(event) => setLoanTypeWithPreset(event.target.value)}
-                        className={inputClass(isDark, isRTL)}
-                      >
-                        {LOAN_TYPE_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {getLocalizedLabel(option.labels, language)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {LOAN_TYPE_OPTIONS.map((option) => {
+                          const CategoryIcon = LOAN_CATEGORY_ICONS[option.iconKey] || Landmark;
+                          const active = loanType === option.value;
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => setLoanTypeWithPreset(option.value)}
+                              className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 text-sm transition ${categorySelectorCardClass(
+                                isDark,
+                                active,
+                              )} ${isRTL ? "flex-row-reverse" : ""}`}
+                            >
+                              <span className={categoryIconBadgeClass(isDark, option.iconKey)}>
+                                <CategoryIcon className="h-4 w-4" />
+                              </span>
+                              <span className="font-medium">{getLocalizedLabel(option.labels, language)}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
 
                     {loanType === "auto" && (
                       <label className="block text-sm">
@@ -1001,7 +1074,7 @@ export function Simulator() {
                 <section className={`${sectionCardClass(isDark, "emerald")} p-5`}>
                   <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <span className={sectionIconClass(isDark, "emerald")}>
-                      <Wallet className="h-4 w-4" />
+                      <User className="h-4 w-4" />
                     </span>
                     <h2 className="text-lg font-semibold">{ui.stepProfile}</h2>
                   </div>
@@ -1085,7 +1158,7 @@ export function Simulator() {
                 <section className={`${sectionCardClass(isDark, "indigo")} p-5`}>
                   <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <span className={sectionIconClass(isDark, "indigo")}>
-                      <Calculator className="h-4 w-4" />
+                      <Wallet className="h-4 w-4" />
                     </span>
                     <h2 className="text-lg font-semibold">{ui.stepFinance}</h2>
                   </div>
@@ -1174,7 +1247,11 @@ export function Simulator() {
                       {ui.financedEstimated}: <span className="font-semibold">{formatAmount(financedAmountPreview)}</span>
                     </p>
                     <p>
-                      {ui.selectedProduct}: <span className="font-semibold">{loanLabelPreview}</span>
+                      {ui.selectedProduct}:{" "}
+                      <span className="inline-flex items-center gap-1.5 font-semibold">
+                        <SelectedLoanIcon className="h-4 w-4" />
+                        {loanLabelPreview}
+                      </span>
                     </p>
                   </div>
 
@@ -1255,7 +1332,7 @@ export function Simulator() {
             <section className={`${sectionCardClass(isDark, "amber")} p-5`}>
               <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <span className={sectionIconClass(isDark, "amber")}>
-                  <ShieldCheck className="h-4 w-4" />
+                  <BarChart3 className="h-4 w-4" />
                 </span>
                 <h2 className="text-lg font-semibold">{ui.results}</h2>
               </div>
@@ -1294,18 +1371,30 @@ export function Simulator() {
                 <div className="space-y-4 text-sm">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className={miniStatCardClass(isDark, "blue")}>
+                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-blue-500/15 text-blue-600">
+                        <Wallet className="h-3.5 w-3.5" />
+                      </span>
                       <p className="text-xs opacity-75">{ui.monthlyPayment}</p>
                       <p className="text-base font-semibold">{formatAmount(result.monthly_payment)}</p>
                     </div>
                     <div className={miniStatCardClass(isDark, "emerald")}>
+                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/15 text-emerald-600">
+                        <TrendingUp className="h-3.5 w-3.5" />
+                      </span>
                       <p className="text-xs opacity-75">{ui.totalCost}</p>
                       <p className="text-base font-semibold">{formatAmount(result.total_cost)}</p>
                     </div>
                     <div className={miniStatCardClass(isDark, "indigo")}>
+                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/15 text-indigo-600">
+                        <BadgePercent className="h-3.5 w-3.5" />
+                      </span>
                       <p className="text-xs opacity-75">{ui.totalInterest}</p>
                       <p className="text-base font-semibold">{formatAmount(result.total_interest)}</p>
                     </div>
                     <div className={miniStatCardClass(isDark, "rose")}>
+                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-rose-500/15 text-rose-600">
+                        <Calculator className="h-3.5 w-3.5" />
+                      </span>
                       <p className="text-xs opacity-75">{ui.duration}</p>
                       <p className="text-base font-semibold">{result.duration_months} {ui.months}</p>
                     </div>
@@ -1375,7 +1464,7 @@ export function Simulator() {
               <section className={`${sectionCardClass(isDark, "rose")} p-5`}>
                 <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <span className={sectionIconClass(isDark, "rose")}>
-                    <Clock3 className="h-4 w-4" />
+                    <ShieldCheck className="h-4 w-4" />
                   </span>
                   <h2 className="text-lg font-semibold">{ui.rateRecap}</h2>
                 </div>
@@ -1383,6 +1472,7 @@ export function Simulator() {
                 <div className="space-y-2 text-sm">
                   {RATE_RECAP.map((item) => {
                     const active = mode === "loan" && item.rate === appliedRate;
+                    const CategoryIcon = LOAN_CATEGORY_ICONS[item.iconKey] || Landmark;
                     return (
                       <div
                         key={item.value}
@@ -1394,7 +1484,12 @@ export function Simulator() {
                               : "border-gray-200 bg-gray-50 text-gray-700"
                         }`}
                       >
-                        <span>{getLocalizedLabel(item.labels, language)}</span>
+                          <span className="inline-flex items-center gap-2">
+                          <span className={categoryIconBadgeClass(isDark, item.iconKey)}>
+                            <CategoryIcon className="h-4 w-4" />
+                          </span>
+                            {getLocalizedLabel(item.labels, language)}
+                          </span>
                         <span className="font-semibold">{formatRate(item.rate)}</span>
                       </div>
                     );

@@ -72,6 +72,12 @@ export const loginUser = (credentials) =>
 
 export const getMe = () => request("/auth/me");
 
+export const updateProfilePhoto = (profilePhoto) =>
+  request("/auth/me/photo", {
+    method: "PATCH",
+    body: JSON.stringify({ profile_photo: profilePhoto }),
+  });
+
 export const getClientRecommendation = (clientId) =>
   request(`/recommendations/${clientId}`);
 

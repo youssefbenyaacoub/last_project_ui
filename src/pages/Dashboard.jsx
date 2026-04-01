@@ -14,7 +14,6 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getBudget, getClientId, getClientRecommendation, getMe } from "../api";
-import profileImage from "../assets/man_pfp.png";
 
 const dashboardCopy = {
   en: {
@@ -224,6 +223,13 @@ export function Dashboard() {
 
   const name = profile?.client_name || recommendation?.client_name || ui.clientFallback;
   const email = profile?.email || localStorage.getItem("bh_email") || "client@bhbank.tn";
+  const profilePhoto = String(profile?.profile_photo || "").trim();
+  const profileInitials = useMemo(() => {
+    const base = String(name || email || ui.clientFallback).trim();
+    const parts = base.split(/\s+/).filter(Boolean).slice(0, 2);
+    if (parts.length === 0) return "CL";
+    return parts.map((part) => part[0]?.toUpperCase() || "").join("") || "CL";
+  }, [name, email, ui.clientFallback]);
   const cardNumber = formatCardNumber(profile?.card_number || recommendation?.card_number);
   const expiry = profile?.card_expiry || "05/25";
 
@@ -546,7 +552,13 @@ export function Dashboard() {
             <h2 className="text-base font-medium">{ui.myProfile}</h2>
 
             <div className="flex flex-col items-center gap-2 text-center">
-              <img src={profileImage} alt={name} className="h-20 w-20 rounded-full object-cover" />
+              {profilePhoto ? (
+                <img src={profilePhoto} alt={name} className="h-20 w-20 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-[#0A2240] to-[#1f5faa] text-xl font-semibold text-white">
+                  {profileInitials}
+                </div>
+              )}
               <p className="text-xl font-medium">{name}</p>
               <p className={`text-xs ${isDark ? "text-gray-300" : "text-[#566783]"}`}>{email}</p>
               <button type="button" onClick={() => navigate("/dashboard/profile")} className="text-xs text-blue-600 hover:text-blue-700">
