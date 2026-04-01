@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUp, Menu, Plus, X, AlertCircle, Bot, UserRound } from "lucide-react";
+import { ArrowUp, Menu, Plus, X, AlertCircle } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import { useUserPreferences } from "../contexts/UserPreferencesContext";
 import {
   createChatSession,
   getChatHistory,
@@ -32,15 +31,9 @@ const uiByLanguage = {
     createConversationError: "Unable to create a new conversation.",
     sendError: "Error while sending your message.",
     conversationFallback: "Conversation",
+    chatbotTitle: "BH Advisor Chatbot",
+    chatbotShortName: "BH Advisor",
     typingLabel: "is replying...",
-    botNameLabel: "Chatbot name",
-    botToneLabel: "Chatbot style",
-    userGenderLabel: "User profile",
-    colorLabel: "Discussion colors",
-    femaleOption: "Female",
-    maleOption: "Male",
-    userMale: "Male user",
-    userFemale: "Female user",
   },
   fr: {
     conversationsTitle: "Conversations",
@@ -62,15 +55,9 @@ const uiByLanguage = {
     createConversationError: "Impossible de creer une nouvelle conversation.",
     sendError: "Erreur lors de l'envoi du message.",
     conversationFallback: "Conversation",
+    chatbotTitle: "BH Advisor Chatbot",
+    chatbotShortName: "BH Advisor",
     typingLabel: "repond...",
-    botNameLabel: "Nom du chatbot",
-    botToneLabel: "Style du chatbot",
-    userGenderLabel: "Profil utilisateur",
-    colorLabel: "Couleurs de discussion",
-    femaleOption: "Feminin",
-    maleOption: "Masculin",
-    userMale: "Utilisateur homme",
-    userFemale: "Utilisatrice",
   },
   ar: {
     conversationsTitle: "المحادثات",
@@ -92,15 +79,9 @@ const uiByLanguage = {
     createConversationError: "تعذر انشاء محادثة جديدة.",
     sendError: "حدث خطا عند ارسال الرسالة.",
     conversationFallback: "محادثة",
+    chatbotTitle: "مساعد BH Advisor",
+    chatbotShortName: "BH Advisor",
     typingLabel: "يقوم بالرد...",
-    botNameLabel: "اسم المساعد",
-    botToneLabel: "اسلوب المساعد",
-    userGenderLabel: "ملف المستخدم",
-    colorLabel: "الوان المحادثة",
-    femaleOption: "انثى",
-    maleOption: "ذكر",
-    userMale: "مستخدم ذكر",
-    userFemale: "مستخدمة",
   },
 };
 
@@ -129,12 +110,6 @@ const formatTime = (value, locale) => {
 export function Chatbot() {
   const { theme } = useTheme();
   const { language, isRTL } = useLanguage();
-  const {
-    chatbotName,
-    userGender,
-    setChatbotName,
-    setUserGender,
-  } = useUserPreferences();
 
   const langKey = getLangKey(language);
   const ui = uiByLanguage[langKey] || uiByLanguage.fr;
@@ -420,39 +395,12 @@ export function Chatbot() {
                 <Menu size={18} />
               </button>
               <div>
-                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{chatbotName}</h1>
+                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{ui.chatbotTitle}</h1>
                 <p className={`text-xs sm:text-sm ${isDark ? "text-white/60" : "text-[#6b7a93]"}`}>
                   {ui.connectSubtitle}
                 </p>
               </div>
             </div>
-          </div>
-
-          <div className={`mt-3 grid gap-2 md:grid-cols-2 ${isRTL ? "text-right" : "text-left"}`}>
-            <label className="space-y-1">
-              <span className={`text-xs ${isDark ? "text-white/65" : "text-[#65758f]"}`}>{ui.botNameLabel}</span>
-              <input
-                value={chatbotName}
-                onChange={(event) => setChatbotName(event.target.value)}
-                className={`w-full rounded-lg border px-2.5 py-2 text-sm outline-none ${
-                  isDark ? "border-white/15 bg-[#182235] text-white" : "border-[#d8e0ec] bg-white text-[#182540]"
-                }`}
-              />
-            </label>
-
-            <label className="space-y-1">
-              <span className={`text-xs ${isDark ? "text-white/65" : "text-[#65758f]"}`}>{ui.userGenderLabel}</span>
-              <select
-                value={userGender}
-                onChange={(event) => setUserGender(event.target.value)}
-                className={`w-full rounded-lg border px-2.5 py-2 text-sm outline-none ${
-                  isDark ? "border-white/15 bg-[#182235] text-white" : "border-[#d8e0ec] bg-white text-[#182540]"
-                }`}
-              >
-                <option value="female">{ui.userFemale}</option>
-                <option value="male">{ui.userMale}</option>
-              </select>
-            </label>
           </div>
         </header>
 
@@ -512,16 +460,6 @@ export function Chatbot() {
                       className="max-w-[85%] rounded-2xl border px-4 py-3 text-sm leading-relaxed sm:max-w-[75%]"
                       style={message.role === "user" ? userBubbleStyle : assistantBubbleStyle}
                     >
-                      <div className={`mb-1 flex items-center gap-1.5 text-[11px] font-semibold ${isRTL ? "justify-end" : "justify-start"}`}>
-                        {message.role === "user" ? <UserRound size={12} /> : <Bot size={12} />}
-                        <span>
-                          {message.role === "user"
-                            ? userGender === "female"
-                              ? ui.userFemale
-                              : ui.userMale
-                            : chatbotName}
-                        </span>
-                      </div>
                       <p>{message.content}</p>
                       <p className={`mt-1 text-[11px] ${message.role === "user" ? "text-white/70" : isDark ? "text-gray-300" : "text-[#667892]"}`}>
                         {formatTime(message.timestamp, locale)}
@@ -536,7 +474,7 @@ export function Chatbot() {
                       className="rounded-xl border px-4 py-2 text-sm"
                       style={assistantBubbleStyle}
                     >
-                      {chatbotName} {ui.typingLabel}
+                        {ui.chatbotShortName} {ui.typingLabel}
                     </div>
                   </div>
                 )}
