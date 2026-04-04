@@ -3,6 +3,7 @@ import { Search, Star, AlertCircle, X, Info } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getClientId, getClientRecommendation, getProductsCatalog } from "../api";
+import { PageLoader } from "../components/PageLoader";
 
 const uiByLanguage = {
   en: {
@@ -679,13 +680,7 @@ export function Products() {
       </div>
 
       {loading ? (
-        <div
-          className={`rounded-xl border p-4 ${
-            isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
-          }`}
-        >
-          {ui.loading}
-        </div>
+        <PageLoader label={ui.loading} isDark={isDark} compact />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredProducts.map((product) => (
@@ -701,7 +696,7 @@ export function Products() {
                   alt={product.displayName}
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-r from-black/50 via-black/20 to-transparent" />
                 <div className={`absolute inset-x-0 bottom-0 p-3 ${isRTL ? "text-right" : "text-left"}`}>
                   <p className="text-[10px] font-semibold tracking-[0.14em] text-white/80">
                     {productPhotoTag(language)}
@@ -778,7 +773,7 @@ export function Products() {
                 alt={selectedProduct.displayName}
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-r from-black/55 via-black/20 to-transparent" />
               <div className={`absolute inset-x-0 bottom-0 p-5 ${isRTL ? "text-right" : "text-left"}`}>
                 <p className="text-xs font-semibold tracking-[0.18em] text-white/80">
                   {productPhotoTag(language)}

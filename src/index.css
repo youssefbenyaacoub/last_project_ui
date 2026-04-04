@@ -92,3 +92,26 @@ html.low-vision-mode textarea {
     opacity: 1;
   }
 }
+
+@keyframes theme-loader-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.theme-loader-spinner {
+  border-radius: 9999px;
+  border: 4px solid rgba(89, 91, 159, 0.2);
+  border-top-color: var(--color-primary);
+  border-right-color: var(--color-primary-hover);
+  animation: theme-loader-spin 0.9s linear infinite;
+}
+
+.theme-loader-spinner-dark {
+  border-color: rgba(203, 213, 225, 0.24);
+  border-top-color: #e2e8f0;
+  border-right-color: #cbd5e1;
+}

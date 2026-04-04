@@ -20,6 +20,7 @@ import {
   submitForm,
   updateProfilePhoto,
 } from "../api";
+import { PageLoader } from "../components/PageLoader";
 
 const toArray = (value) => {
   if (Array.isArray(value)) return value;
@@ -452,11 +453,7 @@ export function Profile() {
   };
 
   if (loading) {
-    return (
-      <div className={`p-6 lg:p-8 ${isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
-        {labels.loading}
-      </div>
-    );
+    return <PageLoader label={labels.loading} isDark={isDark} className={isDark ? "bg-gray-900" : "bg-gray-50"} />;
   }
 
   return (

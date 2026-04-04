@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle2, FileText, Send } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { createComplaint, getComplaints } from "../api";
+import { PageLoader } from "../components/PageLoader";
 
 const TYPE_OPTIONS = [
   {
@@ -301,7 +302,7 @@ export function Reclamation() {
           <h2 className="mb-4 text-lg font-semibold">{ui.historyTitle}</h2>
 
           {loading ? (
-            <p className={isDark ? "text-gray-400" : "text-gray-600"}>{ui.loading}</p>
+            <PageLoader label={ui.loading} isDark={isDark} compact />
           ) : sortedComplaints.length === 0 ? (
             <p className={isDark ? "text-gray-400" : "text-gray-600"}>{ui.empty}</p>
           ) : (

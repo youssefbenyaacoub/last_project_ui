@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   BadgePercent,
@@ -21,6 +21,7 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getBudget, upsertBudget } from "../api";
+import { PageLoader } from "../components/PageLoader";
 
 const currentMonth = () => new Date().toISOString().slice(0, 7);
 
@@ -258,7 +259,7 @@ export function Budget() {
   const [feedback, setFeedback] = useState("");
   const [initialStateHash, setInitialStateHash] = useState("[]");
 
-  const loadBudget = async (targetMonth) => {
+  const loadBudget = useCallback(async (targetMonth) => {
     try {
       setLoading(true);
       setError("");
@@ -284,11 +285,11 @@ export function Budget() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [language, t.loadError, t.preloaded]);
 
   useEffect(() => {
     loadBudget(month);
-  }, [month]);
+  }, [month, loadBudget]);
 
   const totals = useMemo(() => {
     const budget = categories.reduce((sum, item) => sum + Number(item.budget || 0), 0);
@@ -422,8 +423,8 @@ export function Budget() {
       <section
         className={`rounded-2xl border p-4 lg:p-5 ${
           isDark
-            ? "border-blue-800/70 bg-gradient-to-br from-blue-950/30 via-gray-900 to-gray-800"
-            : "border-blue-200 bg-gradient-to-br from-blue-50 via-white to-white"
+            ? "border-blue-800/70 bg-linear-to-br from-blue-950/30 via-gray-900 to-gray-800"
+            : "border-blue-200 bg-linear-to-br from-blue-50 via-white to-white"
         }`}
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -533,7 +534,7 @@ export function Budget() {
         </div>
 
         {loading ? (
-          <p className={isDark ? "text-gray-400" : "text-gray-600"}>{t.loading}</p>
+          <PageLoader label={t.loading} isDark={isDark} compact />
         ) : categories.length === 0 ? (
           <p className={isDark ? "text-gray-400" : "text-gray-600"}>{t.noCategory}</p>
         ) : (

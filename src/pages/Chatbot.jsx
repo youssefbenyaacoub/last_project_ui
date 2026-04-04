@@ -9,6 +9,7 @@ import {
   listChatSessions,
   sendChatMessage,
 } from "../api";
+import { PageLoader } from "../components/PageLoader";
 
 const uiByLanguage = {
   en: {
@@ -507,9 +508,7 @@ export function Chatbot() {
 
           <div className="mx-auto w-full max-w-3xl">
             {loading ? (
-              <div className={`rounded-xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-[#e2e8f2] bg-white"}`}>
-                {ui.loadingConversations}
-              </div>
+              <PageLoader label={ui.loadingConversations} isDark={isDark} compact />
             ) : emptyState ? (
               <div className="space-y-4">
                 <h2 className="text-2xl font-semibold">{ui.emptyPromptTitle}</h2>

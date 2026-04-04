@@ -14,6 +14,7 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getBudget, getClientId, getClientRecommendation, getMe, revealMyCardInfo } from "../api";
+import { PageLoader } from "../components/PageLoader";
 
 const dashboardCopy = {
   en: {
@@ -61,6 +62,12 @@ const dashboardCopy = {
     socialMediaLabel: "Social media",
     entertainmentLabel: "Entertainment",
     musicLabel: "Music",
+    notificationsTitle: "Smart Notifications",
+    notificationsSubtitle: "Personalized value based on your spending behavior",
+    viewProduct: "View product",
+    productSuggestionTitle: "Suggested for you",
+    productSuggestionMessage: "We selected this product based on your current profile.",
+    spendingSuggestionTitle: "Spending-based suggestion",
   },
   fr: {
     clientFallback: "Client",
@@ -107,6 +114,12 @@ const dashboardCopy = {
     socialMediaLabel: "Reseaux sociaux",
     entertainmentLabel: "Divertissement",
     musicLabel: "Musique",
+    notificationsTitle: "Notifications intelligentes",
+    notificationsSubtitle: "Des idees personnalisees basees sur vos habitudes de depense",
+    viewProduct: "Voir le produit",
+    productSuggestionTitle: "Suggestion pour vous",
+    productSuggestionMessage: "Ce produit est selectionne selon votre profil actuel.",
+    spendingSuggestionTitle: "Suggestion basee sur vos depenses",
   },
   ar: {
     clientFallback: "العميل",
@@ -153,6 +166,12 @@ const dashboardCopy = {
     socialMediaLabel: "تواصل اجتماعي",
     entertainmentLabel: "ترفيه",
     musicLabel: "موسيقى",
+    notificationsTitle: "اشعارات ذكية",
+    notificationsSubtitle: "اقتراحات مخصصة حسب عادات الانفاق متاعك",
+    viewProduct: "شوف المنتج",
+    productSuggestionTitle: "اقتراح ليك",
+    productSuggestionMessage: "هذا المنتج مختار حسب ملفك الحالي.",
+    spendingSuggestionTitle: "اقتراح حسب الانفاق",
   },
 };
 
@@ -521,11 +540,7 @@ export function Dashboard() {
   ];
 
   if (loading) {
-    return (
-      <div className={`p-6 lg:p-8 ${isDark ? "bg-gray-900 text-white" : "bg-[#f4f6f9] text-[#182540]"}`}>
-        {t("loading")}
-      </div>
-    );
+    return <PageLoader label={t("loading")} isDark={isDark} className={isDark ? "bg-gray-900" : "bg-[#f4f6f9]"} />;
   }
 
   const resolvedErrorMessage =
