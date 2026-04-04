@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   AlertCircle,
@@ -21,189 +21,159 @@ import {
 const copyByLanguage = {
   en: {
     title: "Agent Workspace",
-    subtitle: "Client dossier only",
+    subtitle: "One client dossier at a time",
     loadingAgent: "Loading your workspace...",
     globalError: "Unable to load agent profile.",
-    searchTitle: "Client dossier search",
+    searchTitle: "Find client dossier",
     searchHintCenter: "Start by entering a CIN",
-    searchHintTop: "Search another client by CIN",
+    searchHintTop: "Search another client CIN",
     searchPlaceholder: "Enter CIN (numbers only)",
     runSearch: "Open dossier",
-    searching: "Loading dossier...",
+    searching: "Opening...",
     noResult: "No client selected yet.",
-    summaryTitle: "Client identity",
-    profileCategoryTitle: "Categorized client information",
-    personalInfoTitle: "Personal",
-    professionalInfoTitle: "Professional",
-    accountInfoTitle: "Account and behavior",
-    productsInfoTitle: "Products and projects",
+    clientCardTitle: "Client card",
+    essentialsTitle: "Essentials",
     decisionTitle: "Credit decision",
-    indicatorsTitle: "Financial indicators",
-    reasonsTitle: "Decision reasons",
     capacityTitle: "Borrowing capacity",
-    segmentationTitle: "Segmentation",
-    riskTitle: "Risk level",
-    recommendedProductsTitle: "Recommended products",
-    existingProductsTitle: "Existing BH products",
-    noRecommendedProducts: "No recommendation available yet.",
-    profileFallback: "No profile details available yet.",
-    regularIncome: "Regular income",
-    formCompleted: "Form completed",
+    reasonsTitle: "Main reasons",
+    indicatorsTitle: "Financial indicators",
+    advancedTitle: "Advanced details",
+    showAdvanced: "Show advanced details",
+    hideAdvanced: "Hide advanced details",
+    invalidCin: "CIN must contain numbers only.",
+    loginExpired: "Session expired. Please sign in again.",
+    logout: "Log out",
     yes: "Yes",
     no: "No",
+    idLabel: "Client ID",
+    segmentLabel: "Segment",
+    scoreLabel: "Financial score",
+    regularIncome: "Regular income",
+    formCompleted: "Form completed",
+    riskLevel: "Risk level",
     ageRange: "Age range",
     familyStatus: "Family status",
-    childrenCount: "Children",
-    educationLevel: "Education",
-    housingStatus: "Housing",
     professionStatus: "Employment status",
+    housingStatus: "Housing status",
+    salaryLabel: "Monthly salary",
+    expensesLabel: "Monthly expenses",
+    savingsLabel: "Monthly savings",
+    ratioLabel: "Expense/Income ratio",
+    productsLabel: "Existing products",
+    objectiveLabel: "Financial objective",
+    projectsLabel: "12-month projects",
+    recommendationsLabel: "Recommended products",
+    noRecommendations: "No recommendation available yet.",
+    seniorityLabel: "Account seniority (days)",
+    lastOpLabel: "Days since last operation",
     activitySector: "Activity sector",
     workSeniority: "Employment seniority",
-    monthlyCharges: "Monthly charges",
     debtRatio: "Real debt ratio",
-    ownsCar: "Owns a car",
-    carType: "Car type",
-    autoLoan: "Auto loan",
-    homeLoan: "Home loan",
-    housingPlan: "Housing purchase plan",
-    childrenStudies: "Children studies interest",
-    riskTolerance: "Risk tolerance",
-    financialGoal: "Financial goal",
-    projects12Months: "Projects (12 months)",
-    seniorityDays: "Account seniority (days)",
-    daysSinceLastOp: "Days since last operation",
-    transactionFrequency: "Transaction frequency",
-    avgTransactionsMonth: "Avg transactions / month",
-    firstOperation: "First operation",
-    lastOperation: "Last operation",
-    incomeStability: "Income stability",
-    loginExpired: "Session expired. Please sign in again.",
-    invalidCin: "CIN must contain numbers only.",
-    logout: "Log out",
+    toleranceRisk: "Risk tolerance",
   },
   fr: {
     title: "Espace Agent",
-    subtitle: "Dossier client uniquement",
+    subtitle: "Un dossier client a la fois",
     loadingAgent: "Chargement de votre espace...",
     globalError: "Impossible de charger le profil agent.",
-    searchTitle: "Recherche dossier client",
+    searchTitle: "Rechercher un dossier client",
     searchHintCenter: "Commencez par saisir un CIN",
-    searchHintTop: "Rechercher un autre client par CIN",
+    searchHintTop: "Rechercher un autre CIN client",
     searchPlaceholder: "Entrez le CIN (chiffres uniquement)",
     runSearch: "Ouvrir dossier",
-    searching: "Chargement du dossier...",
+    searching: "Ouverture...",
     noResult: "Aucun client selectionne pour le moment.",
-    summaryTitle: "Identite client",
-    profileCategoryTitle: "Informations client categorisees",
-    personalInfoTitle: "Informations personnelles",
-    professionalInfoTitle: "Informations professionnelles",
-    accountInfoTitle: "Compte et comportement",
-    productsInfoTitle: "Produits et projets",
+    clientCardTitle: "Carte client",
+    essentialsTitle: "Essentiel",
     decisionTitle: "Decision credit",
-    indicatorsTitle: "Indicateurs financiers",
-    reasonsTitle: "Raisons de decision",
     capacityTitle: "Capacite d'emprunt",
-    segmentationTitle: "Segmentation",
-    riskTitle: "Niveau de risque",
-    recommendedProductsTitle: "Produits recommandes",
-    existingProductsTitle: "Produits BH existants",
-    noRecommendedProducts: "Aucune recommandation disponible pour le moment.",
-    profileFallback: "Aucun detail de profil disponible pour le moment.",
-    regularIncome: "Revenu regulier",
-    formCompleted: "Formulaire complete",
+    reasonsTitle: "Raisons principales",
+    indicatorsTitle: "Indicateurs financiers",
+    advancedTitle: "Details avances",
+    showAdvanced: "Afficher les details avances",
+    hideAdvanced: "Masquer les details avances",
+    invalidCin: "Le CIN doit contenir uniquement des chiffres.",
+    loginExpired: "Session expiree. Reconnectez-vous.",
+    logout: "Deconnexion",
     yes: "Oui",
     no: "Non",
+    idLabel: "ID client",
+    segmentLabel: "Segment",
+    scoreLabel: "Score financier",
+    regularIncome: "Revenu regulier",
+    formCompleted: "Formulaire complete",
+    riskLevel: "Niveau de risque",
     ageRange: "Tranche d'age",
     familyStatus: "Situation familiale",
-    childrenCount: "Nombre d'enfants",
-    educationLevel: "Niveau d'etudes",
-    housingStatus: "Situation logement",
     professionStatus: "Statut professionnel",
+    housingStatus: "Situation logement",
+    salaryLabel: "Salaire mensuel",
+    expensesLabel: "Depenses mensuelles",
+    savingsLabel: "Epargne mensuelle",
+    ratioLabel: "Ratio depenses/revenu",
+    productsLabel: "Produits existants",
+    objectiveLabel: "Objectif financier",
+    projectsLabel: "Projets 12 mois",
+    recommendationsLabel: "Produits recommandes",
+    noRecommendations: "Aucune recommandation disponible pour le moment.",
+    seniorityLabel: "Anciennete compte (jours)",
+    lastOpLabel: "Jours depuis la derniere operation",
     activitySector: "Secteur d'activite",
     workSeniority: "Anciennete emploi",
-    monthlyCharges: "Charges mensuelles",
     debtRatio: "Taux d'endettement reel",
-    ownsCar: "Possede une voiture",
-    carType: "Type de voiture",
-    autoLoan: "Credit auto",
-    homeLoan: "Credit immobilier",
-    housingPlan: "Projet achat logement",
-    childrenStudies: "Interet etudes enfants",
-    riskTolerance: "Tolerance au risque",
-    financialGoal: "Objectif financier",
-    projects12Months: "Projets (12 mois)",
-    seniorityDays: "Anciennete du compte (jours)",
-    daysSinceLastOp: "Jours depuis la derniere operation",
-    transactionFrequency: "Frequence de transaction",
-    avgTransactionsMonth: "Moyenne transactions / mois",
-    firstOperation: "Premiere operation",
-    lastOperation: "Derniere operation",
-    incomeStability: "Stabilite du revenu",
-    loginExpired: "Session expiree. Reconnectez-vous.",
-    invalidCin: "Le CIN doit contenir uniquement des chiffres.",
-    logout: "Deconnexion",
+    toleranceRisk: "Tolerance au risque",
   },
   ar: {
     title: "Agent Workspace",
-    subtitle: "Client dossier only",
+    subtitle: "One client dossier at a time",
     loadingAgent: "Loading your workspace...",
     globalError: "Unable to load agent profile.",
-    searchTitle: "Client dossier search",
+    searchTitle: "Find client dossier",
     searchHintCenter: "Start by entering a CIN",
-    searchHintTop: "Search another client by CIN",
+    searchHintTop: "Search another client CIN",
     searchPlaceholder: "Enter CIN (numbers only)",
     runSearch: "Open dossier",
-    searching: "Loading dossier...",
+    searching: "Opening...",
     noResult: "No client selected yet.",
-    summaryTitle: "Client identity",
-    profileCategoryTitle: "Categorized client information",
-    personalInfoTitle: "Personal",
-    professionalInfoTitle: "Professional",
-    accountInfoTitle: "Account and behavior",
-    productsInfoTitle: "Products and projects",
+    clientCardTitle: "Client card",
+    essentialsTitle: "Essentials",
     decisionTitle: "Credit decision",
-    indicatorsTitle: "Financial indicators",
-    reasonsTitle: "Decision reasons",
     capacityTitle: "Borrowing capacity",
-    segmentationTitle: "Segmentation",
-    riskTitle: "Risk level",
-    recommendedProductsTitle: "Recommended products",
-    existingProductsTitle: "Existing BH products",
-    noRecommendedProducts: "No recommendation available yet.",
-    profileFallback: "No profile details available yet.",
-    regularIncome: "Regular income",
-    formCompleted: "Form completed",
+    reasonsTitle: "Main reasons",
+    indicatorsTitle: "Financial indicators",
+    advancedTitle: "Advanced details",
+    showAdvanced: "Show advanced details",
+    hideAdvanced: "Hide advanced details",
+    invalidCin: "CIN must contain numbers only.",
+    loginExpired: "Session expired. Please sign in again.",
+    logout: "Log out",
     yes: "Yes",
     no: "No",
+    idLabel: "Client ID",
+    segmentLabel: "Segment",
+    scoreLabel: "Financial score",
+    regularIncome: "Regular income",
+    formCompleted: "Form completed",
+    riskLevel: "Risk level",
     ageRange: "Age range",
     familyStatus: "Family status",
-    childrenCount: "Children",
-    educationLevel: "Education",
-    housingStatus: "Housing",
     professionStatus: "Employment status",
+    housingStatus: "Housing status",
+    salaryLabel: "Monthly salary",
+    expensesLabel: "Monthly expenses",
+    savingsLabel: "Monthly savings",
+    ratioLabel: "Expense/Income ratio",
+    productsLabel: "Existing products",
+    objectiveLabel: "Financial objective",
+    projectsLabel: "12-month projects",
+    recommendationsLabel: "Recommended products",
+    noRecommendations: "No recommendation available yet.",
+    seniorityLabel: "Account seniority (days)",
+    lastOpLabel: "Days since last operation",
     activitySector: "Activity sector",
     workSeniority: "Employment seniority",
-    monthlyCharges: "Monthly charges",
     debtRatio: "Real debt ratio",
-    ownsCar: "Owns a car",
-    carType: "Car type",
-    autoLoan: "Auto loan",
-    homeLoan: "Home loan",
-    housingPlan: "Housing purchase plan",
-    childrenStudies: "Children studies interest",
-    riskTolerance: "Risk tolerance",
-    financialGoal: "Financial goal",
-    projects12Months: "Projects (12 months)",
-    seniorityDays: "Account seniority (days)",
-    daysSinceLastOp: "Days since last operation",
-    transactionFrequency: "Transaction frequency",
-    avgTransactionsMonth: "Avg transactions / month",
-    firstOperation: "First operation",
-    lastOperation: "Last operation",
-    incomeStability: "Income stability",
-    loginExpired: "Session expired. Please sign in again.",
-    invalidCin: "CIN must contain numbers only.",
-    logout: "Log out",
+    toleranceRisk: "Risk tolerance",
   },
 };
 
@@ -234,7 +204,6 @@ const listFromValue = (value) => {
   }
 
   if (typeof value !== "string") return [];
-
   const raw = value.trim();
   if (!raw) return [];
 
@@ -246,13 +215,24 @@ const listFromValue = (value) => {
         .filter(Boolean);
     }
   } catch {
-    // Keep fallback split parsing.
+    // Ignore parse failures and fall back to splitting.
   }
 
   return raw
     .split(/[,;|]/)
     .map((item) => item.trim())
     .filter(Boolean);
+};
+
+const getInitials = (name) => {
+  const parts = String(name || "")
+    .split(" ")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) return "CL";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
 };
 
 const badgeByEligibility = {
@@ -278,11 +258,8 @@ export function AgentDashboardPage() {
   const [clientSummary, setClientSummary] = useState(null);
   const [creditAnalysis, setCreditAnalysis] = useState(null);
   const [searchPinned, setSearchPinned] = useState(false);
-
-  const handleLogout = () => {
-    clearAgentAuthSession();
-    navigate("/agent/login", { replace: true });
-  };
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [photoFailed, setPhotoFailed] = useState(false);
 
   useEffect(() => {
     if (!getAgentAuthToken()) {
@@ -311,6 +288,11 @@ export function AgentDashboardPage() {
     loadAgent();
   }, [navigate, ui.globalError]);
 
+  const handleLogout = () => {
+    clearAgentAuthSession();
+    navigate("/agent/login", { replace: true });
+  };
+
   const handleSearch = async (event) => {
     event.preventDefault();
     if (searching) return;
@@ -324,6 +306,8 @@ export function AgentDashboardPage() {
     try {
       setSearching(true);
       setSearchPinned(true);
+      setShowAdvanced(false);
+      setPhotoFailed(false);
       setSearchError("");
       setClientSummary(null);
       setCreditAnalysis(null);
@@ -345,6 +329,10 @@ export function AgentDashboardPage() {
     }
   };
 
+  const clientName = clientSummary?.client_name || creditAnalysis?.client_name || "Client";
+  const clientPhoto = clientSummary?.client_photo || creditAnalysis?.client_photo || "";
+  const clientInitials = useMemo(() => getInitials(clientName), [clientName]);
+
   const loanDecision = creditAnalysis?.credit_decision || null;
   const financialIndicators =
     creditAnalysis?.financial_indicators || clientSummary?.financial_snapshot || null;
@@ -363,24 +351,18 @@ export function AgentDashboardPage() {
   );
   const reasons = Array.isArray(loanDecision?.reasons) ? loanDecision.reasons : [];
 
-  const rootClass = theme === "dark" ? "bg-[#0f172a] text-white" : "bg-surface-alt text-text";
+  const pageBg = theme === "dark" ? "bg-[#0f172a] text-white" : "bg-surface-alt text-text";
   const navbarClass =
-    theme === "dark"
-      ? "border-white/10 bg-[#101a2f]"
-      : "border-border bg-surface";
+    theme === "dark" ? "border-white/10 bg-[#101b31]" : "border-border bg-surface";
   const panelClass =
     theme === "dark"
-      ? "rounded-3xl border border-white/10 bg-[#121f35] p-5 shadow-sm"
-      : "rounded-3xl border border-border bg-surface p-5 shadow-sm";
+      ? "rounded-2xl border border-white/10 bg-[#14233b] p-5"
+      : "rounded-2xl border border-border bg-surface p-5";
+  const softCardClass =
+    theme === "dark"
+      ? "rounded-xl border border-white/10 bg-white/5 p-3"
+      : "rounded-xl border border-border bg-surface-alt p-3";
   const mutedTextClass = theme === "dark" ? "text-white/65" : "text-text-muted";
-  const chipClass =
-    theme === "dark"
-      ? "rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm"
-      : "rounded-xl border border-border bg-surface-alt px-3 py-2 text-sm";
-  const dataCellClass =
-    theme === "dark"
-      ? "rounded-xl border border-white/10 bg-[#0d192c] px-3 py-2"
-      : "rounded-xl border border-border bg-surface-alt px-3 py-2";
 
   const inputClass =
     theme === "dark"
@@ -389,8 +371,6 @@ export function AgentDashboardPage() {
 
   const primaryButtonClass =
     "inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60";
-
-  const showData = Boolean(clientSummary);
 
   const searchForm = (
     <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
@@ -408,7 +388,7 @@ export function AgentDashboardPage() {
   );
 
   return (
-    <div className={`min-h-screen ${rootClass}`} dir={isRTL ? "rtl" : "ltr"}>
+    <div className={`min-h-screen ${pageBg}`} dir={isRTL ? "rtl" : "ltr"}>
       <header className={`border-b px-5 py-4 sm:px-8 ${navbarClass}`}>
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
           <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
@@ -422,9 +402,7 @@ export function AgentDashboardPage() {
           </div>
 
           <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <div className={chipClass}>
-              {agentProfile?.full_name || agentProfile?.agent_id || "Agent"}
-            </div>
+            <div className={softCardClass}>{agentProfile?.full_name || agentProfile?.agent_id || "Agent"}</div>
             <button
               type="button"
               onClick={handleLogout}
@@ -492,128 +470,114 @@ export function AgentDashboardPage() {
                   </p>
                 )}
 
-                {!showData && !searchError ? (
+                {!clientSummary && !searchError ? (
                   <div className={panelClass}>{ui.noResult}</div>
                 ) : (
-                  <section className="grid gap-6 lg:grid-cols-[1.2fr_0.95fr]">
-                    <div className={panelClass}>
-                      <div className={dataCellClass}>
-                        <h3 className="text-base font-semibold">{ui.summaryTitle}</h3>
-                        <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-                          <p className={chipClass}>ID: {displayValue(clientSummary?.client_id)}</p>
-                          <p className={chipClass}>Name: {displayValue(clientSummary?.client_name)}</p>
-                          <p className={chipClass}>Segment: {displayValue(segmentation.rfm_segment)}</p>
-                          <p className={chipClass}>
-                            Score: {Number(clientSummary?.financial_score || 0).toFixed(0)}/100
-                          </p>
-                        </div>
-                        <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
-                          <p className={chipClass}>
-                            {ui.formCompleted}: {clientSummary?.form_completed ? ui.yes : ui.no}
-                          </p>
-                          <p className={chipClass}>
-                            {ui.regularIncome}: {clientSummary?.has_regular_income ? ui.yes : ui.no}
-                          </p>
-                          <p className={chipClass}>
-                            {ui.riskTitle}: {displayValue(loanDecision?.risk_level)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className={`${dataCellClass} mt-4`}>
-                        <h4 className="text-sm font-semibold">{ui.profileCategoryTitle}</h4>
-
-                        <div className="mt-3 grid gap-4 lg:grid-cols-2">
-                          <div>
-                            <p className={`text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                              {ui.personalInfoTitle}
-                            </p>
-                            <div className="mt-2 grid gap-2 text-sm">
-                              <p className={chipClass}>{ui.ageRange}: {displayValue(clientProfile.tranche_age)}</p>
-                              <p className={chipClass}>{ui.familyStatus}: {displayValue(clientProfile.situation_familiale)}</p>
-                              <p className={chipClass}>{ui.childrenCount}: {displayValue(clientProfile.nombre_enfants)}</p>
-                              <p className={chipClass}>{ui.educationLevel}: {displayValue(clientProfile.niveau_etudes)}</p>
-                              <p className={chipClass}>{ui.housingStatus}: {displayValue(clientProfile.situation_logement)}</p>
-                            </div>
-                          </div>
-
-                          <div>
-                            <p className={`text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                              {ui.professionalInfoTitle}
-                            </p>
-                            <div className="mt-2 grid gap-2 text-sm">
-                              <p className={chipClass}>{ui.professionStatus}: {displayValue(clientProfile.statut_professionnel)}</p>
-                              <p className={chipClass}>{ui.activitySector}: {displayValue(clientProfile.secteur_activite)}</p>
-                              <p className={chipClass}>{ui.workSeniority}: {displayValue(clientProfile.anciennete_emploi)}</p>
-                              <p className={chipClass}>{ui.monthlyCharges}: {displayValue(clientProfile.charges_mensuelles)}</p>
-                              <p className={chipClass}>{ui.debtRatio}: {displayValue(clientProfile.taux_endettement_reel)}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-4">
-                          <p className={`text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                            {ui.accountInfoTitle}
-                          </p>
-                          <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-                            <p className={chipClass}>{ui.seniorityDays}: {displayValue(accountInfo.account_seniority_days)}</p>
-                            <p className={chipClass}>{ui.daysSinceLastOp}: {displayValue(accountInfo.days_since_last_op)}</p>
-                            <p className={chipClass}>{ui.transactionFrequency}: {displayValue(accountInfo.transaction_frequency)}</p>
-                            <p className={chipClass}>{ui.avgTransactionsMonth}: {displayValue(accountInfo.avg_transactions_month)}</p>
-                            <p className={chipClass}>{ui.firstOperation}: {displayValue(accountInfo.first_operation)}</p>
-                            <p className={chipClass}>{ui.lastOperation}: {displayValue(accountInfo.last_operation)}</p>
-                          </div>
-                        </div>
-
-                        <div className="mt-4">
-                          <p className={`text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                            {ui.productsInfoTitle}
-                          </p>
-                          <div className="mt-2 space-y-2 text-sm">
-                            <p className={chipClass}>{ui.existingProductsTitle}: {displayValue(existingProducts)}</p>
-                            <p className={chipClass}>{ui.projects12Months}: {displayValue(clientProfile.projets_12_mois)}</p>
-                            <p className={chipClass}>{ui.financialGoal}: {displayValue(clientProfile.objectif_financier)}</p>
-                            <p className={chipClass}>{ui.riskTolerance}: {displayValue(clientProfile.tolerance_risque)}</p>
-                            <p className={chipClass}>{ui.housingPlan}: {displayValue(clientProfile.souhait_achat_logement)}</p>
-                            <p className={chipClass}>{ui.homeLoan}: {displayValue(clientProfile.credit_immobilier_en_cours)}</p>
-                            <p className={chipClass}>{ui.autoLoan}: {displayValue(clientProfile.credit_auto_en_cours)}</p>
-                            <p className={chipClass}>{ui.ownsCar}: {displayValue(clientProfile.possede_voiture)}</p>
-                            <p className={chipClass}>{ui.carType}: {displayValue(clientProfile.type_voiture)}</p>
-                            <p className={chipClass}>{ui.childrenStudies}: {displayValue(clientProfile.interet_etudes_enfants)}</p>
-                          </div>
-
-                          <div className="mt-3">
-                            <p className={`text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                              {ui.recommendedProductsTitle}
-                            </p>
-                            {recommendedProducts.length > 0 ? (
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {recommendedProducts.map((product) => (
-                                  <span
-                                    key={product}
-                                    className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${
-                                      theme === "dark"
-                                        ? "border-white/20 bg-white/10 text-white"
-                                        : "border-border bg-surface text-text"
-                                    }`}
-                                  >
-                                    {product}
-                                  </span>
-                                ))}
-                              </div>
+                  <section className="grid gap-6 lg:grid-cols-[1.25fr_0.95fr]">
+                    <div className="space-y-6">
+                      <article className={panelClass}>
+                        <h2 className="text-lg font-bold">{ui.clientCardTitle}</h2>
+                        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+                          <div className="h-24 w-24 overflow-hidden rounded-2xl border border-border bg-surface-alt">
+                            {clientPhoto && !photoFailed ? (
+                              <img
+                                src={clientPhoto}
+                                alt={clientName}
+                                className="h-full w-full object-cover"
+                                onError={() => setPhotoFailed(true)}
+                              />
                             ) : (
-                              <p className={`mt-2 text-sm ${mutedTextClass}`}>{ui.noRecommendedProducts}</p>
+                              <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-primary">
+                                {clientInitials}
+                              </div>
                             )}
                           </div>
+
+                          <div className="grid flex-1 gap-2 text-sm sm:grid-cols-2">
+                            <p className={softCardClass}>{ui.idLabel}: {displayValue(clientSummary?.client_id)}</p>
+                            <p className={softCardClass}>{ui.segmentLabel}: {displayValue(segmentation.rfm_segment)}</p>
+                            <p className={softCardClass}>{ui.scoreLabel}: {Number(clientSummary?.financial_score || 0).toFixed(0)}/100</p>
+                            <p className={softCardClass}>{ui.riskLevel}: {displayValue(loanDecision?.risk_level)}</p>
+                            <p className={softCardClass}>{ui.regularIncome}: {clientSummary?.has_regular_income ? ui.yes : ui.no}</p>
+                            <p className={softCardClass}>{ui.formCompleted}: {clientSummary?.form_completed ? ui.yes : ui.no}</p>
+                          </div>
+                        </div>
+                        <p className="mt-3 text-lg font-semibold">{clientName}</p>
+                      </article>
+
+                      <article className={panelClass}>
+                        <h2 className="text-lg font-bold">{ui.essentialsTitle}</h2>
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                          <div className={softCardClass}>
+                            <p className="text-sm font-semibold">{ui.salaryLabel}</p>
+                            <p className="mt-1 text-lg font-bold">{formatMoney(financialIndicators?.monthly_salary)}</p>
+                          </div>
+                          <div className={softCardClass}>
+                            <p className="text-sm font-semibold">{ui.expensesLabel}</p>
+                            <p className="mt-1 text-lg font-bold">{formatMoney(financialIndicators?.avg_monthly_expenses)}</p>
+                          </div>
+                          <div className={softCardClass}>
+                            <p className="text-sm font-semibold">{ui.savingsLabel}</p>
+                            <p className="mt-1 text-lg font-bold">{formatMoney(financialIndicators?.net_monthly_savings)}</p>
+                          </div>
+                          <div className={softCardClass}>
+                            <p className="text-sm font-semibold">{ui.ratioLabel}</p>
+                            <p className="mt-1 text-lg font-bold">{formatPercent(financialIndicators?.expense_income_ratio)}</p>
+                          </div>
                         </div>
 
-                        {!Object.values(clientProfile || {}).some(Boolean) && (
-                          <p className={`mt-4 text-sm ${mutedTextClass}`}>{ui.profileFallback}</p>
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                          <p className={softCardClass}>{ui.ageRange}: {displayValue(clientProfile.tranche_age)}</p>
+                          <p className={softCardClass}>{ui.familyStatus}: {displayValue(clientProfile.situation_familiale)}</p>
+                          <p className={softCardClass}>{ui.professionStatus}: {displayValue(clientProfile.statut_professionnel)}</p>
+                          <p className={softCardClass}>{ui.housingStatus}: {displayValue(clientProfile.situation_logement)}</p>
+                          <p className={softCardClass}>{ui.productsLabel}: {displayValue(existingProducts)}</p>
+                          <p className={softCardClass}>{ui.objectiveLabel}: {displayValue(clientProfile.objectif_financier)}</p>
+                          <p className={softCardClass}>{ui.projectsLabel}: {displayValue(clientProfile.projets_12_mois)}</p>
+                        </div>
+
+                        <div className="mt-4">
+                          <p className={`text-sm font-semibold ${mutedTextClass}`}>{ui.recommendationsLabel}</p>
+                          {recommendedProducts.length > 0 ? (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {recommendedProducts.map((product) => (
+                                <span
+                                  key={product}
+                                  className="inline-flex rounded-full border border-border bg-surface-alt px-3 py-1 text-xs font-medium"
+                                >
+                                  {product}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className={`mt-2 text-sm ${mutedTextClass}`}>{ui.noRecommendations}</p>
+                          )}
+                        </div>
+                      </article>
+
+                      <article className={panelClass}>
+                        <button
+                          type="button"
+                          onClick={() => setShowAdvanced((prev) => !prev)}
+                          className="inline-flex items-center rounded-xl border border-border bg-surface-alt px-3 py-2 text-sm font-medium hover:bg-surface"
+                        >
+                          {showAdvanced ? ui.hideAdvanced : ui.showAdvanced}
+                        </button>
+
+                        {showAdvanced && (
+                          <div className="mt-4 grid gap-3 md:grid-cols-2">
+                            <p className={softCardClass}>{ui.seniorityLabel}: {displayValue(accountInfo.account_seniority_days)}</p>
+                            <p className={softCardClass}>{ui.lastOpLabel}: {displayValue(accountInfo.days_since_last_op)}</p>
+                            <p className={softCardClass}>{ui.activitySector}: {displayValue(clientProfile.secteur_activite)}</p>
+                            <p className={softCardClass}>{ui.workSeniority}: {displayValue(clientProfile.anciennete_emploi)}</p>
+                            <p className={softCardClass}>{ui.debtRatio}: {displayValue(clientProfile.taux_endettement_reel)}</p>
+                            <p className={softCardClass}>{ui.toleranceRisk}: {displayValue(clientProfile.tolerance_risque)}</p>
+                          </div>
                         )}
-                      </div>
+                      </article>
                     </div>
 
-                    <div className={panelClass}>
+                    <aside className={panelClass}>
                       <h2 className="text-lg font-bold">{ui.decisionTitle}</h2>
 
                       {!loanDecision ? (
@@ -634,72 +598,39 @@ export function AgentDashboardPage() {
                             {loanDecision.eligibility || "-"}
                           </div>
 
-                          <p className={chipClass}>
-                            {ui.riskTitle}: {displayValue(loanDecision?.risk_level)}
-                          </p>
+                          <p className={softCardClass}>{ui.riskLevel}: {displayValue(loanDecision?.risk_level)}</p>
 
                           <div>
                             <h3 className="text-sm font-semibold">{ui.reasonsTitle}</h3>
                             <ul className="mt-2 space-y-2 text-sm">
                               {reasons.length > 0 ? (
                                 reasons.map((reason, index) => (
-                                  <li key={`${reason}-${index}`} className={chipClass}>
+                                  <li key={`${reason}-${index}`} className={softCardClass}>
                                     {reason}
                                   </li>
                                 ))
                               ) : (
-                                <li className={mutedTextClass}>No specific reason provided.</li>
+                                <li className={mutedTextClass}>-</li>
                               )}
                             </ul>
                           </div>
 
                           <div>
                             <h3 className="text-sm font-semibold">{ui.capacityTitle}</h3>
-                            <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-                              <p className={chipClass}>
-                                36m: {formatMoney(loanDecision?.borrowing_capacity?.["36_months"])}
-                              </p>
-                              <p className={chipClass}>
-                                60m: {formatMoney(loanDecision?.borrowing_capacity?.["60_months"])}
-                              </p>
-                              <p className={chipClass}>
-                                84m: {formatMoney(loanDecision?.borrowing_capacity?.["84_months"])}
-                              </p>
-                              <p className={chipClass}>
-                                Monthly: {formatMoney(loanDecision?.max_monthly_payment)}
-                              </p>
+                            <div className="mt-2 grid gap-2 text-sm">
+                              <p className={softCardClass}>36m: {formatMoney(loanDecision?.borrowing_capacity?.["36_months"])}</p>
+                              <p className={softCardClass}>60m: {formatMoney(loanDecision?.borrowing_capacity?.["60_months"])}</p>
+                              <p className={softCardClass}>84m: {formatMoney(loanDecision?.borrowing_capacity?.["84_months"])}</p>
+                              <p className={softCardClass}>Monthly: {formatMoney(loanDecision?.max_monthly_payment)}</p>
                             </div>
                           </div>
 
-                          {financialIndicators && (
-                            <div>
-                              <h3 className="text-sm font-semibold">{ui.indicatorsTitle}</h3>
-                              <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-                                <p className={chipClass}>Salary: {formatMoney(financialIndicators.monthly_salary)}</p>
-                                <p className={chipClass}>Expenses: {formatMoney(financialIndicators.avg_monthly_expenses)}</p>
-                                <p className={chipClass}>Savings: {formatMoney(financialIndicators.net_monthly_savings)}</p>
-                                <p className={chipClass}>
-                                  Score: {Number(financialIndicators.financial_score || 0).toFixed(0)}/100
-                                </p>
-                                <p className={chipClass}>Ratio: {formatPercent(financialIndicators.expense_income_ratio)}</p>
-                                <p className={chipClass}>
-                                  {ui.incomeStability}: {Number(financialIndicators.income_stability_score || 0).toFixed(0)}/100
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
                           <div>
-                            <h3 className="text-sm font-semibold">{ui.segmentationTitle}</h3>
-                            <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-                              <p className={chipClass}>Segment: {displayValue(segmentation.rfm_segment)}</p>
-                              <p className={chipClass}>Savings profile: {displayValue(segmentation.savings_profile)}</p>
-                              <p className={chipClass}>Cluster: {displayValue(segmentation.kmeans_cluster)}</p>
-                              <p className={chipClass}>
-                                R/F/M: {displayValue(segmentation?.rfm_scores?.R)}/
-                                {displayValue(segmentation?.rfm_scores?.F)}/
-                                {displayValue(segmentation?.rfm_scores?.M)}
-                              </p>
+                            <h3 className="text-sm font-semibold">{ui.indicatorsTitle}</h3>
+                            <div className="mt-2 grid gap-2 text-sm">
+                              <p className={softCardClass}>{ui.segmentLabel}: {displayValue(segmentation.rfm_segment)}</p>
+                              <p className={softCardClass}>Savings profile: {displayValue(segmentation.savings_profile)}</p>
+                              <p className={softCardClass}>R/F/M: {displayValue(segmentation?.rfm_scores?.R)}/{displayValue(segmentation?.rfm_scores?.F)}/{displayValue(segmentation?.rfm_scores?.M)}</p>
                             </div>
                           </div>
                         </div>
@@ -709,7 +640,7 @@ export function AgentDashboardPage() {
                         <AlertCircle size={13} />
                         {ui.loginExpired}
                       </p>
-                    </div>
+                    </aside>
                   </section>
                 )}
               </>
