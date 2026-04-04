@@ -27,6 +27,18 @@ const copyByLanguage = {
     passwordHint: "Use your browser password manager to safely remember the password.",
     signIn: "Sign in as agent",
     loading: "Signing in...",
+    scopeTitle: "After login, your dashboard is categorized",
+    scopeProfile: "Client profile and household context",
+    scopeFinance: "Financial indicators and borrowing capacity",
+    scopeRisk: "Risk level and credit decision reasons",
+    scopeProducts: "Existing products and cross-sell opportunities",
+    workspaceTitle: "BH Agent Workspace",
+    workspaceDescription:
+      "This portal is reserved for BH Bank staff. Agent sessions use dedicated authentication and isolated local storage keys.",
+    securityTitle: "Security and scope",
+    securityEndpoint: "Dedicated endpoint: /api/auth/agent/login",
+    securityRoutes: "Dedicated routes: /agent/login and /agent/dashboard",
+    securityStorage: "Dedicated storage keys: bh_agent_*",
   },
   fr: {
     title: "Portail Agent",
@@ -41,6 +53,18 @@ const copyByLanguage = {
     passwordHint: "Utilisez le gestionnaire de mots de passe du navigateur pour memoriser le mot de passe en securite.",
     signIn: "Connexion agent",
     loading: "Connexion...",
+    scopeTitle: "Apres connexion, votre dashboard est categorise",
+    scopeProfile: "Profil client et contexte familial",
+    scopeFinance: "Indicateurs financiers et capacite d'emprunt",
+    scopeRisk: "Niveau de risque et raisons de decision credit",
+    scopeProducts: "Produits existants et opportunites de cross-sell",
+    workspaceTitle: "Espace Agent BH",
+    workspaceDescription:
+      "Ce portail est reserve aux equipes BH Bank. Les sessions agent utilisent une authentification dediee et des cles locales isolees.",
+    securityTitle: "Securite et perimetre",
+    securityEndpoint: "Endpoint dedie: /api/auth/agent/login",
+    securityRoutes: "Routes dediees: /agent/login et /agent/dashboard",
+    securityStorage: "Cles de stockage dediees: bh_agent_*",
   },
   ar: {
     title: "Agent Portal",
@@ -55,6 +79,18 @@ const copyByLanguage = {
     passwordHint: "Use your browser password manager to safely remember the password.",
     signIn: "Agent sign in",
     loading: "Signing in...",
+    scopeTitle: "After login, your dashboard is categorized",
+    scopeProfile: "Client profile and household context",
+    scopeFinance: "Financial indicators and borrowing capacity",
+    scopeRisk: "Risk level and credit decision reasons",
+    scopeProducts: "Existing products and cross-sell opportunities",
+    workspaceTitle: "BH Agent Workspace",
+    workspaceDescription:
+      "This portal is reserved for BH Bank staff. Agent sessions use dedicated authentication and isolated local storage keys.",
+    securityTitle: "Security and scope",
+    securityEndpoint: "Dedicated endpoint: /api/auth/agent/login",
+    securityRoutes: "Dedicated routes: /agent/login and /agent/dashboard",
+    securityStorage: "Dedicated storage keys: bh_agent_*",
   },
 };
 
@@ -163,6 +199,16 @@ export function AgentLoginPage() {
             <div className={`mb-7 ${isRTL ? "text-right" : "text-left"}`}>
               <h1 className="text-3xl font-extrabold tracking-tight">{ui.title}</h1>
               <p className={`mt-2 text-sm ${theme === "dark" ? "text-white/70" : "text-[#5f7090]"}`}>{ui.subtitle}</p>
+
+              <div className={`mt-4 rounded-2xl border p-3 text-xs ${theme === "dark" ? "border-white/15 bg-white/5 text-white/80" : "border-[#d7e0ee] bg-[#f8fbff] text-[#4d6286]"}`}>
+                <p className="font-semibold">{ui.scopeTitle}</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <p>- {ui.scopeProfile}</p>
+                  <p>- {ui.scopeFinance}</p>
+                  <p>- {ui.scopeRisk}</p>
+                  <p>- {ui.scopeProducts}</p>
+                </div>
+              </div>
             </div>
 
             <form className="space-y-5" onSubmit={handleSubmit}>
@@ -274,20 +320,22 @@ export function AgentLoginPage() {
                 : "border-[#dbe4f2] bg-[#f1f5fc] text-[#13233f]"
             }`}
           >
-            <h2 className="text-xl font-bold">BH Agent Workspace</h2>
+            <h2 className="text-xl font-bold">{ui.workspaceTitle}</h2>
             <p className={`mt-3 text-sm leading-relaxed ${theme === "dark" ? "text-white/75" : "text-[#516484]"}`}>
-              This portal is reserved for BH Bank staff. Agent sessions use dedicated authentication
-              and do not share the same entry or local session keys as client accounts.
+              {ui.workspaceDescription}
             </p>
             <div className="mt-8 space-y-3">
+              <p className={`text-xs font-semibold uppercase tracking-wide ${theme === "dark" ? "text-white/60" : "text-[#5f7090]"}`}>
+                {ui.securityTitle}
+              </p>
               <div className={`rounded-2xl border px-4 py-3 text-sm ${theme === "dark" ? "border-white/15 bg-white/5" : "border-[#d6e0ef] bg-white"}`}>
-                Dedicated endpoint: /api/auth/agent/login
+                {ui.securityEndpoint}
               </div>
               <div className={`rounded-2xl border px-4 py-3 text-sm ${theme === "dark" ? "border-white/15 bg-white/5" : "border-[#d6e0ef] bg-white"}`}>
-                Dedicated routes: /agent/login and /agent/dashboard
+                {ui.securityRoutes}
               </div>
               <div className={`rounded-2xl border px-4 py-3 text-sm ${theme === "dark" ? "border-white/15 bg-white/5" : "border-[#d6e0ef] bg-white"}`}>
-                Dedicated storage keys: bh_agent_*
+                {ui.securityStorage}
               </div>
             </div>
           </aside>
