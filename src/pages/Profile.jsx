@@ -73,6 +73,11 @@ const PROFILE_COPY = {
     emailLabel: "Email",
     phoneLabel: "Phone",
     clientIdLabel: "Client ID",
+    cinLabel: "Client CIN",
+    cardNumberLabel: "Card number",
+    cardExpiryLabel: "Card expiry",
+    cardsCountLabel: "Cards count",
+    cardCodeLabel: "Card code (mock)",
     statusLabel: "Status",
   },
   fr: {
@@ -113,6 +118,11 @@ const PROFILE_COPY = {
     emailLabel: "Email",
     phoneLabel: "Telephone",
     clientIdLabel: "Client ID",
+    cinLabel: "CIN client",
+    cardNumberLabel: "Numero de carte",
+    cardExpiryLabel: "Expiration carte",
+    cardsCountLabel: "Nombre de cartes",
+    cardCodeLabel: "Code carte (mock)",
     statusLabel: "Statut",
   },
   ar: {
@@ -153,6 +163,11 @@ const PROFILE_COPY = {
     emailLabel: "البريد الالكتروني",
     phoneLabel: "رقم الهاتف",
     clientIdLabel: "رقم العميل",
+    cinLabel: "رقم CIN",
+    cardNumberLabel: "رقم البطاقة",
+    cardExpiryLabel: "تاريخ انتهاء البطاقة",
+    cardsCountLabel: "عدد البطاقات",
+    cardCodeLabel: "رمز البطاقة (تجريبي)",
     statusLabel: "الحالة",
   },
 };
@@ -295,15 +310,33 @@ export function Profile() {
   const identityRows = useMemo(
     () => [
       { label: labels.clientIdLabel, value: profile?.client_id || "-" },
+      { label: labels.cinLabel, value: profile?.client_cin || "-" },
       { label: "Name", value: profile?.client_name || "-" },
       { label: labels.emailLabel, value: profile?.email || "-" },
       { label: labels.phoneLabel, value: profile?.phone || "-" },
+      { label: labels.cardNumberLabel, value: profile?.card_number_masked || "-" },
+      { label: labels.cardExpiryLabel, value: profile?.card_expires_on || "-" },
+      { label: labels.cardsCountLabel, value: profile?.cards_count ?? "-" },
+      { label: labels.cardCodeLabel, value: profile?.card_reveal_code_mock || "-" },
       {
         label: labels.statusLabel,
         value: profile?.email_verified ? labels.verified : labels.notVerified,
       },
     ],
-    [profile, labels.clientIdLabel, labels.emailLabel, labels.phoneLabel, labels.statusLabel, labels.verified, labels.notVerified],
+    [
+      profile,
+      labels.clientIdLabel,
+      labels.cinLabel,
+      labels.emailLabel,
+      labels.phoneLabel,
+      labels.cardNumberLabel,
+      labels.cardExpiryLabel,
+      labels.cardsCountLabel,
+      labels.cardCodeLabel,
+      labels.statusLabel,
+      labels.verified,
+      labels.notVerified,
+    ],
   );
 
   const updateField = (fieldId, value) => {

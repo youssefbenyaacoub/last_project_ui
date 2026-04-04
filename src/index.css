@@ -33,6 +33,22 @@ body {
   color: #1e293b;
 }
 
+html.low-vision-mode {
+  font-size: 17px;
+}
+
+html.low-vision-mode body {
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+html.low-vision-mode button,
+html.low-vision-mode input,
+html.low-vision-mode select,
+html.low-vision-mode textarea {
+  border-width: 2px;
+}
+
 /* Arabic font override */
 [dir="rtl"] body,
 [dir="rtl"] * {

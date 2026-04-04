@@ -33,7 +33,7 @@ const uiByLanguage = {
     conversationFallback: "Conversation",
     chatbotTitle: "BH Advisor Chatbot",
     chatbotShortName: "BH Advisor",
-    typingLabel: "is replying...",
+    typingLabel: "is thinking...",
   },
   fr: {
     conversationsTitle: "Conversations",
@@ -57,7 +57,7 @@ const uiByLanguage = {
     conversationFallback: "Conversation",
     chatbotTitle: "BH Advisor Chatbot",
     chatbotShortName: "BH Advisor",
-    typingLabel: "repond...",
+    typingLabel: "reflechit...",
   },
   ar: {
     conversationsTitle: "المحادثات",
@@ -81,7 +81,7 @@ const uiByLanguage = {
     conversationFallback: "محادثة",
     chatbotTitle: "مساعد BH Advisor",
     chatbotShortName: "BH Advisor",
-    typingLabel: "يقوم بالرد...",
+    typingLabel: "يفكر...",
   },
 };
 
@@ -107,6 +107,55 @@ const formatTime = (value, locale) => {
   }).format(date);
 };
 
+const renderMessageContent = (content, linkClassName) => {
+  const text = String(content || "");
+  const lines = text.split("\n");
+
+  return lines.map((line, lineIndex) => {
+    if (!line.trim()) {
+      return <p key={`line-${lineIndex}`} className="h-3" />;
+    }
+
+    const linkRegex = /\[([^\]]+)\]\(([^)\s]+)\)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = linkRegex.exec(line)) !== null) {
+      const [fullMatch, label, href] = match;
+
+      if (match.index > lastIndex) {
+        parts.push(line.slice(lastIndex, match.index));
+      }
+
+      const isExternal = /^https?:\/\//i.test(href);
+      parts.push(
+        <a
+          key={`link-${lineIndex}-${match.index}`}
+          href={href}
+          className={linkClassName}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noreferrer noopener" : undefined}
+        >
+          {label}
+        </a>,
+      );
+
+      lastIndex = match.index + fullMatch.length;
+    }
+
+    if (lastIndex < line.length) {
+      parts.push(line.slice(lastIndex));
+    }
+
+    return (
+      <p key={`line-${lineIndex}`} className={lineIndex === 0 ? "" : "mt-1"}>
+        {parts.length > 0 ? parts : line}
+      </p>
+    );
+  });
+};
+
 export function Chatbot() {
   const { theme } = useTheme();
   const { language, isRTL } = useLanguage();
@@ -127,6 +176,7 @@ export function Chatbot() {
   const [activeSessionId, setActiveSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
 
+  const [typingSeconds, setTypingSeconds] = useState(0);
   const bottomRef = useRef(null);
   const clientId = getClientId();
 
@@ -159,41 +209,78 @@ export function Chatbot() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, sending]);
 
-  const loadSessions = useCallback(async () => {
-    if (!clientId) {
-      setError(ui.sessionMissing);
-      setLoading(false);
-      return;
+  useEffect(() => {
+    if (!sending) {
+      setTypingSeconds(0);
+      return undefined;
     }
 
-    try {
-      setLoading(true);
-      setError("");
-      const data = await listChatSessions(clientId);
-      const nextSessions = Array.isArray(data?.sessions) ? data.sessions : [];
-      setSessions(nextSessions);
+    const timer = window.setInterval(() => {
+      setTypingSeconds((prev) => prev + 1);
+    }, 1000);
 
-      if (nextSessions.length > 0) {
-        const firstSessionId = nextSessions[0].id;
-        setActiveSessionId(firstSessionId);
-        const history = await getChatHistory(clientId, firstSessionId);
-        setMessages(
-          (history?.history || []).map((entry) => ({
-            role: entry.role,
-            content: entry.content,
-            timestamp: entry.timestamp,
-          })),
-        );
-      } else {
-        setMessages([]);
-        setActiveSessionId(null);
+    return () => window.clearInterval(timer);
+  }, [sending]);
+
+  const assistantLinkClass = isDark
+    ? "underline text-cyan-200 hover:text-cyan-100"
+    : "underline text-[#0A2240] hover:text-[#12305b]";
+
+  const loadSessions = useCallback(
+    async ({ showLoader = true, hydrateMessages = true } = {}) => {
+      if (!clientId) {
+        setError(ui.sessionMissing);
+        if (showLoader) setLoading(false);
+        return;
       }
-    } catch (err) {
-      setError(err.message || ui.loadSessionsError);
-    } finally {
-      setLoading(false);
-    }
-  }, [clientId, ui]);
+
+      try {
+        if (showLoader) {
+          setLoading(true);
+          setError("");
+        }
+
+        const data = await listChatSessions(clientId);
+        const nextSessions = Array.isArray(data?.sessions) ? data.sessions : [];
+        setSessions(nextSessions);
+
+        if (nextSessions.length > 0) {
+          const hasActiveSession =
+            activeSessionId && nextSessions.some((session) => session.id === activeSessionId);
+          const targetSessionId = hasActiveSession ? activeSessionId : nextSessions[0].id;
+
+          if (!hasActiveSession) {
+            setActiveSessionId(targetSessionId);
+          }
+
+          if (hydrateMessages && targetSessionId) {
+            const history = await getChatHistory(clientId, targetSessionId);
+            setMessages(
+              (history?.history || []).map((entry) => ({
+                role: entry.role,
+                content: entry.content,
+                timestamp: entry.timestamp,
+              })),
+            );
+          }
+        } else {
+          if (hydrateMessages) {
+            setMessages([]);
+          }
+          setActiveSessionId(null);
+        }
+      } catch (err) {
+        if (showLoader) {
+          setError(err.message || ui.loadSessionsError);
+        }
+      } finally {
+        if (showLoader) {
+          setLoading(false);
+        }
+      }
+    },
+    [activeSessionId, clientId, ui],
+  );
 
   useEffect(() => {
     loadSessions();
@@ -264,7 +351,7 @@ export function Chatbot() {
         setActiveSessionId(response.session_id);
       }
 
-      await loadSessions();
+      await loadSessions({ showLoader: false, hydrateMessages: false });
     } catch (err) {
       setError(err.message || ui.sendError);
     } finally {
@@ -460,7 +547,12 @@ export function Chatbot() {
                       className="max-w-[85%] rounded-2xl border px-4 py-3 text-sm leading-relaxed sm:max-w-[75%]"
                       style={message.role === "user" ? userBubbleStyle : assistantBubbleStyle}
                     >
-                      <p>{message.content}</p>
+                      <div className="whitespace-pre-wrap" style={{ overflowWrap: "anywhere" }}>
+                        {renderMessageContent(
+                          message.content,
+                          message.role === "user" ? "underline text-white" : assistantLinkClass,
+                        )}
+                      </div>
                       <p className={`mt-1 text-[11px] ${message.role === "user" ? "text-white/70" : isDark ? "text-gray-300" : "text-[#667892]"}`}>
                         {formatTime(message.timestamp, locale)}
                       </p>
@@ -474,7 +566,23 @@ export function Chatbot() {
                       className="rounded-xl border px-4 py-2 text-sm"
                       style={assistantBubbleStyle}
                     >
-                        {ui.chatbotShortName} {ui.typingLabel}
+                      <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <span className="inline-flex items-center gap-1">
+                          {[0, 1, 2].map((dot) => (
+                            <span
+                              key={`typing-dot-${dot}`}
+                              className={`h-1.5 w-1.5 rounded-full ${isDark ? "bg-white/70" : "bg-[#4b5d79]"} animate-bounce`}
+                              style={{ animationDelay: `${dot * 0.15}s` }}
+                            />
+                          ))}
+                        </span>
+                        <span className="whitespace-nowrap">
+                          {ui.chatbotShortName} {ui.typingLabel}
+                        </span>
+                        <span className={`text-[11px] ${isDark ? "text-white/55" : "text-[#7a879d]"}`}>
+                          {typingSeconds}s
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}

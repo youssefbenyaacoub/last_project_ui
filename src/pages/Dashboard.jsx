@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import { getBudget, getClientId, getClientRecommendation, getMe } from "../api";
+import { getBudget, getClientId, getClientRecommendation, getMe, revealMyCardInfo } from "../api";
 
 const dashboardCopy = {
   en: {
@@ -38,12 +38,23 @@ const dashboardCopy = {
     netSavings: "Net savings",
     monthlySalary: "Monthly salary",
     seniority: "Seniority",
+    forMonth: "For",
     forFebruary: "For February",
     perMonth: "Per month",
     years: "years",
     cardholder: "CARDHOLDER",
     expires: "EXPIRES",
     used: "used",
+    cardLocked: "Card details are hidden.",
+    revealCard: "Reveal card",
+    hideCard: "Hide card",
+    revealCodeLabel: "4-digit card code",
+    revealCodePlaceholder: "Enter 4 digits",
+    revealCardError: "Unable to reveal card information.",
+    invalidCardCode: "Enter a valid 4-digit code.",
+    mockCodeLabel: "Mock code",
+    cardsCountLabel: "Cards",
+    cinLabel: "CIN",
     shoppingLabel: "Shopping",
     groceriesLabel: "Groceries",
     diningLabel: "Dining",
@@ -73,12 +84,23 @@ const dashboardCopy = {
     netSavings: "Epargne nette",
     monthlySalary: "Salaire mensuel",
     seniority: "Anciennete",
+    forMonth: "Pour",
     forFebruary: "Pour fevrier",
     perMonth: "Par mois",
     years: "ans",
     cardholder: "TITULAIRE",
     expires: "EXPIRE",
     used: "utilise",
+    cardLocked: "Les informations carte sont masquees.",
+    revealCard: "Afficher la carte",
+    hideCard: "Masquer la carte",
+    revealCodeLabel: "Code carte (4 chiffres)",
+    revealCodePlaceholder: "Saisir 4 chiffres",
+    revealCardError: "Impossible d'afficher les informations carte.",
+    invalidCardCode: "Entrez un code valide de 4 chiffres.",
+    mockCodeLabel: "Code mock",
+    cardsCountLabel: "Cartes",
+    cinLabel: "CIN",
     shoppingLabel: "Shopping",
     groceriesLabel: "Courses",
     diningLabel: "Restauration",
@@ -108,12 +130,23 @@ const dashboardCopy = {
     netSavings: "الادخار الصافي",
     monthlySalary: "الراتب الشهري",
     seniority: "الاقدمية",
+    forMonth: "لشهر",
     forFebruary: "لشهر فيفري",
     perMonth: "شهريا",
     years: "سنوات",
     cardholder: "صاحب البطاقة",
     expires: "تنتهي",
     used: "مستخدم",
+    cardLocked: "معلومات البطاقة مخفية.",
+    revealCard: "اظهار البطاقة",
+    hideCard: "اخفاء البطاقة",
+    revealCodeLabel: "رمز البطاقة (4 ارقام)",
+    revealCodePlaceholder: "ادخل 4 ارقام",
+    revealCardError: "تعذر اظهار معلومات البطاقة.",
+    invalidCardCode: "ادخل رمز صحيح من 4 ارقام.",
+    mockCodeLabel: "رمز تجريبي",
+    cardsCountLabel: "عدد البطاقات",
+    cinLabel: "رقم CIN",
     shoppingLabel: "تسوق",
     groceriesLabel: "بقالة",
     diningLabel: "مطاعم",
@@ -123,13 +156,11 @@ const dashboardCopy = {
   },
 };
 
-const monthLabels = {
-  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-  fr: ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout"],
-  ar: ["جان", "فيف", "مار", "اف", "ماي", "جوان", "جويل", "اوت"],
+const monthNames = {
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  fr: ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sep", "Oct", "Nov", "Dec"],
+  ar: ["جانفي", "فيفري", "مارس", "افريل", "ماي", "جوان", "جويلية", "اوت", "سبتمبر", "اكتوبر", "نوفمبر", "ديسمبر"],
 };
-
-const fallbackSpending = [620, 1025, 710, 910, 1240, 830, 1120, 1320];
 
 const colorByIndex = ["bg-blue-500", "bg-teal-500", "bg-orange-500", "bg-purple-500"];
 
@@ -137,6 +168,45 @@ const getLocale = (language) => {
   if (language === "ar") return "ar-TN";
   if (language === "en") return "en-US";
   return "fr-TN";
+};
+
+const getCurrentMonthKey = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+};
+
+const buildRecentMonthKeys = (count = 8) => {
+  const now = new Date();
+  const keys = [];
+
+  for (let offset = count - 1; offset >= 0; offset -= 1) {
+    const absoluteMonth = now.getFullYear() * 12 + now.getMonth() - offset;
+    const year = Math.floor(absoluteMonth / 12);
+    const month = (absoluteMonth % 12) + 1;
+    keys.push(`${year}-${String(month).padStart(2, "0")}`);
+  }
+
+  return keys;
+};
+
+const normalizeMonthKey = (value) => {
+  if (!value) return "";
+  const raw = String(value).trim();
+  if (/^\d{4}-\d{2}$/.test(raw)) return raw;
+  if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.slice(0, 7);
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}`;
+};
+
+const formatMonthLabel = (monthKey, language) => {
+  const names = monthNames[language] || monthNames.en;
+  const normalized = normalizeMonthKey(monthKey);
+  if (!normalized) return "--";
+  const monthIndex = Number(normalized.slice(5, 7)) - 1;
+  if (monthIndex < 0 || monthIndex > 11) return normalized;
+  return names[monthIndex] || normalized;
 };
 
 const formatAmount = (value, language) => {
@@ -169,6 +239,15 @@ const formatCardNumber = (value) => {
   return digits.slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
 };
 
+const formatCardExpiry = (value) => {
+  if (!value) return "--/--";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+  return `${month}/${year}`;
+};
+
 export function Dashboard() {
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -176,15 +255,20 @@ export function Dashboard() {
   const isDark = theme === "dark";
 
   const ui = dashboardCopy[language] || dashboardCopy.en;
-  const months = monthLabels[language] || monthLabels.en;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showAmounts, setShowAmounts] = useState(true);
   const [showProfile, setShowProfile] = useState(true);
+  const [showCardInfo, setShowCardInfo] = useState(false);
+  const [cardRevealCode, setCardRevealCode] = useState("");
+  const [cardRevealError, setCardRevealError] = useState("");
+  const [revealingCard, setRevealingCard] = useState(false);
+  const [revealedCard, setRevealedCard] = useState(null);
   const [recommendation, setRecommendation] = useState(null);
   const [profile, setProfile] = useState(null);
   const [budgetCategories, setBudgetCategories] = useState([]);
+  const [selectedMonthKey, setSelectedMonthKey] = useState(() => getCurrentMonthKey());
 
   const clientId = getClientId();
 
@@ -199,16 +283,15 @@ export function Dashboard() {
       try {
         setLoading(true);
         setError("");
+        setBudgetCategories([]);
 
-        const [recData, meData, budgetData] = await Promise.all([
+        const [recData, meData] = await Promise.all([
           getClientRecommendation(clientId),
           getMe().catch(() => null),
-          getBudget().catch(() => ({ categories: [] })),
         ]);
 
         setRecommendation(recData || null);
         setProfile(meData || null);
-        setBudgetCategories(Array.isArray(budgetData?.categories) ? budgetData.categories : []);
       } catch (loadErr) {
         setError(loadErr.message || "LOAD_DASHBOARD_FAILED");
       } finally {
@@ -218,6 +301,41 @@ export function Dashboard() {
 
     loadDashboard();
   }, [clientId]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!clientId || !selectedMonthKey) {
+      setBudgetCategories([]);
+      return undefined;
+    }
+
+    const loadBudgetByMonth = async () => {
+      try {
+        const budgetData = await getBudget(selectedMonthKey);
+        if (!cancelled) {
+          setBudgetCategories(Array.isArray(budgetData?.categories) ? budgetData.categories : []);
+        }
+      } catch {
+        if (!cancelled) {
+          setBudgetCategories([]);
+        }
+      }
+    };
+
+    loadBudgetByMonth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientId, selectedMonthKey]);
+
+  useEffect(() => {
+    setShowCardInfo(false);
+    setCardRevealCode("");
+    setCardRevealError("");
+    setRevealedCard(null);
+  }, [profile?.client_id, profile?.card_number_masked]);
 
   const indicators = recommendation?.indicators || {};
 
@@ -230,8 +348,17 @@ export function Dashboard() {
     if (parts.length === 0) return "CL";
     return parts.map((part) => part[0]?.toUpperCase() || "").join("") || "CL";
   }, [name, email, ui.clientFallback]);
-  const cardNumber = formatCardNumber(profile?.card_number || recommendation?.card_number);
-  const expiry = profile?.card_expiry || "05/25";
+  const cardNumber = showCardInfo
+    ? formatCardNumber(revealedCard?.card_number)
+    : String(profile?.card_number_masked || "**** **** **** ****");
+  const expiry = showCardInfo
+    ? formatCardExpiry(revealedCard?.card_expires_on || profile?.card_expires_on)
+    : "••/••";
+  const cardCIN = showCardInfo ? (revealedCard?.client_cin || profile?.client_cin || "-") : "••••••••";
+  const cardsCount = showCardInfo
+    ? String(revealedCard?.cards_count ?? profile?.cards_count ?? "-")
+    : "•";
+  const mockRevealCode = String(profile?.card_reveal_code_mock || "");
 
   const balance = Number(indicators.estimated_balance || 0);
   const income = Number(indicators.avg_monthly_income || 0);
@@ -240,9 +367,78 @@ export function Dashboard() {
   const monthlySalary = Number(indicators.monthly_salary || 0);
   const seniorityYears = Math.max(1, Math.round(Number(indicators.account_seniority_days || 365) / 365));
 
-  const paymentLimitTotal = Math.max(3000, Math.round(monthlySalary || income || 3000));
-  const paymentUsed = Math.max(0, Math.round(expenses));
+  const spendingBars = useMemo(() => {
+    const keys = buildRecentMonthKeys(8);
+    const source = Array.isArray(recommendation?.monthly_spending)
+      ? recommendation.monthly_spending
+      : Array.isArray(recommendation?.monthly_spending_trend)
+        ? recommendation.monthly_spending_trend
+        : null;
+
+    const valuesByMonth = new Map(keys.map((monthKey) => [monthKey, 0]));
+
+    if (Array.isArray(source) && source.length > 0) {
+      const hasMonthKey = source.some((entry) => entry && typeof entry === "object" && (entry.month || entry.month_key || entry.period));
+
+      if (hasMonthKey) {
+        source.forEach((entry) => {
+          const monthKey = normalizeMonthKey(entry?.month || entry?.month_key || entry?.period);
+          if (!monthKey || !valuesByMonth.has(monthKey)) return;
+          const amount = Number(entry?.amount ?? entry?.spent ?? entry?.value ?? 0);
+          valuesByMonth.set(monthKey, Number.isFinite(amount) ? Math.max(0, amount) : 0);
+        });
+      } else {
+        const normalizedValues = source
+          .slice(-keys.length)
+          .map((entry) => (typeof entry === "number" ? Number(entry || 0) : Number(entry?.amount || entry?.spent || entry?.value || 0)));
+        const offset = Math.max(0, keys.length - normalizedValues.length);
+
+        normalizedValues.forEach((value, index) => {
+          const monthKey = keys[index + offset];
+          if (!monthKey) return;
+          valuesByMonth.set(monthKey, Number.isFinite(value) ? Math.max(0, value) : 0);
+        });
+      }
+    }
+
+    const maxValue = Math.max(...Array.from(valuesByMonth.values()), 1);
+
+    return keys.map((monthKey) => {
+      const amount = Number(valuesByMonth.get(monthKey) || 0);
+      return {
+        key: monthKey,
+        month: formatMonthLabel(monthKey, language),
+        amount,
+        height: amount > 0 ? Math.max(20, Math.round((amount / maxValue) * 100)) : 12,
+      };
+    });
+  }, [recommendation, language]);
+
+  useEffect(() => {
+    if (!spendingBars.length) return;
+    const selectedExists = spendingBars.some((bar) => bar.key === selectedMonthKey);
+    if (!selectedExists) {
+      setSelectedMonthKey(spendingBars[spendingBars.length - 1].key);
+    }
+  }, [spendingBars, selectedMonthKey]);
+
+  const selectedBar = useMemo(
+    () => spendingBars.find((bar) => bar.key === selectedMonthKey) || spendingBars[spendingBars.length - 1] || null,
+    [spendingBars, selectedMonthKey],
+  );
+
+  const budgetSpentTotal = budgetCategories.reduce((total, item) => total + Math.max(0, Number(item?.spent || 0)), 0);
+  const budgetPlannedTotal = budgetCategories.reduce(
+    (total, item) => total + Math.max(0, Number(item?.planned ?? item?.budget ?? item?.limit ?? 0)),
+    0,
+  );
+
+  const selectedMonthSpending = Number(selectedBar?.amount || 0);
+  const paymentUsed = Math.max(0, Math.round(budgetSpentTotal > 0 ? budgetSpentTotal : selectedMonthSpending));
+  const indicatorLimit = Math.max(0, Math.round(monthlySalary || income || 0));
+  const paymentLimitTotal = Math.max(Math.round(budgetPlannedTotal), indicatorLimit, paymentUsed);
   const paymentUsage = paymentLimitTotal > 0 ? Math.min(100, Math.round((paymentUsed / paymentLimitTotal) * 100)) : 0;
+  const selectedMonthMeta = selectedBar ? `${ui.forMonth} ${selectedBar.month}` : ui.perMonth;
 
   const topCategories = useMemo(() => {
     const source = [...budgetCategories]
@@ -256,40 +452,11 @@ export function Dashboard() {
     if (source.length > 0) return source;
 
     return [
-      { label: ui.shoppingLabel, amount: 328 },
-      { label: ui.groceriesLabel, amount: 240 },
-      { label: ui.diningLabel, amount: 203 },
+      { label: ui.shoppingLabel, amount: 0 },
+      { label: ui.groceriesLabel, amount: 0 },
+      { label: ui.diningLabel, amount: 0 },
     ];
   }, [budgetCategories, ui]);
-
-  const spendingBars = useMemo(() => {
-    const source = Array.isArray(recommendation?.monthly_spending)
-      ? recommendation.monthly_spending
-      : Array.isArray(recommendation?.monthly_spending_trend)
-        ? recommendation.monthly_spending_trend
-        : null;
-
-    let values = [];
-
-    if (Array.isArray(source) && source.length > 0) {
-      values = source.slice(0, 8).map((entry) => {
-        if (typeof entry === "number") return Number(entry || 0);
-        return Number(entry?.amount || entry?.spent || entry?.value || 0);
-      });
-    }
-
-    if (values.length === 0) {
-      values = fallbackSpending;
-    }
-
-    const maxValue = Math.max(...values, 1);
-
-    return values.slice(0, 8).map((value, index) => ({
-      month: months[index] || `M${index + 1}`,
-      amount: value,
-      height: Math.max(20, Math.round((value / maxValue) * 100)),
-    }));
-  }, [recommendation, months]);
 
   const transactions = useMemo(() => {
     const source = Array.isArray(recommendation?.recent_transactions) ? recommendation.recent_transactions : [];
@@ -304,20 +471,15 @@ export function Dashboard() {
       }));
     }
 
-    return [
-      { key: "fallback-1", title: "Apple Store", category: ui.shoppingLabel, amount: 1250, time: "17:42" },
-      { key: "fallback-2", title: "YouTube", category: ui.socialMediaLabel, amount: 45, time: "12:42" },
-      { key: "fallback-3", title: "Netflix", category: ui.entertainmentLabel, amount: 124, time: "21:22" },
-      { key: "fallback-4", title: "Spotify", category: ui.musicLabel, amount: 15, time: "08:15" },
-    ];
+    return [];
   }, [recommendation, ui, language]);
 
   const sidebarCards = [
     {
       key: "income",
       label: ui.income,
-      value: formatAmount(income || 1448, language),
-      meta: ui.forFebruary,
+      value: formatAmount(income, language),
+      meta: selectedMonthMeta,
       icon: TrendingUp,
       cardClass: isDark ? "bg-emerald-900/20 border-emerald-800/50" : "bg-emerald-50 border-emerald-100",
       iconClass: "bg-emerald-600",
@@ -325,8 +487,8 @@ export function Dashboard() {
     {
       key: "expenses",
       label: ui.expenses,
-      value: formatAmount(expenses || 2075, language),
-      meta: ui.forFebruary,
+      value: formatAmount(expenses, language),
+      meta: selectedMonthMeta,
       icon: TrendingDown,
       cardClass: isDark ? "bg-rose-900/20 border-rose-800/50" : "bg-rose-50 border-rose-100",
       iconClass: "bg-rose-600",
@@ -334,7 +496,7 @@ export function Dashboard() {
     {
       key: "net-savings",
       label: ui.netSavings,
-      value: formatAmount(netSavings || 627, language),
+      value: formatAmount(netSavings, language),
       meta: ui.perMonth,
       icon: PiggyBank,
       cardClass: isDark ? "bg-teal-900/20 border-teal-800/50" : "bg-teal-50 border-teal-100",
@@ -343,7 +505,7 @@ export function Dashboard() {
     {
       key: "salary",
       label: ui.monthlySalary,
-      value: formatAmount(monthlySalary || 3500, language),
+      value: formatAmount(monthlySalary, language),
       icon: Calendar,
       cardClass: isDark ? "bg-blue-900/20 border-blue-800/50" : "bg-blue-50 border-blue-100",
       iconClass: "bg-blue-600",
@@ -368,6 +530,34 @@ export function Dashboard() {
 
   const resolvedErrorMessage =
     error === "SESSION_MISSING" ? ui.sessionMissing : error === "LOAD_DASHBOARD_FAILED" ? ui.loadError : error;
+
+  const onRevealCard = async () => {
+    if (!/^\d{4}$/.test(cardRevealCode)) {
+      setCardRevealError(ui.invalidCardCode);
+      return;
+    }
+
+    try {
+      setRevealingCard(true);
+      setCardRevealError("");
+      const payload = await revealMyCardInfo(cardRevealCode);
+      setRevealedCard(payload || null);
+      setShowCardInfo(true);
+      setCardRevealCode("");
+    } catch (revealErr) {
+      setCardRevealError(revealErr.message || ui.revealCardError);
+      setShowCardInfo(false);
+    } finally {
+      setRevealingCard(false);
+    }
+  };
+
+  const onHideCard = () => {
+    setShowCardInfo(false);
+    setCardRevealCode("");
+    setCardRevealError("");
+    setRevealedCard(null);
+  };
 
   return (
     <div className={`min-h-full ${isDark ? "bg-gray-900 text-white" : "bg-[#f4f6f9] text-[#182540]"}`}>
@@ -405,7 +595,7 @@ export function Dashboard() {
             <p className={`text-sm ${isDark ? "text-gray-300" : "text-[#4b5b73]"}`}>{ui.totalBalance}</p>
             <div className="mt-1 flex items-center justify-between">
               <p className="text-xl font-semibold tracking-tight lg:text-2xl">
-                {showAmounts ? formatAmount(balance || 3048, language) : "••••••"}
+                {showAmounts ? formatAmount(balance, language) : "••••••"}
               </p>
               <button
                 type="button"
@@ -429,7 +619,7 @@ export function Dashboard() {
                 <p className="text-sm tracking-[0.18em]">BH BANK</p>
               </div>
 
-              <p className="mb-5 text-base tracking-[0.12em] lg:text-lg">{showAmounts ? cardNumber : "•••• •••• •••• ••••"}</p>
+              <p className="mb-5 text-base tracking-[0.12em] lg:text-lg">{cardNumber}</p>
 
               <div className="flex items-end justify-between gap-3">
                 <div>
@@ -440,6 +630,50 @@ export function Dashboard() {
                   <p className="text-xs text-white/70">{ui.expires}</p>
                   <p className="text-sm font-medium lg:text-base">{expiry}</p>
                 </div>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                {showCardInfo ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-white/80">
+                      <p>{ui.cinLabel}: {cardCIN}</p>
+                      <p>{ui.cardsCountLabel}: {cardsCount}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onHideCard}
+                      className="rounded-lg border border-white/40 px-3 py-1.5 text-xs text-white hover:bg-white/10"
+                    >
+                      {ui.hideCard}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-white/80">{ui.cardLocked}</p>
+                    {mockRevealCode && <p className="text-[11px] text-white/75">{ui.mockCodeLabel}: {mockRevealCode}</p>}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={cardRevealCode}
+                        onChange={(event) => setCardRevealCode(event.target.value.replace(/\D/g, "").slice(0, 4))}
+                        placeholder={ui.revealCodePlaceholder}
+                        className="w-36 rounded-lg border border-white/40 bg-white/10 px-2.5 py-1.5 text-xs text-white placeholder:text-white/60 outline-hidden focus:border-white/70"
+                        aria-label={ui.revealCodeLabel}
+                      />
+                      <button
+                        type="button"
+                        onClick={onRevealCard}
+                        disabled={revealingCard}
+                        className="rounded-lg border border-white/40 px-3 py-1.5 text-xs text-white hover:bg-white/10 disabled:opacity-60"
+                      >
+                        {revealingCard ? "..." : ui.revealCard}
+                      </button>
+                    </div>
+                    {cardRevealError && <p className="text-[11px] text-rose-200">{cardRevealError}</p>}
+                  </>
+                )}
               </div>
             </article>
 
@@ -483,7 +717,8 @@ export function Dashboard() {
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium">{ui.monthlySpending}</h2>
-                <p className="text-lg font-semibold">{showAmounts ? formatAmount(spendingBars[1]?.amount || 1025, language) : "••••••"}</p>
+                <p className="text-lg font-semibold">{showAmounts ? formatAmount(selectedMonthSpending, language) : "••••••"}</p>
+                <p className={`mt-1 text-xs ${isDark ? "text-gray-400" : "text-[#67768f]"}`}>{selectedMonthMeta}</p>
               </div>
               <div className={`flex items-center gap-4 text-xs ${isDark ? "text-gray-400" : "text-[#67768f]"}`}>
                 <button type="button" className={`border-b-4 pb-1 ${isDark ? "border-white text-white" : "border-[#222b44] text-[#222b44]"}`}>
@@ -501,12 +736,24 @@ export function Dashboard() {
                     : index < 4
                       ? "from-[#9ec1ff] to-[#769fe9]"
                       : "from-[#6792e8] to-[#2f61c4]";
+                const isSelected = selectedBar?.key === bar.key;
 
                 return (
-                  <div key={`${bar.month}-${index}`} className="flex min-w-16 flex-col items-center gap-1.5">
-                    <div className={`w-full rounded-t-md bg-linear-to-t ${gradientClass}`} style={{ height: `${bar.height + 10}px` }} />
-                    <p className={`text-[10px] ${isDark ? "text-gray-400" : "text-[#7b879b]"}`}>{bar.month}</p>
-                  </div>
+                  <button
+                    key={bar.key}
+                    type="button"
+                    onClick={() => setSelectedMonthKey(bar.key)}
+                    aria-pressed={isSelected}
+                    className="flex min-w-16 flex-col items-center gap-1.5"
+                  >
+                    <div
+                      className={`w-full rounded-t-md bg-linear-to-t ${gradientClass} transition ${isSelected ? "opacity-100 ring-2 ring-[#2951da]/40" : "opacity-75 hover:opacity-95"}`}
+                      style={{ height: `${bar.height + 10}px` }}
+                    />
+                    <p className={`text-[10px] ${isSelected ? (isDark ? "text-white" : "text-[#24324a]") : isDark ? "text-gray-400" : "text-[#7b879b]"}`}>
+                      {bar.month}
+                    </p>
+                  </button>
                 );
               })}
             </div>

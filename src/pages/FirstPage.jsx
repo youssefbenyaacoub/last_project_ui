@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import logoExpanded from "../assets/BH_logo2.png";
+import logoWhite from "../assets/bh_logo_blanc.png";
 import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
@@ -184,7 +185,7 @@ export function FirstPage() {
               <div className="space-y-5">
                 <div className={`${isRTL ? "justify-end" : "justify-start"} flex`}>
                   <img
-                    src={logoExpanded}
+                    src={logoWhite}
                     alt="BH Bank"
                     className="h-14 sm:h-16 w-auto drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
                   />

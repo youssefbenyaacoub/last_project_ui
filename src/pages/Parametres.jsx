@@ -1,14 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bot,
   Bell,
-  CreditCard,
   Globe,
   HelpCircle,
   Lock,
-  Mail,
   MessageCircle,
-  Moon,
   Phone,
   RotateCcw,
   Shield,
@@ -18,18 +15,14 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useUserPreferences } from "../contexts/UserPreferencesContext";
+import { getMe } from "../api";
 import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
 
+const SETTINGS_STORAGE_KEY = "bh_dashboard_settings";
+
 const defaultSettings = {
-  notifications: {
-    email: true,
-    push: true,
-    sms: false,
-    transactions: true,
-    marketing: false,
-  },
   security: {
     twoFactor: true,
     biometric: false,
@@ -39,7 +32,25 @@ const defaultSettings = {
     shareData: false,
     analytics: true,
   },
+  accessibility: {
+    lowVision: false,
+  },
 };
+
+const normalizeSettings = (value = {}) => ({
+  security: {
+    ...defaultSettings.security,
+    ...(value.security || {}),
+  },
+  privacy: {
+    ...defaultSettings.privacy,
+    ...(value.privacy || {}),
+  },
+  accessibility: {
+    ...defaultSettings.accessibility,
+    ...(value.accessibility || {}),
+  },
+});
 
 const uiByLanguage = {
   en: {
@@ -113,6 +124,8 @@ const uiByLanguage = {
       openingDate: "Opening date",
       status: "Status",
       statusActive: "Active",
+      statusPending: "Pending verification",
+      unknown: "Unknown",
       openingDateValue: "January 15, 2024",
     },
     feedback: {
@@ -191,6 +204,8 @@ const uiByLanguage = {
       openingDate: "Date d'ouverture",
       status: "Statut",
       statusActive: "Actif",
+      statusPending: "En attente de verification",
+      unknown: "Inconnu",
       openingDateValue: "15 janvier 2024",
     },
     feedback: {
@@ -269,6 +284,8 @@ const uiByLanguage = {
       openingDate: "تاريخ فتح الحساب",
       status: "الحالة",
       statusActive: "نشط",
+      statusPending: "قيد التحقق",
+      unknown: "غير متوفر",
       openingDateValue: "15 جانفي 2024",
     },
     feedback: {
@@ -302,14 +319,6 @@ const languageOptions = [
   },
 ];
 
-const notificationItems = [
-  { key: "email", icon: Mail },
-  { key: "push", icon: Bell },
-  { key: "sms", icon: Smartphone },
-  { key: "transactions", icon: CreditCard },
-  { key: "marketing", icon: Mail },
-];
-
 const securityItems = [
   { key: "twoFactor", icon: Lock },
   { key: "biometric", icon: Smartphone },
@@ -332,7 +341,7 @@ const getLangKey = (language) => {
 };
 
 export function Parametres() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { language, setLanguage, isRTL } = useLanguage();
   const {
     chatbotName,
@@ -345,8 +354,49 @@ export function Parametres() {
   const langKey = getLangKey(language);
   const ui = uiByLanguage[langKey] || uiByLanguage.en;
 
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useState(() => {
+    try {
+      const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (!raw) return defaultSettings;
+      return normalizeSettings(JSON.parse(raw));
+    } catch {
+      return defaultSettings;
+    }
+  });
+  const [profile, setProfile] = useState(null);
   const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProfile = async () => {
+      try {
+        const payload = await getMe();
+        if (!isMounted) return;
+        setProfile(payload || null);
+      } catch {
+        if (!isMounted) return;
+        setProfile(null);
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  }, [settings]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle(
+      "low-vision-mode",
+      Boolean(settings?.accessibility?.lowVision),
+    );
+  }, [settings?.accessibility?.lowVision]);
 
   const enabledCount = useMemo(() => {
     return Object.values(settings).reduce((sum, section) => {
@@ -359,6 +409,37 @@ export function Parametres() {
       return sum + Object.keys(section).length;
     }, 0);
   }, [settings]);
+
+  const openingDateLabel = useMemo(() => {
+    if (!profile?.created_at) return ui.account.unknown;
+
+    const parsed = new Date(profile.created_at);
+    if (Number.isNaN(parsed.getTime())) return ui.account.unknown;
+
+    const locale =
+      language === "ar" ? "ar-TN" : language === "fr" ? "fr-FR" : "en-US";
+    return new Intl.DateTimeFormat(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(parsed);
+  }, [profile?.created_at, language, ui.account.unknown]);
+
+  const accountNumberLabel = profile?.client_id
+    ? `BH-${String(profile.client_id).trim()}`
+    : "BH-2026-001234";
+  const accountStatusLabel =
+    profile?.email_verified || profile?.is_verified
+      ? ui.account.statusActive
+      : ui.account.statusPending;
+  const accountStatusClass =
+    profile?.email_verified || profile?.is_verified
+      ? theme === "dark"
+        ? "bg-green-900/30 text-green-400"
+        : "bg-green-100 text-green-700"
+      : theme === "dark"
+        ? "bg-amber-900/30 text-amber-300"
+        : "bg-amber-100 text-amber-700";
 
   const getTrackClass = (enabled) => {
     return `relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
@@ -489,30 +570,13 @@ export function Parametres() {
                 <div
                   className={`w-10 h-10 rounded-lg flex items-center justify-center ${softCardClass}`}
                 >
-                  {theme === "dark" ? (
-                    <Moon className="w-5 h-5 text-indigo-400" />
-                  ) : (
-                    <Sun className="w-5 h-5 text-amber-500" />
-                  )}
+                  <Sun className="w-5 h-5 text-amber-500" />
                 </div>
                 <div className={isRTL ? "text-right" : "text-left"}>
                   <p className={`font-medium ${textMainClass}`}>{ui.appearance.theme}</p>
-                  <p className={`text-sm ${textMutedClass}`}>
-                    {theme === "dark"
-                      ? ui.appearance.darkEnabled
-                      : ui.appearance.lightEnabled}
-                  </p>
+                  <p className={`text-sm ${textMutedClass}`}>{ui.appearance.lightEnabled}</p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={toggleTheme}
-                aria-label={ui.appearance.theme}
-                className={getTrackClass(theme === "dark")}
-              >
-                <span className={getThumbClass(theme === "dark")} />
-              </button>
             </div>
 
             <div
@@ -636,58 +700,6 @@ export function Parametres() {
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${softCardClass}`}
               >
-                <Bell className="w-5 h-5 text-blue-500" />
-              </div>
-              <h2 className={`text-lg font-semibold ${textMainClass}`}>
-                {ui.sections.notifications}
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              {notificationItems.map((item) => {
-                const Icon = item.icon;
-                const enabled = settings.notifications[item.key];
-
-                return (
-                  <div
-                    key={item.key}
-                    className={`flex items-center justify-between ${
-                      isRTL ? "flex-row-reverse" : ""
-                    }`}
-                  >
-                    <div
-                      className={`flex items-center gap-3 ${
-                        isRTL ? "flex-row-reverse" : ""
-                      }`}
-                    >
-                      <Icon className={`w-5 h-5 ${textMutedClass}`} />
-                      <span className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
-                        {ui.notifications[item.key]}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      aria-label={ui.notifications[item.key]}
-                      onClick={() => toggleSetting("notifications", item.key)}
-                      className={getTrackClass(enabled)}
-                    >
-                      <span className={getThumbClass(enabled)} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className={`${cardClass} border rounded-xl p-6`}>
-            <div
-              className={`flex items-center gap-3 mb-4 ${
-                isRTL ? "flex-row-reverse" : ""
-              }`}
-            >
-              <div
-                className={`w-10 h-10 rounded-lg flex items-center justify-center ${softCardClass}`}
-              >
                 <Shield className="w-5 h-5 text-emerald-500" />
               </div>
               <h2 className={`text-lg font-semibold ${textMainClass}`}>
@@ -791,6 +803,42 @@ export function Parametres() {
               })}
             </div>
           </div>
+
+          <div className={`${cardClass} border rounded-xl p-6`}>
+            <div
+              className={`flex items-center gap-3 mb-4 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <div
+                className={`w-10 h-10 rounded-lg flex items-center justify-center ${softCardClass}`}
+              >
+                <Sun className="w-5 h-5 text-amber-500" />
+              </div>
+              <h2 className={`text-lg font-semibold ${textMainClass}`}>
+                {ui.sections.accessibility}
+              </h2>
+            </div>
+
+            <div
+              className={`flex items-center justify-between ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <div className={isRTL ? "text-right" : "text-left"}>
+                <p className={`font-medium ${textMainClass}`}>{ui.accessibility.lowVision}</p>
+                <p className={`text-sm ${textMutedClass}`}>{ui.accessibility.lowVisionDesc}</p>
+              </div>
+              <button
+                type="button"
+                aria-label={ui.accessibility.lowVision}
+                onClick={() => toggleSetting("accessibility", "lowVision")}
+                className={getTrackClass(Boolean(settings.accessibility?.lowVision))}
+              >
+                <span className={getThumbClass(Boolean(settings.accessibility?.lowVision))} />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -886,22 +934,18 @@ export function Parametres() {
             <div className={`space-y-3 ${isRTL ? "text-right" : "text-left"}`}>
               <div>
                 <p className={`text-xs ${textMutedClass}`}>{ui.account.accountNumber}</p>
-                <p className={`font-mono ${textMainClass}`}>BH-2026-001234</p>
+                <p className={`font-mono ${textMainClass}`}>{accountNumberLabel}</p>
               </div>
               <div>
                 <p className={`text-xs ${textMutedClass}`}>{ui.account.openingDate}</p>
-                <p className={textMainClass}>{ui.account.openingDateValue}</p>
+                <p className={textMainClass}>{openingDateLabel}</p>
               </div>
               <div>
                 <p className={`text-xs ${textMutedClass}`}>{ui.account.status}</p>
                 <span
-                  className={`inline-block px-2 py-1 text-xs rounded-full ${
-                    theme === "dark"
-                      ? "bg-green-900/30 text-green-400"
-                      : "bg-green-100 text-green-700"
-                  }`}
+                  className={`inline-block px-2 py-1 text-xs rounded-full ${accountStatusClass}`}
                 >
-                  {ui.account.statusActive}
+                  {accountStatusLabel}
                 </span>
               </div>
             </div>

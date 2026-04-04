@@ -19,6 +19,14 @@ import logoExpanded from "../assets/BH_logo2.png";
 import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
+import {
+  registerAccount,
+  resendEmailOTP,
+  setAuthSession,
+  verifyCard,
+  verifyEmail,
+  verifyOTP,
+} from "../api";
 
 export function SignInPage() {
   const navigate = useNavigate();
@@ -27,10 +35,14 @@ export function SignInPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [phoneVerificationRequired, setPhoneVerificationRequired] = useState(true);
 
   // Step 1: Personal Information
-  const [cardNumber, setCardNumber] = useState("00000001");
-  const [fullName, setFullName] = useState("Youssef Ben Yaacoub");
+  const [cardNumber, setCardNumber] = useState("");
+  const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -91,6 +103,14 @@ export function SignInPage() {
   };
 
   const localizedSteps = stepLabels[language] || stepLabels.en;
+  const visibleSteps = phoneVerificationRequired
+    ? localizedSteps
+    : [localizedSteps[0], localizedSteps[2], localizedSteps[3]];
+  const visualCurrentStep = phoneVerificationRequired
+    ? currentStep
+    : currentStep === 4
+      ? 3
+      : currentStep;
 
   const signInCopy = {
     en: {
@@ -211,15 +231,136 @@ export function SignInPage() {
     }
   };
 
-  const handleNextStep = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      navigate("/client");
+  const handleResendCode = async (channel) => {
+    setErrorMessage("");
+
+    try {
+      setIsSubmitting(true);
+
+      if (channel === "phone") {
+        if (!phoneVerificationRequired) {
+          return;
+        }
+
+        await verifyCard({
+          card_number: cardNumber.trim(),
+          full_name: fullName.trim(),
+          birthday: birthDate.trim(),
+          phone: phoneNumber.trim(),
+        });
+        return;
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail) {
+        setErrorMessage("Email is required before resending code.");
+        return;
+      }
+
+      await resendEmailOTP({ email: normalizedEmail });
+    } catch (error) {
+      setErrorMessage(error.message || "Unable to resend code.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNextStep = async () => {
+    setErrorMessage("");
+
+    try {
+      setIsSubmitting(true);
+
+      if (currentStep === 1) {
+        const payload = await verifyCard({
+          card_number: cardNumber.trim(),
+          full_name: fullName.trim(),
+          birthday: birthDate.trim(),
+          phone: phoneNumber.trim(),
+        });
+
+        setClientId(String(payload?.client_id || "").trim());
+        if (payload?.client_name) {
+          setFullName(String(payload.client_name));
+        }
+        const shouldVerifyPhone = payload?.phone_verification_required !== false;
+        setPhoneVerificationRequired(shouldVerifyPhone);
+        setCurrentStep(shouldVerifyPhone ? 2 : 3);
+        return;
+      }
+
+      if (currentStep === 2) {
+        const otp = phoneCode.join("");
+        if (otp.length !== 6) {
+          setErrorMessage("OTP code must contain 6 digits.");
+          return;
+        }
+
+        await verifyOTP({
+          phone: phoneNumber.trim(),
+          code: otp,
+          purpose: "registration",
+        });
+
+        setCurrentStep(3);
+        return;
+      }
+
+      if (currentStep === 3) {
+        if (password !== confirmPassword) {
+          setErrorMessage(ui.passwordMismatch);
+          return;
+        }
+
+        const resolvedClientId = clientId.trim();
+        if (!resolvedClientId) {
+          setErrorMessage("Card verification is required first.");
+          return;
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+        const payload = await registerAccount({
+          client_id: resolvedClientId,
+          card_number: cardNumber.trim(),
+          email: normalizedEmail,
+          password,
+          phone: phoneNumber.trim(),
+        });
+
+        setAuthSession({ ...payload, email: normalizedEmail });
+        setCurrentStep(4);
+        return;
+      }
+
+      if (currentStep === 4) {
+        const otp = emailCode.join("");
+        if (otp.length !== 6) {
+          setErrorMessage("Email OTP code must contain 6 digits.");
+          return;
+        }
+
+        await verifyEmail({
+          email: email.trim().toLowerCase(),
+          code: otp,
+        });
+
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      setErrorMessage(error.message || "Sign up failed.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handlePreviousStep = () => {
+    setErrorMessage("");
+
+    if (currentStep === 3 && !phoneVerificationRequired) {
+      setCurrentStep(1);
+      return;
+    }
+
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
@@ -256,10 +397,10 @@ export function SignInPage() {
             />
 
             <div className="h-full flex flex-col justify-between">
-              {localizedSteps.map((text, index) => {
+              {visibleSteps.map((text, index) => {
                 const step = index + 1;
-                const isDone = currentStep > step;
-                const isActive = currentStep === step;
+                const isDone = visualCurrentStep > step;
+                const isActive = visualCurrentStep === step;
 
                 return (
                   <div
@@ -327,6 +468,16 @@ export function SignInPage() {
           </div>
 
           <AnimatePresence mode="wait">
+            {errorMessage && (
+              <p
+                className={`mb-4 text-sm ${
+                  theme === "dark" ? "text-red-400" : "text-red-600"
+                } ${isRTL ? "text-right" : "text-left"}`}
+              >
+                {errorMessage}
+              </p>
+            )}
+
             {/* Step 1: Personal Information */}
             {currentStep === 1 && (
               <motion.div
@@ -364,8 +515,12 @@ export function SignInPage() {
                       <input
                         type="text"
                         value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                        placeholder="00000001"
+                        onChange={(e) =>
+                          setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 19))
+                        }
+                        placeholder="1234567812345678"
+                        inputMode="numeric"
+                        maxLength={19}
                         className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
                           theme === "dark"
                             ? "bg-gray-800 border-gray-700 text-white"
@@ -392,7 +547,7 @@ export function SignInPage() {
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Youssef Ben Yaacoub"
+                        placeholder="Full name"
                         className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
                           theme === "dark"
                             ? "bg-gray-800 border-gray-700 text-white"
@@ -460,9 +615,10 @@ export function SignInPage() {
                   <button
                     type="button"
                     onClick={handleNextStep}
+                    disabled={isSubmitting}
                     className="w-full bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
                   >
-                    {ui.step1Cta}
+                    {isSubmitting ? "..." : ui.step1Cta}
                   </button>
                 </form>
               </motion.div>
@@ -522,7 +678,12 @@ export function SignInPage() {
                     className={`text-center text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
                   >
                     {ui.codeNotReceived}
-                    <button className="text-[#242f54] hover:underline cursor-pointer">
+                    <button
+                      type="button"
+                      onClick={() => handleResendCode("phone")}
+                      disabled={isSubmitting}
+                      className="text-[#242f54] hover:underline cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
                       {ui.resend}
                     </button>
                   </p>
@@ -543,9 +704,10 @@ export function SignInPage() {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
+                      disabled={isSubmitting}
+                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {ui.verify}
+                      {isSubmitting ? "..." : ui.verify}
                     </button>
                   </div>
                 </div>
@@ -709,9 +871,10 @@ export function SignInPage() {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
+                      disabled={isSubmitting}
+                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {ui.continue}
+                      {isSubmitting ? "..." : ui.continue}
                     </button>
                   </div>
                 </form>
@@ -772,7 +935,12 @@ export function SignInPage() {
                     className={`text-center text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
                   >
                     {ui.codeNotReceived}
-                    <button className="text-[#242f54] hover:underline cursor-pointer">
+                    <button
+                      type="button"
+                      onClick={() => handleResendCode("email")}
+                      disabled={isSubmitting}
+                      className="text-[#242f54] hover:underline cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
                       {ui.resend}
                     </button>
                   </p>
@@ -793,9 +961,10 @@ export function SignInPage() {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
+                      disabled={isSubmitting}
+                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {ui.complete}
+                      {isSubmitting ? "..." : ui.complete}
                     </button>
                   </div>
                 </div>

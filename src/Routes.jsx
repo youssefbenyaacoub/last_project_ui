@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { FirstPage } from "./pages/FirstPage";
 import { LoginPage } from "./pages/LoginPage";
+import { AgentLoginPage } from "./pages/AgentLoginPage";
+import { AgentDashboardPage } from "./pages/AgentDashboardPage";
 import { SignInPage } from "./pages/SignInPage";
 import { QuestPage } from "./pages/QuestPage";
 import { ClientPage } from "./pages/ClientPage";
@@ -30,6 +32,18 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     Component: LoginPage,
+  },
+  {
+    path: "/agent",
+    Component: AgentLoginPage,
+  },
+  {
+    path: "/agent/login",
+    Component: AgentLoginPage,
+  },
+  {
+    path: "/agent/dashboard",
+    Component: AgentDashboardPage,
   },
   {
     path: "/signin",

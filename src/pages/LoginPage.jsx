@@ -3,10 +3,9 @@ import { useNavigate } from "react-router";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import {
   Lock,
+  Mail,
   Eye,
   EyeOff,
-  Check,
-  CreditCard,
   House,
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -29,7 +28,7 @@ export function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   // Step 1: Login
-  const [cinNumber, setCinNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // Step 2: Phone Verification
@@ -70,8 +69,8 @@ export function LoginPage() {
       loginTitle: "Login",
       loginSubtitle: "Sign in to your account",
       home: "Home",
-      cinLabel: "Email",
-      cinPlaceholder: "Enter your email",
+      emailLabel: "Email",
+      emailPlaceholder: "Enter your email",
       passwordLabel: "Password",
       passwordPlaceholder: "Enter your password",
       forgotPassword: "Forgot password?",
@@ -90,8 +89,8 @@ export function LoginPage() {
       loginTitle: "Connexion",
       loginSubtitle: "Connectez-vous a votre compte",
       home: "Accueil",
-      cinLabel: "Email",
-      cinPlaceholder: "Entrez votre email",
+      emailLabel: "Email",
+      emailPlaceholder: "Entrez votre email",
       passwordLabel: "Mot de passe",
       passwordPlaceholder: "Entrez votre mot de passe",
       forgotPassword: "Mot de passe oublie?",
@@ -110,8 +109,8 @@ export function LoginPage() {
       loginTitle: "تسجيل الدخول",
       loginSubtitle: "قم بتسجيل الدخول إلى حسابك",
       home: "الرئيسية",
-      cinLabel: "البريد الإلكتروني",
-      cinPlaceholder: "أدخل البريد الإلكتروني",
+      emailLabel: "البريد الإلكتروني",
+      emailPlaceholder: "أدخل بريدك الإلكتروني",
       passwordLabel: "كلمة المرور",
       passwordPlaceholder: "أدخل كلمة المرور",
       forgotPassword: "هل نسيت كلمة المرور؟",
@@ -129,6 +128,7 @@ export function LoginPage() {
   };
 
   const ui = loginCopy[language] || loginCopy.en;
+  const agentPortalLabel = language === "fr" ? "Portail agent" : "Agent portal";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -162,7 +162,7 @@ export function LoginPage() {
       setErrorMessage("");
 
       const payload = await loginUser({
-        email: cinNumber.trim().toLowerCase(),
+        email: email.trim().toLowerCase(),
         password,
       });
 
@@ -205,8 +205,21 @@ export function LoginPage() {
           </div>
 
           <div
-            className={`mb-6 flex ${isRTL ? "justify-start" : "justify-end"}`}
+            className={`mb-6 flex items-center gap-2 ${isRTL ? "justify-start" : "justify-end"}`}
           >
+            <button
+              type="button"
+              onClick={() => navigate("/agent/login")}
+              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                theme === "dark"
+                  ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
+                  : "border border-[#242f54]/20 text-[#242f54] hover:bg-[#242f54]/5"
+              } ${isRTL ? "flex-row-reverse" : ""}`}
+            >
+              <Lock size={16} />
+              {agentPortalLabel}
+            </button>
+
             <button
               type="button"
               onClick={() => navigate("/")}
@@ -224,7 +237,7 @@ export function LoginPage() {
           {/* Step Indicator */}
 
           <AnimatePresence mode="wait">
-            {/* Step 1: Login with CIN and Password */}
+            {/* Step 1: Login with email and password */}
             {currentStep === 1 && (
               <Motion.div
                 key="step1"
@@ -249,27 +262,28 @@ export function LoginPage() {
                 </p>
 
                 <form className="space-y-6">
-                  {/* CIN Number */}
+                  {/* Email */}
                   <div>
                     <label
                       className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"} ${
                         isRTL ? "text-right" : "text-left"
                       }`}
                     >
-                      {ui.cinLabel}
+                      {ui.emailLabel}
                     </label>
                     <div className="relative">
                       <div
                         className={`absolute ${isRTL ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
                       >
-                        <CreditCard size={20} />
+                        <Mail size={20} />
                       </div>
                       <input
                         type="email"
-                        value={cinNumber}
-                        onChange={(e) => setCinNumber(e.target.value)}
-                        placeholder={ui.cinPlaceholder}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder={ui.emailPlaceholder}
                         autoComplete="email"
+                        inputMode="email"
                         className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
                           theme === "dark"
                             ? "bg-gray-800 border-gray-700 text-white"

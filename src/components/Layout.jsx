@@ -31,6 +31,30 @@ import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
 
+const isTruthyFlag = (value) =>
+  value === true || String(value ?? "").trim().toLowerCase() === "true";
+
+const hasAnyMeaningfulValue = (value) => {
+  if (Array.isArray(value)) return value.length > 0;
+  if (value && typeof value === "object") return Object.keys(value).length > 0;
+  return String(value ?? "").trim() !== "";
+};
+
+const isOnboardingCompleted = (formResponse) => {
+  const formData = formResponse?.form_data || {};
+
+  if (isTruthyFlag(formResponse?.form_completed) || isTruthyFlag(formData?.form_completed)) {
+    return true;
+  }
+
+  // Keep compatibility with previously saved payloads.
+  if (hasAnyMeaningfulValue(formData?.submitted_at) || hasAnyMeaningfulValue(formResponse?.submitted_at)) {
+    return true;
+  }
+
+  return false;
+};
+
 export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -74,26 +98,30 @@ export function Layout() {
       const clientId = getClientId();
       if (!clientId) return;
 
+      let schemaData = null;
       try {
-        const [schemaData, formData] = await Promise.all([
-          getFormSchema(),
-          getFormData(clientId),
-        ]);
+        schemaData = await getFormSchema();
+
+        if (!isMounted) return;
+        setOnboardingSchema(schemaData || null);
+
+        const formData = await getFormData(clientId);
 
         if (!isMounted) return;
 
         const initialData = formData?.form_data || {};
-        const completed =
-          formData?.form_completed === true ||
-          String(formData?.form_completed || "").toLowerCase() === "true";
+        const completed = isOnboardingCompleted(formData);
 
         setOnboardingSchema(schemaData || null);
         setOnboardingInitialData(initialData);
         setOnboardingOpen(!completed);
       } catch {
         if (!isMounted) return;
-        setOnboardingSchema(null);
+
+        setOnboardingSchema(schemaData || null);
         setOnboardingInitialData({});
+
+        // Never auto-open onboarding on transient errors; this avoids random popups.
         setOnboardingOpen(false);
       }
     };
