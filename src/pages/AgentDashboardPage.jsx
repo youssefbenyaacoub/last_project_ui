@@ -37,6 +37,8 @@ const copyByLanguage = {
     capacityTitle: "Borrowing capacity",
     reasonsTitle: "Main reasons",
     indicatorsTitle: "Financial indicators",
+    profileTitle: "Profile snapshot",
+    productsProjectsTitle: "Products and goals",
     advancedTitle: "Advanced details",
     showAdvanced: "Show advanced details",
     hideAdvanced: "Hide advanced details",
@@ -64,12 +66,14 @@ const copyByLanguage = {
     projectsLabel: "12-month projects",
     recommendationsLabel: "Recommended products",
     noRecommendations: "No recommendation available yet.",
+    photoMissing: "No profile photo available",
     seniorityLabel: "Account seniority (days)",
     lastOpLabel: "Days since last operation",
     activitySector: "Activity sector",
     workSeniority: "Employment seniority",
     debtRatio: "Real debt ratio",
     toleranceRisk: "Risk tolerance",
+    noData: "Not available",
   },
   fr: {
     title: "Espace Agent",
@@ -89,6 +93,8 @@ const copyByLanguage = {
     capacityTitle: "Capacite d'emprunt",
     reasonsTitle: "Raisons principales",
     indicatorsTitle: "Indicateurs financiers",
+    profileTitle: "Profil rapide",
+    productsProjectsTitle: "Produits et objectifs",
     advancedTitle: "Details avances",
     showAdvanced: "Afficher les details avances",
     hideAdvanced: "Masquer les details avances",
@@ -116,12 +122,14 @@ const copyByLanguage = {
     projectsLabel: "Projets 12 mois",
     recommendationsLabel: "Produits recommandes",
     noRecommendations: "Aucune recommandation disponible pour le moment.",
+    photoMissing: "Aucune photo de profil disponible",
     seniorityLabel: "Anciennete compte (jours)",
     lastOpLabel: "Jours depuis la derniere operation",
     activitySector: "Secteur d'activite",
     workSeniority: "Anciennete emploi",
     debtRatio: "Taux d'endettement reel",
     toleranceRisk: "Tolerance au risque",
+    noData: "Non disponible",
   },
   ar: {
     title: "Agent Workspace",
@@ -141,6 +149,8 @@ const copyByLanguage = {
     capacityTitle: "Borrowing capacity",
     reasonsTitle: "Main reasons",
     indicatorsTitle: "Financial indicators",
+    profileTitle: "Profile snapshot",
+    productsProjectsTitle: "Products and goals",
     advancedTitle: "Advanced details",
     showAdvanced: "Show advanced details",
     hideAdvanced: "Hide advanced details",
@@ -168,12 +178,14 @@ const copyByLanguage = {
     projectsLabel: "12-month projects",
     recommendationsLabel: "Recommended products",
     noRecommendations: "No recommendation available yet.",
+    photoMissing: "No profile photo available",
     seniorityLabel: "Account seniority (days)",
     lastOpLabel: "Days since last operation",
     activitySector: "Activity sector",
     workSeniority: "Employment seniority",
     debtRatio: "Real debt ratio",
     toleranceRisk: "Risk tolerance",
+    noData: "Not available",
   },
 };
 
@@ -184,11 +196,18 @@ const getLangKey = (language) => {
 };
 
 const formatMoney = (value) => {
-  const number = Number(value || 0);
+  if (value === null || value === undefined || String(value).trim() === "") return "-";
+  const number = Number(value);
+  if (Number.isNaN(number)) return "-";
   return `${number.toLocaleString(undefined, { maximumFractionDigits: 0 })} TND`;
 };
 
-const formatPercent = (value) => `${(Number(value || 0) * 100).toFixed(1)}%`;
+const formatPercent = (value) => {
+  if (value === null || value === undefined || String(value).trim() === "") return "-";
+  const number = Number(value);
+  if (Number.isNaN(number)) return "-";
+  return `${(number * 100).toFixed(1)}%`;
+};
 
 const displayValue = (value) => {
   if (value === null || value === undefined) return "-";
@@ -196,11 +215,54 @@ const displayValue = (value) => {
   return String(value);
 };
 
+const itemToText = (item) => {
+  if (item === null || item === undefined) return "";
+  if (typeof item === "string" || typeof item === "number" || typeof item === "boolean") {
+    return String(item).trim();
+  }
+
+  if (typeof item === "object") {
+    const preferredKeys = [
+      "product_name",
+      "name",
+      "label",
+      "title",
+      "nom_produit",
+      "product",
+      "projet",
+      "objectif",
+    ];
+
+    for (const key of preferredKeys) {
+      const candidate = item[key];
+      if (typeof candidate === "string" && candidate.trim()) {
+        return candidate.trim();
+      }
+    }
+
+    const firstScalar = Object.values(item).find(
+      (value) =>
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean",
+    );
+
+    if (firstScalar !== undefined) {
+      return String(firstScalar).trim();
+    }
+  }
+
+  return "";
+};
+
 const listFromValue = (value) => {
   if (Array.isArray(value)) {
-    return value
-      .map((item) => String(item || "").trim())
-      .filter(Boolean);
+    return [...new Set(value.map(itemToText).filter(Boolean))];
+  }
+
+  if (value && typeof value === "object") {
+    const text = itemToText(value);
+    return text ? [text] : [];
   }
 
   if (typeof value !== "string") return [];
@@ -210,18 +272,65 @@ const listFromValue = (value) => {
   try {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      return parsed
-        .map((item) => String(item || "").trim())
-        .filter(Boolean);
+      return [...new Set(parsed.map(itemToText).filter(Boolean))];
+    }
+    if (parsed && typeof parsed === "object") {
+      const text = itemToText(parsed);
+      return text ? [text] : [];
     }
   } catch {
     // Ignore parse failures and fall back to splitting.
   }
 
-  return raw
+  return [...new Set(raw
     .split(/[,;|]/)
     .map((item) => item.trim())
-    .filter(Boolean);
+    .filter(Boolean))];
+};
+
+const resolveClientPhoto = (value) => {
+  let raw = value;
+
+  if (raw && typeof raw === "object") {
+    raw = raw.url || raw.src || raw.path || raw.photo || "";
+  }
+
+  raw = String(raw || "").trim();
+  if (!raw) return "";
+
+  if (raw.startsWith("data:image/")) return raw;
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+
+  // Accept plain base64 payloads from legacy rows.
+  if (/^[A-Za-z0-9+/=]+$/.test(raw) && raw.length > 100) {
+    return `data:image/jpeg;base64,${raw}`;
+  }
+
+  // Keep API-relative URLs on Vite proxy path.
+  if (raw.startsWith("/api/")) return raw;
+
+  // Common backend static paths served by Flask on port 5000.
+  if (
+    raw.startsWith("/uploads/") ||
+    raw.startsWith("/media/") ||
+    raw.startsWith("/storage/") ||
+    raw.startsWith("uploads/") ||
+    raw.startsWith("media/") ||
+    raw.startsWith("storage/")
+  ) {
+    const protocol = window.location.protocol || "http:";
+    const host = window.location.hostname || "localhost";
+    const normalized = raw.startsWith("/") ? raw : `/${raw}`;
+    return `${protocol}//${host}:5000${normalized}`;
+  }
+
+  if (raw.startsWith("/")) {
+    const protocol = window.location.protocol || "http:";
+    const host = window.location.hostname || "localhost";
+    return `${protocol}//${host}:5000${raw}`;
+  }
+
+  return raw;
 };
 
 const getInitials = (name) => {
@@ -330,8 +439,14 @@ export function AgentDashboardPage() {
   };
 
   const clientName = clientSummary?.client_name || creditAnalysis?.client_name || "Client";
-  const clientPhoto = clientSummary?.client_photo || creditAnalysis?.client_photo || "";
+  const clientPhoto =
+    clientSummary?.client_photo ||
+    creditAnalysis?.client_photo ||
+    creditAnalysis?.client_profile?.profile_photo ||
+    clientSummary?.client_profile?.profile_photo ||
+    "";
   const clientInitials = useMemo(() => getInitials(clientName), [clientName]);
+  const clientPhotoSrc = useMemo(() => resolveClientPhoto(clientPhoto), [clientPhoto]);
 
   const loanDecision = creditAnalysis?.credit_decision || null;
   const financialIndicators =
@@ -349,6 +464,8 @@ export function AgentDashboardPage() {
   const recommendedProducts = listFromValue(
     creditAnalysis?.recommended_products || clientSummary?.recommended_products || [],
   );
+  const existingProductsList = listFromValue(existingProducts);
+  const projectsList = listFromValue(clientProfile?.projets_12_mois || "");
   const reasons = Array.isArray(loanDecision?.reasons) ? loanDecision.reasons : [];
 
   const pageBg = theme === "dark" ? "bg-[#0f172a] text-white" : "bg-surface-alt text-text";
@@ -479,9 +596,9 @@ export function AgentDashboardPage() {
                         <h2 className="text-lg font-bold">{ui.clientCardTitle}</h2>
                         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
                           <div className="h-24 w-24 overflow-hidden rounded-2xl border border-border bg-surface-alt">
-                            {clientPhoto && !photoFailed ? (
+                            {clientPhotoSrc && !photoFailed ? (
                               <img
-                                src={clientPhoto}
+                                src={clientPhotoSrc}
                                 alt={clientName}
                                 className="h-full w-full object-cover"
                                 onError={() => setPhotoFailed(true)}
@@ -503,6 +620,9 @@ export function AgentDashboardPage() {
                           </div>
                         </div>
                         <p className="mt-3 text-lg font-semibold">{clientName}</p>
+                        {(!clientPhotoSrc || photoFailed) && (
+                          <p className={`text-xs ${mutedTextClass}`}>{ui.photoMissing}</p>
+                        )}
                       </article>
 
                       <article className={panelClass}>
@@ -526,32 +646,76 @@ export function AgentDashboardPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 grid gap-3 md:grid-cols-2">
-                          <p className={softCardClass}>{ui.ageRange}: {displayValue(clientProfile.tranche_age)}</p>
-                          <p className={softCardClass}>{ui.familyStatus}: {displayValue(clientProfile.situation_familiale)}</p>
-                          <p className={softCardClass}>{ui.professionStatus}: {displayValue(clientProfile.statut_professionnel)}</p>
-                          <p className={softCardClass}>{ui.housingStatus}: {displayValue(clientProfile.situation_logement)}</p>
-                          <p className={softCardClass}>{ui.productsLabel}: {displayValue(existingProducts)}</p>
-                          <p className={softCardClass}>{ui.objectiveLabel}: {displayValue(clientProfile.objectif_financier)}</p>
-                          <p className={softCardClass}>{ui.projectsLabel}: {displayValue(clientProfile.projets_12_mois)}</p>
-                        </div>
-
-                        <div className="mt-4">
-                          <p className={`text-sm font-semibold ${mutedTextClass}`}>{ui.recommendationsLabel}</p>
-                          {recommendedProducts.length > 0 ? (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {recommendedProducts.map((product) => (
-                                <span
-                                  key={product}
-                                  className="inline-flex rounded-full border border-border bg-surface-alt px-3 py-1 text-xs font-medium"
-                                >
-                                  {product}
-                                </span>
-                              ))}
+                        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                          <div>
+                            <p className="text-sm font-semibold">{ui.profileTitle}</p>
+                            <div className="mt-2 grid gap-2">
+                              <p className={softCardClass}>{ui.ageRange}: {displayValue(clientProfile.tranche_age)}</p>
+                              <p className={softCardClass}>{ui.familyStatus}: {displayValue(clientProfile.situation_familiale)}</p>
+                              <p className={softCardClass}>{ui.professionStatus}: {displayValue(clientProfile.statut_professionnel)}</p>
+                              <p className={softCardClass}>{ui.housingStatus}: {displayValue(clientProfile.situation_logement)}</p>
                             </div>
-                          ) : (
-                            <p className={`mt-2 text-sm ${mutedTextClass}`}>{ui.noRecommendations}</p>
-                          )}
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-semibold">{ui.productsProjectsTitle}</p>
+                            <div className="mt-2 grid gap-2">
+                              <p className={softCardClass}>{ui.objectiveLabel}: {displayValue(clientProfile.objectif_financier)}</p>
+                              <div className={softCardClass}>
+                                <p className="text-xs font-semibold uppercase tracking-wide">{ui.productsLabel}</p>
+                                {existingProductsList.length > 0 ? (
+                                  <div className="mt-2 flex flex-wrap gap-2">
+                                    {existingProductsList.map((product, index) => (
+                                      <span
+                                        key={`existing-${index}-${product}`}
+                                        className="inline-flex rounded-full border border-border bg-surface px-2.5 py-1 text-xs"
+                                      >
+                                        {product}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className={`mt-2 text-sm ${mutedTextClass}`}>{ui.noData}</p>
+                                )}
+                              </div>
+
+                              <div className={softCardClass}>
+                                <p className="text-xs font-semibold uppercase tracking-wide">{ui.projectsLabel}</p>
+                                {projectsList.length > 0 ? (
+                                  <div className="mt-2 flex flex-wrap gap-2">
+                                    {projectsList.map((project, index) => (
+                                      <span
+                                        key={`project-${index}-${project}`}
+                                        className="inline-flex rounded-full border border-border bg-surface px-2.5 py-1 text-xs"
+                                      >
+                                        {project}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className={`mt-2 text-sm ${mutedTextClass}`}>{ui.noData}</p>
+                                )}
+                              </div>
+
+                              <div className={softCardClass}>
+                                <p className="text-xs font-semibold uppercase tracking-wide">{ui.recommendationsLabel}</p>
+                                {recommendedProducts.length > 0 ? (
+                                  <div className="mt-2 flex flex-wrap gap-2">
+                                    {recommendedProducts.map((product, index) => (
+                                      <span
+                                        key={`rec-${index}-${product}`}
+                                        className="inline-flex rounded-full border border-border bg-surface px-2.5 py-1 text-xs"
+                                      >
+                                        {product}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className={`mt-2 text-sm ${mutedTextClass}`}>{ui.noRecommendations}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </article>
 
