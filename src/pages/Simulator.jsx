@@ -9,7 +9,6 @@ import {
   Landmark,
   Package,
   PiggyBank,
-  ShieldCheck,
   TrendingUp,
   User,
   Wallet,
@@ -181,69 +180,6 @@ const HABITAT_OPTIONS = [
   },
 ];
 
-const RATE_RECAP = [
-  {
-    value: "consommation",
-    iconKey: "consommation",
-    rate: 11.99,
-    labels: {
-      en: "Consumer Loan",
-      fr: "Credit Consommation",
-      ar: "قرض استهلاكي",
-    },
-  },
-  {
-    value: "amenagement",
-    iconKey: "amenagement",
-    rate: 10.74,
-    labels: {
-      en: "Renovation Loan",
-      fr: "Credit Amenagement",
-      ar: "قرض تهيئة",
-    },
-  },
-  {
-    value: "auto-neuve-gt4",
-    iconKey: "auto",
-    rate: 10.49,
-    labels: {
-      en: "Auto Loan New (>4 hp)",
-      fr: "Credit Auto Neuve (>4 cv)",
-      ar: "قرض سيارة جديدة (أكثر من 4 خيول)",
-    },
-  },
-  {
-    value: "auto-occasion-lte4",
-    iconKey: "auto",
-    rate: 10.74,
-    labels: {
-      en: "Auto Loan Used (<=4 hp)",
-      fr: "Credit Auto Occasion (<=4 cv)",
-      ar: "قرض سيارة مستعملة (4 خيول او اقل)",
-    },
-  },
-  {
-    value: "auto-occasion-gt4",
-    iconKey: "auto",
-    rate: 10.74,
-    labels: {
-      en: "Auto Loan Used (>4 hp)",
-      fr: "Credit Auto Occasion (>4 cv)",
-      ar: "قرض سيارة مستعملة (أكثر من 4 خيول)",
-    },
-  },
-  {
-    value: "habitat",
-    iconKey: "habitat",
-    rate: 10.24,
-    labels: {
-      en: "Housing Loan",
-      fr: "Credit Habitat",
-      ar: "قرض السكن",
-    },
-  },
-];
-
 const UI_COPY = {
   en: {
     title: "Credit & Savings Simulator",
@@ -255,6 +191,10 @@ const UI_COPY = {
     stepProduct: "1. Product selection",
     stepProfile: "2. Profile and income",
     stepFinance: "3. Financing settings",
+    paginationLabel: "Step navigation",
+    previous: "Previous",
+    next: "Next",
+    page: "Page",
     savingsProjection: "Savings projection",
     loanType: "Loan type",
     vehicleType: "Vehicle type / fiscal power",
@@ -277,6 +217,7 @@ const UI_COPY = {
     financedEstimated: "Estimated financed amount",
     selectedProduct: "Selected product",
     runLoan: "Run credit simulation",
+    editFinance: "Edit financing settings",
     runSavings: "Run savings projection",
     loading: "Processing...",
     results: "Results",
@@ -331,6 +272,10 @@ const UI_COPY = {
     stepProduct: "1. Choix du produit",
     stepProfile: "2. Profil et revenus",
     stepFinance: "3. Parametres du financement",
+    paginationLabel: "Navigation des etapes",
+    previous: "Precedent",
+    next: "Suivant",
+    page: "Page",
     savingsProjection: "Projection epargne",
     loanType: "Type de credit",
     vehicleType: "Type vehicule / puissance fiscale",
@@ -353,6 +298,7 @@ const UI_COPY = {
     financedEstimated: "Montant finance estime",
     selectedProduct: "Produit selectionne",
     runLoan: "Lancer la simulation credit",
+    editFinance: "Modifier les parametres du financement",
     runSavings: "Lancer la projection epargne",
     loading: "Calcul en cours...",
     results: "Resultats",
@@ -407,6 +353,10 @@ const UI_COPY = {
     stepProduct: "1. اختيار المنتج",
     stepProfile: "2. الملف الشخصي والدخل",
     stepFinance: "3. إعدادات التمويل",
+    paginationLabel: "التنقل بين المراحل",
+    previous: "السابق",
+    next: "التالي",
+    page: "صفحة",
     savingsProjection: "توقع الادخار",
     loanType: "نوع القرض",
     vehicleType: "نوع السيارة / القوة الجبائية",
@@ -429,6 +379,7 @@ const UI_COPY = {
     financedEstimated: "المبلغ الممول المتوقع",
     selectedProduct: "المنتج المختار",
     runLoan: "تشغيل محاكاة القرض",
+    editFinance: "تعديل إعدادات التمويل",
     runSavings: "تشغيل توقع الادخار",
     loading: "جاري الحساب...",
     results: "النتائج",
@@ -494,20 +445,20 @@ const LOAN_CATEGORY_ICONS = {
 
 const CATEGORY_ICON_TONES = {
   consommation: {
-    light: "border-blue-200 bg-blue-100 text-blue-600",
-    dark: "border-blue-800/70 bg-blue-900/30 text-blue-200",
+    light: "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]",
+    dark: "border-[#3e6db1]/70 bg-[#10213e] text-[#bdd5ff]",
   },
   amenagement: {
-    light: "border-violet-200 bg-violet-100 text-violet-600",
-    dark: "border-violet-800/70 bg-violet-900/30 text-violet-200",
+    light: "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]",
+    dark: "border-[#3e6db1]/70 bg-[#10213e] text-[#bdd5ff]",
   },
   auto: {
-    light: "border-emerald-200 bg-emerald-100 text-emerald-600",
-    dark: "border-emerald-800/70 bg-emerald-900/30 text-emerald-200",
+    light: "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]",
+    dark: "border-[#3e6db1]/70 bg-[#10213e] text-[#bdd5ff]",
   },
   habitat: {
-    light: "border-purple-200 bg-purple-100 text-purple-600",
-    dark: "border-purple-800/70 bg-purple-900/30 text-purple-200",
+    light: "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]",
+    dark: "border-[#3e6db1]/70 bg-[#10213e] text-[#bdd5ff]",
   },
 };
 
@@ -521,62 +472,62 @@ const categoryIconBadgeClass = (isDark, iconKey) => {
 const categorySelectorCardClass = (isDark, active) => {
   if (active) {
     return isDark
-      ? "border-[#3b82f6]/70 bg-gray-900 text-white shadow-[0_0_0_2px_rgba(59,130,246,0.18)]"
-      : "border-[#3b82f6]/50 bg-white text-gray-900 shadow-[0_0_0_2px_rgba(59,130,246,0.14)]";
+      ? "border-[#3e6db1]/80 bg-[#10213e] text-white shadow-[0_0_0_2px_rgba(62,109,177,0.25)]"
+      : "border-[#214b89]/40 bg-[#f7fbff] text-[#10203c] shadow-[0_0_0_2px_rgba(33,75,137,0.14)]";
   }
 
   return isDark
-    ? "border-gray-600 bg-gray-800 text-gray-200 hover:border-gray-500"
-    : "border-gray-300 bg-white text-gray-700 hover:border-gray-400";
+    ? "border-white/15 bg-black text-gray-200 hover:border-[#3e6db1]"
+    : "border-[#d7e0ee] bg-white text-[#13233f] hover:border-[#c6d7f1]";
 };
 
 const SECTION_TONES = {
   neutral: {
-    dark: "border-gray-700 bg-gray-800/80",
-    light: "border-gray-200 bg-white",
+    dark: "border-white/10 bg-[#111f37]",
+    light: "border-[#dbe4f2] bg-white",
   },
   blue: {
-    dark: "border-blue-800/70 bg-gradient-to-br from-blue-950/35 via-gray-900 to-gray-800/80",
-    light: "border-blue-200 bg-gradient-to-br from-blue-50 via-white to-white",
+    dark: "border-[#3e6db1]/70 bg-gradient-to-br from-[#0d1628] via-[#10213e] to-[#152b4f]",
+    light: "border-[#c6d7f1] bg-gradient-to-br from-white via-[#f5f9ff] to-[#edf4ff]",
   },
   emerald: {
-    dark: "border-emerald-800/70 bg-gradient-to-br from-emerald-950/30 via-gray-900 to-gray-800/80",
-    light: "border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white",
+    dark: "border-[#355f9e]/70 bg-gradient-to-br from-[#0d1628] via-[#112744] to-[#0f223d]",
+    light: "border-[#c7d8f2] bg-gradient-to-br from-white via-[#f6faff] to-[#eef4ff]",
   },
   indigo: {
-    dark: "border-indigo-800/70 bg-gradient-to-br from-indigo-950/30 via-gray-900 to-gray-800/80",
-    light: "border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-white",
+    dark: "border-[#2f588f]/70 bg-gradient-to-br from-[#0d1628] via-[#102645] to-[#112d55]",
+    light: "border-[#cad9f2] bg-gradient-to-br from-white via-[#f4f8ff] to-[#edf3ff]",
   },
   amber: {
-    dark: "border-amber-800/70 bg-gradient-to-br from-amber-950/20 via-gray-900 to-gray-800/80",
-    light: "border-amber-200 bg-gradient-to-br from-amber-50 via-white to-white",
+    dark: "border-[#3e6db1]/70 bg-gradient-to-br from-[#0d1628] via-[#10213e] to-[#112846]",
+    light: "border-[#c6d7f1] bg-gradient-to-br from-white via-[#f6faff] to-[#edf4ff]",
   },
   rose: {
-    dark: "border-rose-800/70 bg-gradient-to-br from-rose-950/25 via-gray-900 to-gray-800/80",
-    light: "border-rose-200 bg-gradient-to-br from-rose-50 via-white to-white",
+    dark: "border-[#D71920]/40 bg-gradient-to-br from-[#1e1317] via-[#171b2a] to-[#10213e]",
+    light: "border-[#f0c7cb] bg-gradient-to-br from-white via-[#fff7f8] to-[#f7f1f2]",
   },
 };
 
 const ICON_TONES = {
   blue: {
-    dark: "bg-blue-900/40 text-blue-200",
-    light: "bg-blue-100 text-blue-700",
+    dark: "bg-[#10213e] text-[#bdd5ff]",
+    light: "bg-[#eef4ff] text-[#214b89]",
   },
   emerald: {
-    dark: "bg-emerald-900/35 text-emerald-200",
-    light: "bg-emerald-100 text-emerald-700",
+    dark: "bg-[#10213e] text-[#bdd5ff]",
+    light: "bg-[#eef4ff] text-[#214b89]",
   },
   indigo: {
-    dark: "bg-indigo-900/35 text-indigo-200",
-    light: "bg-indigo-100 text-indigo-700",
+    dark: "bg-[#10213e] text-[#bdd5ff]",
+    light: "bg-[#eef4ff] text-[#214b89]",
   },
   amber: {
-    dark: "bg-amber-900/35 text-amber-200",
-    light: "bg-amber-100 text-amber-700",
+    dark: "bg-[#3b1a22] text-[#f3b6bd]",
+    light: "bg-[#fff0f2] text-[#b21f29]",
   },
   rose: {
-    dark: "bg-rose-900/35 text-rose-200",
-    light: "bg-rose-100 text-rose-700",
+    dark: "bg-[#3b1a22] text-[#f3b6bd]",
+    light: "bg-[#fff0f2] text-[#b21f29]",
   },
 };
 
@@ -589,33 +540,33 @@ const sectionIconClass = (isDark, tone = "blue") => {
   const resolvedTone = ICON_TONES[tone] || ICON_TONES.blue;
   return `inline-flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm ${
     isDark ? resolvedTone.dark : resolvedTone.light
-  } ${isDark ? "border-white/10" : "border-black/10"}`;
+  } ${isDark ? "border-white/15" : "border-[#d7e0ee]"}`;
 };
 
 const miniStatCardClass = (isDark, tone = "blue") => {
   const map = {
     blue: isDark
-      ? "border border-blue-800/60 bg-blue-950/25"
-      : "border border-blue-200 bg-blue-50",
+      ? "border border-[#3e6db1]/70 bg-[#10213e]"
+      : "border border-[#c6d7f1] bg-[#eef4ff]",
     emerald: isDark
-      ? "border border-emerald-800/60 bg-emerald-950/20"
-      : "border border-emerald-200 bg-emerald-50",
+      ? "border border-[#355f9e]/70 bg-[#0f223d]"
+      : "border border-[#c7d8f2] bg-[#f4f8ff]",
     indigo: isDark
-      ? "border border-indigo-800/60 bg-indigo-950/20"
-      : "border border-indigo-200 bg-indigo-50",
+      ? "border border-[#2f588f]/70 bg-[#112744]"
+      : "border border-[#cad9f2] bg-[#f1f6ff]",
     rose: isDark
-      ? "border border-rose-800/60 bg-rose-950/20"
-      : "border border-rose-200 bg-rose-50",
+      ? "border border-[#D71920]/35 bg-[#28171d]"
+      : "border border-[#f0c7cb] bg-[#fff5f6]",
   };
 
   return `rounded-xl p-3 ${map[tone] || map.blue}`;
 };
 
 const inputClass = (isDark, isRTL) =>
-  `w-full rounded-xl border px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-[#0A2240]/25 ${
+  `w-full rounded-xl border px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-[#214b89]/25 ${
     isDark
-      ? "border-gray-600 bg-gray-800 text-white placeholder:text-gray-400"
-      : "border-gray-300 bg-white text-gray-900 placeholder:text-gray-500"
+      ? "border-white/15 bg-[#0d1628] text-white placeholder:text-white/35"
+      : "border-[#d7e0ee] bg-[#fbfcff] text-[#13233f] placeholder:text-[#95a2b9]"
   } ${isRTL ? "text-right" : "text-left"}`;
 
 const quickButtonClass = (isDark, active) =>
@@ -623,8 +574,15 @@ const quickButtonClass = (isDark, active) =>
     active
       ? "border-[#0A2240] bg-[#0A2240] text-white"
       : isDark
-        ? "border-gray-600 bg-gray-800 text-gray-300 hover:border-gray-500"
-        : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
+        ? "border-white/15 bg-[#0d1628] text-white/80 hover:border-[#3e6db1]"
+        : "border-[#d7e0ee] bg-white text-[#13233f] hover:border-[#c6d7f1]"
+  }`;
+
+const pagerButtonClass = (isDark) =>
+  `rounded-lg border px-3 py-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-45 ${
+    isDark
+      ? "border-white/15 bg-[#0d1628] text-white/80 hover:border-[#3e6db1]"
+      : "border-[#d7e0ee] bg-white text-[#13233f] hover:border-[#c6d7f1]"
   }`;
 
 const getAppliedRate = (loanType, autoVariant) => {
@@ -653,8 +611,8 @@ const getDebtRatioStatus = (ratio, ui) => {
     return {
       title: ui.debtHealthyTitle,
       message: ui.debtHealthyMsg,
-      chipClass: "bg-emerald-100 text-emerald-700",
-      barClass: "bg-emerald-500",
+      chipClass: "bg-[#e8f1ff] text-[#204a8a]",
+      barClass: "bg-[#214b89]",
     };
   }
 
@@ -662,16 +620,16 @@ const getDebtRatioStatus = (ratio, ui) => {
     return {
       title: ui.debtWatchTitle,
       message: ui.debtWatchMsg,
-      chipClass: "bg-amber-100 text-amber-800",
-      barClass: "bg-amber-500",
+      chipClass: "bg-[#fff0f2] text-[#a3222b]",
+      barClass: "bg-[#D71920]",
     };
   }
 
   return {
     title: ui.debtHighTitle,
     message: ui.debtHighMsg,
-    chipClass: "bg-red-100 text-red-700",
-    barClass: "bg-red-500",
+    chipClass: "bg-[#D71920] text-white",
+    barClass: "bg-[#D71920]",
   };
 };
 
@@ -692,6 +650,7 @@ export function Simulator() {
   const ui = UI_COPY[language] || UI_COPY.en;
 
   const [mode, setMode] = useState("loan");
+  const [loanStepPage, setLoanStepPage] = useState(1);
 
   const [loanType, setLoanType] = useState("consommation");
   const [autoVariant, setAutoVariant] = useState("neuve_gt4");
@@ -714,6 +673,7 @@ export function Simulator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const [hasLoanSimulationTriggered, setHasLoanSimulationTriggered] = useState(false);
 
   const appliedRate = useMemo(() => getAppliedRate(loanType, autoVariant), [loanType, autoVariant]);
 
@@ -737,14 +697,19 @@ export function Simulator() {
 
   const switchMode = (nextMode) => {
     setMode(nextMode);
+    if (nextMode === "loan") {
+      setLoanStepPage(1);
+    }
     setError("");
     setResult(null);
+    setHasLoanSimulationTriggered(false);
   };
 
   const setLoanTypeWithPreset = (nextType) => {
     setLoanType(nextType);
     setError("");
     setResult(null);
+    setHasLoanSimulationTriggered(false);
 
     if (nextType === "consommation") {
       setLoanAmount(1000);
@@ -781,6 +746,8 @@ export function Simulator() {
       setResult(null);
 
       if (mode === "loan") {
+        setHasLoanSimulationTriggered(true);
+
         if (toNumber(age) < 18) {
           throw new Error(ui.errAgeMin);
         }
@@ -886,42 +853,44 @@ export function Simulator() {
     <div
       dir={isRTL ? "rtl" : "ltr"}
       className={`min-h-full p-4 lg:p-8 ${
-        isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+        isDark ? "bg-black text-white" : "bg-white text-black"
       } ${isRTL ? "text-right" : "text-left"}`}
     >
       <div className="mx-auto max-w-7xl space-y-6">
         <section className={`${sectionCardClass(isDark, "neutral")} p-5 lg:p-6`}>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold lg:text-3xl">{ui.title}</h1>
-              <p className={isDark ? "mt-1 text-gray-300" : "mt-1 text-gray-600"}>{ui.subtitle}</p>
+              <h1 className="text-3xl font-semibold tracking-tight lg:text-4xl">{ui.title}</h1>
+              <p className={`mt-2 text-xs font-medium uppercase tracking-[0.12em] ${isDark ? "text-[#bdd5ff]" : "text-[#214b89]"}`}>
+                {ui.subtitle}
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">
               <div
                 className={`rounded-xl border px-3 py-2 ${
                   isDark
-                    ? "border-blue-800/70 bg-blue-950/25 text-blue-100"
-                    : "border-blue-200 bg-blue-50 text-blue-900"
+                    ? "border-[#3e6db1]/70 bg-[#10213e] text-[#d2e3ff]"
+                    : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
                 }`}
               >
                 <p className="text-[11px] uppercase tracking-wide opacity-80">{ui.tmmLabel}</p>
-                <p className="font-semibold">{formatRate(TMM_REFERENCE)}</p>
+                <p className="text-lg font-semibold">{formatRate(TMM_REFERENCE)}</p>
               </div>
               <div
                 className={`rounded-xl border px-3 py-2 ${
                   isDark
-                    ? "border-indigo-800/70 bg-indigo-950/30 text-indigo-100"
-                    : "border-indigo-200 bg-indigo-50 text-indigo-900"
+                    ? "border-[#3e6db1]/70 bg-[#10213e] text-[#d2e3ff]"
+                    : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
                 }`}
               >
                 <p className="text-[11px] uppercase tracking-wide opacity-80">{ui.activeRateLabel}</p>
-                <p className="font-semibold">{formatRate(appliedRate)}</p>
+                <p className="text-lg font-semibold">{formatRate(appliedRate)}</p>
               </div>
             </div>
           </div>
 
-          <div className={`mt-4 inline-flex rounded-xl p-1 ${isDark ? "bg-gray-900" : "bg-gray-100"}`}>
+          <div className={`mt-4 inline-flex rounded-xl border p-1 ${isDark ? "border-[#3e6db1]/70 bg-[#0d1628]" : "border-[#c6d7f1] bg-white"}`}>
             <button
               type="button"
               onClick={() => switchMode("loan")}
@@ -929,8 +898,8 @@ export function Simulator() {
                 mode === "loan"
                   ? "bg-[#0A2240] text-white"
                   : isDark
-                    ? "text-gray-300 hover:bg-gray-800"
-                    : "text-gray-700 hover:bg-white"
+                    ? "text-white/80 hover:bg-[#10213e]"
+                    : "text-[#13233f] hover:bg-[#eef4ff]"
               } ${isRTL ? "flex-row-reverse" : ""}`}
             >
               <Landmark className="h-4 w-4" />
@@ -943,8 +912,8 @@ export function Simulator() {
                 mode === "savings"
                   ? "bg-[#0A2240] text-white"
                   : isDark
-                    ? "text-gray-300 hover:bg-gray-800"
-                    : "text-gray-700 hover:bg-white"
+                    ? "text-white/80 hover:bg-[#10213e]"
+                    : "text-[#13233f] hover:bg-[#eef4ff]"
               } ${isRTL ? "flex-row-reverse" : ""}`}
             >
               <PiggyBank className="h-4 w-4" />
@@ -953,10 +922,11 @@ export function Simulator() {
           </div>
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[1.4fr,1fr]">
+        <div className="space-y-6">
           <div className="space-y-4">
             {mode === "loan" ? (
               <>
+                {loanStepPage === 1 && (
                 <section className={`${sectionCardClass(isDark, "blue")} p-5`}>
                   <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <span className={sectionIconClass(isDark, "blue")}>
@@ -1051,8 +1021,8 @@ export function Simulator() {
                     <div
                       className={`rounded-xl border px-3 py-3 ${
                         isDark
-                          ? "border-blue-700 bg-blue-950/25 text-blue-100"
-                          : "border-blue-200 bg-blue-50 text-blue-900"
+                          ? "border-[#3e6db1]/70 bg-[#10213e] text-[#d2e3ff]"
+                          : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
                       }`}
                     >
                       <p className="text-xs uppercase tracking-wide opacity-80">{ui.tmmReference}</p>
@@ -1061,16 +1031,36 @@ export function Simulator() {
                     <div
                       className={`rounded-xl border px-3 py-3 ${
                         isDark
-                          ? "border-blue-700 bg-blue-950/25 text-blue-100"
-                          : "border-blue-200 bg-blue-50 text-blue-900"
+                          ? "border-[#3e6db1]/70 bg-[#10213e] text-[#d2e3ff]"
+                          : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
                       }`}
                     >
                       <p className="text-xs uppercase tracking-wide opacity-80">{ui.appliedRate}</p>
                       <p className="text-base font-semibold">{formatRate(appliedRate)}</p>
                     </div>
                   </div>
-                </section>
 
+                  <div className={`mt-5 flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                    <button
+                      type="button"
+                      onClick={() => setLoanStepPage((current) => Math.max(1, current - 1))}
+                      disabled
+                      className={pagerButtonClass(isDark)}
+                    >
+                      {ui.previous}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLoanStepPage(2)}
+                      className={pagerButtonClass(isDark)}
+                    >
+                      {ui.next}
+                    </button>
+                  </div>
+                </section>
+                )}
+
+                {loanStepPage === 2 && (
                 <section className={`${sectionCardClass(isDark, "emerald")} p-5`}>
                   <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <span className={sectionIconClass(isDark, "emerald")}>
@@ -1142,8 +1132,8 @@ export function Simulator() {
                   <div
                     className={`mt-4 rounded-xl border p-3 text-sm ${
                       isDark
-                        ? "border-gray-600 bg-gray-900/40 text-gray-300"
-                        : "border-gray-200 bg-gray-50 text-gray-700"
+                        ? "border-[#3e6db1]/60 bg-[#10213e]/70 text-[#d2e3ff]"
+                        : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
                     }`}
                   >
                     <p>
@@ -1153,117 +1143,271 @@ export function Simulator() {
                       {ui.debtWithoutNew}: <span className="font-semibold">{formatRate(debtRatioPreview)}</span>
                     </p>
                   </div>
-                </section>
 
-                <section className={`${sectionCardClass(isDark, "indigo")} p-5`}>
-                  <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <span className={sectionIconClass(isDark, "indigo")}>
-                      <Wallet className="h-4 w-4" />
-                    </span>
-                    <h2 className="text-lg font-semibold">{ui.stepFinance}</h2>
+                  <div className={`mt-5 flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                    <button
+                      type="button"
+                      onClick={() => setLoanStepPage(1)}
+                      className={pagerButtonClass(isDark)}
+                    >
+                      {ui.previous}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLoanStepPage(3)}
+                      className={pagerButtonClass(isDark)}
+                    >
+                      {ui.next}
+                    </button>
                   </div>
+                </section>
+                )}
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="block text-sm md:col-span-2">
-                      <span className="mb-1 block">{ui.requestedAmount}</span>
-                      <input
-                        type="number"
-                        value={loanAmount}
-                        onChange={(event) => setLoanAmount(event.target.value)}
-                        className={inputClass(isDark, isRTL)}
-                      />
-                    </label>
-
-                    <div className="md:col-span-2 flex flex-wrap gap-2">
-                      {[1000, 5000, 10000, 20000, 50000, 100000].map((preset) => (
-                        <button
-                          key={preset}
-                          type="button"
-                          onClick={() => setLoanAmount(preset)}
-                          className={quickButtonClass(isDark, Number(loanAmount) === preset)}
-                        >
-                          {formatAmount(preset)}
-                        </button>
-                      ))}
+                {loanStepPage === 3 && (
+                hasLoanSimulationTriggered ? (
+                  <section className={`${sectionCardClass(isDark, "amber")} p-5`}>
+                    <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <span className={sectionIconClass(isDark, "amber")}>
+                        <BarChart3 className="h-4 w-4" />
+                      </span>
+                      <h2 className="text-lg font-semibold">{ui.results}</h2>
                     </div>
 
-                    {supportsDownPayment && (
+                    {error && (
+                      <div
+                        className={`mb-4 flex items-center gap-2 rounded-xl border p-3 text-sm ${
+                          isDark
+                            ? "border-[#D71920]/40 bg-[#2a1318] text-[#ffd7db]"
+                            : "border-[#f0c7cb] bg-[#fff2f4] text-[#a3222b]"
+                        }`}
+                      >
+                        <AlertCircle className="h-4 w-4" />
+                        {error}
+                      </div>
+                    )}
+
+                    {!result && !error && (
+                      <div
+                        className={`rounded-xl border border-dashed p-4 text-sm ${
+                          isDark
+                            ? "border-[#3e6db1]/60 bg-[#10213e]/40 text-[#d2e3ff]"
+                            : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
+                        }`}
+                      >
+                        <p className="font-medium">{ui.noResultsTitle}</p>
+                        <p className="mt-1">{buildNoResultLoanMessage(language, loanLabelPreview, appliedRate)}</p>
+                      </div>
+                    )}
+
+                    {result && (
+                      <div className="space-y-4 text-sm">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className={miniStatCardClass(isDark, "blue")}>
+                            <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#214b89]/30 text-[#cfe1ff]" : "bg-[#214b89]/12 text-[#214b89]"}`}>
+                              <Wallet className="h-3.5 w-3.5" />
+                            </span>
+                            <p className="text-xs opacity-75">{ui.monthlyPayment}</p>
+                            <p className="text-base font-semibold">{formatAmount(result.monthly_payment)}</p>
+                          </div>
+                          <div className={miniStatCardClass(isDark, "emerald")}>
+                            <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#214b89]/30 text-[#cfe1ff]" : "bg-[#214b89]/12 text-[#214b89]"}`}>
+                              <TrendingUp className="h-3.5 w-3.5" />
+                            </span>
+                            <p className="text-xs opacity-75">{ui.totalCost}</p>
+                            <p className="text-base font-semibold">{formatAmount(result.total_cost)}</p>
+                          </div>
+                          <div className={miniStatCardClass(isDark, "indigo")}>
+                            <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#214b89]/30 text-[#cfe1ff]" : "bg-[#214b89]/12 text-[#214b89]"}`}>
+                              <BadgePercent className="h-3.5 w-3.5" />
+                            </span>
+                            <p className="text-xs opacity-75">{ui.totalInterest}</p>
+                            <p className="text-base font-semibold">{formatAmount(result.total_interest)}</p>
+                          </div>
+                          <div className={miniStatCardClass(isDark, "rose")}>
+                            <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#D71920]/30 text-[#ffd7db]" : "bg-[#D71920]/12 text-[#a3222b]"}`}>
+                              <Calculator className="h-3.5 w-3.5" />
+                            </span>
+                            <p className="text-xs opacity-75">{ui.duration}</p>
+                            <p className="text-base font-semibold">{result.duration_months} {ui.months}</p>
+                          </div>
+                        </div>
+
+                        <div className={`rounded-xl border p-4 ${isDark ? "border-[#3e6db1]/60 bg-[#10213e]/35" : "border-[#c6d7f1] bg-[#f4f8ff]"}`}>
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <p className="font-medium">{ui.debtRatioEstimated}</p>
+                            <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${debtStatus.chipClass}`}>
+                              {debtStatus.title}
+                            </span>
+                          </div>
+                          <p className="text-lg font-semibold">{formatRate(result.simulation_meta?.debtRatio)}</p>
+                          <div className={`mt-2 h-2 overflow-hidden rounded-full ${isDark ? "bg-gray-700" : "bg-gray-200"}`}>
+                            <div
+                              className={`h-full rounded-full ${debtStatus.barClass}`}
+                              style={{ width: `${Math.min(100, Math.max(0, debtRatioResult))}%` }}
+                            />
+                          </div>
+                          <p className={`mt-2 text-xs ${isDark ? "text-[#bdd5ff]" : "text-[#48648f]"}`}>
+                            {debtStatus.message}
+                          </p>
+                        </div>
+
+                        <div className={`rounded-xl border p-4 ${isDark ? "border-[#3e6db1]/60 bg-[#10213e]/35" : "border-[#c6d7f1] bg-[#f4f8ff]"}`}>
+                          <p>
+                            {ui.monthlyGrossIncome}: <span className="font-semibold">{formatAmount(result.simulation_meta?.monthlyGrossIncome)}</span>
+                          </p>
+                          <p>
+                            {ui.otherInstallments}: <span className="font-semibold">{formatAmount(result.simulation_meta?.otherMonthlyLoans)}</span>
+                          </p>
+                          <p>
+                            {ui.financedAmount}: <span className="font-semibold">{formatAmount(result.simulation_meta?.financedAmount)}</span>
+                          </p>
+                          <p>
+                            {ui.retainedType}: <span className="font-semibold">{resultLoanLabel || "-"}</span>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className={`mt-5 flex ${isRTL ? "justify-start" : "justify-end"}`}>
+                      <button
+                        type="button"
+                        onClick={() => setHasLoanSimulationTriggered(false)}
+                        className={pagerButtonClass(isDark)}
+                      >
+                        {ui.editFinance}
+                      </button>
+                    </div>
+                  </section>
+                ) : (
+                  <section className={`${sectionCardClass(isDark, "indigo")} p-5`}>
+                    <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <span className={sectionIconClass(isDark, "indigo")}>
+                        <Wallet className="h-4 w-4" />
+                      </span>
+                      <h2 className="text-lg font-semibold">{ui.stepFinance}</h2>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
                       <label className="block text-sm md:col-span-2">
-                        <span className="mb-1 block">{ui.downPayment}</span>
+                        <span className="mb-1 block">{ui.requestedAmount}</span>
                         <input
                           type="number"
-                          value={downPayment}
-                          onChange={(event) => setDownPayment(event.target.value)}
+                          value={loanAmount}
+                          onChange={(event) => setLoanAmount(event.target.value)}
                           className={inputClass(isDark, isRTL)}
                         />
                       </label>
-                    )}
 
-                    <label className="block text-sm md:col-span-2">
-                      <span className="mb-1 block">{ui.durationMonths}</span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={360}
-                        value={durationMonths}
-                        onChange={(event) => setDurationMonths(event.target.value)}
-                        className={inputClass(isDark, isRTL)}
-                      />
-                    </label>
+                      <div className="md:col-span-2 flex flex-wrap gap-2">
+                        {[1000, 5000, 10000, 20000, 50000, 100000].map((preset) => (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() => setLoanAmount(preset)}
+                            className={quickButtonClass(isDark, Number(loanAmount) === preset)}
+                          >
+                            {formatAmount(preset)}
+                          </button>
+                        ))}
+                      </div>
 
-                    <div className="md:col-span-2">
-                      <input
-                        type="range"
-                        min={1}
-                        max={360}
-                        value={Math.min(360, Math.max(1, Number(durationMonths) || 1))}
-                        onChange={(event) => setDurationMonths(event.target.value)}
-                        className="w-full accent-[#0A2240]"
-                      />
+                      {supportsDownPayment && (
+                        <label className="block text-sm md:col-span-2">
+                          <span className="mb-1 block">{ui.downPayment}</span>
+                          <input
+                            type="number"
+                            value={downPayment}
+                            onChange={(event) => setDownPayment(event.target.value)}
+                            className={inputClass(isDark, isRTL)}
+                          />
+                        </label>
+                      )}
+
+                      <label className="block text-sm md:col-span-2">
+                        <span className="mb-1 block">{ui.durationMonths}</span>
+                        <input
+                          type="number"
+                          min={1}
+                          max={360}
+                          value={durationMonths}
+                          onChange={(event) => setDurationMonths(event.target.value)}
+                          className={inputClass(isDark, isRTL)}
+                        />
+                      </label>
+
+                      <div className="md:col-span-2">
+                        <input
+                          type="range"
+                          min={1}
+                          max={360}
+                          value={Math.min(360, Math.max(1, Number(durationMonths) || 1))}
+                          onChange={(event) => setDurationMonths(event.target.value)}
+                          className="w-full accent-[#0A2240]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2 flex flex-wrap gap-2">
+                        {[12, 24, 36, 60, 84, 120, 180, 240].map((preset) => (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() => setDurationMonths(preset)}
+                            className={quickButtonClass(isDark, Number(durationMonths) === preset)}
+                          >
+                            {preset} {ui.months}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
-                    <div className="md:col-span-2 flex flex-wrap gap-2">
-                      {[12, 24, 36, 60, 84, 120, 180, 240].map((preset) => (
-                        <button
-                          key={preset}
-                          type="button"
-                          onClick={() => setDurationMonths(preset)}
-                          className={quickButtonClass(isDark, Number(durationMonths) === preset)}
-                        >
-                          {preset} {ui.months}
-                        </button>
-                      ))}
+                    <div
+                      className={`mt-4 rounded-xl border p-3 text-sm ${
+                        isDark
+                          ? "border-[#3e6db1]/70 bg-[#10213e] text-[#d2e3ff]"
+                          : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
+                      }`}
+                    >
+                      <p>
+                        {ui.financedEstimated}: <span className="font-semibold">{formatAmount(financedAmountPreview)}</span>
+                      </p>
+                      <p>
+                        {ui.selectedProduct}:{" "}
+                        <span className="inline-flex items-center gap-1.5 font-semibold">
+                          <SelectedLoanIcon className="h-4 w-4" />
+                          {loanLabelPreview}
+                        </span>
+                      </p>
                     </div>
-                  </div>
 
-                  <div
-                    className={`mt-4 rounded-xl border p-3 text-sm ${
-                      isDark
-                        ? "border-blue-700 bg-blue-950/20 text-blue-100"
-                        : "border-blue-200 bg-blue-50 text-blue-900"
-                    }`}
-                  >
-                    <p>
-                      {ui.financedEstimated}: <span className="font-semibold">{formatAmount(financedAmountPreview)}</span>
-                    </p>
-                    <p>
-                      {ui.selectedProduct}:{" "}
-                      <span className="inline-flex items-center gap-1.5 font-semibold">
-                        <SelectedLoanIcon className="h-4 w-4" />
-                        {loanLabelPreview}
-                      </span>
-                    </p>
-                  </div>
+                    <div className={`mt-5 flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <button
+                        type="button"
+                        onClick={() => setLoanStepPage(2)}
+                        className={pagerButtonClass(isDark)}
+                      >
+                        {ui.previous}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLoanStepPage((current) => Math.min(3, current + 1))}
+                        disabled
+                        className={pagerButtonClass(isDark)}
+                      >
+                        {ui.next}
+                      </button>
+                    </div>
 
-                  <button
-                    type="button"
-                    onClick={runSimulation}
-                    disabled={loading}
-                    className="mt-4 w-full rounded-xl bg-[#0A2240] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#12305b] disabled:opacity-60"
-                  >
-                    {loading ? ui.loading : ui.runLoan}
-                  </button>
-                </section>
+                    <button
+                      type="button"
+                      onClick={runSimulation}
+                      disabled={loading}
+                      className="mt-4 w-full rounded-xl bg-[#0A2240] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#123662] disabled:opacity-60"
+                    >
+                      {loading ? ui.loading : ui.runLoan}
+                    </button>
+                  </section>
+                )
+                )}
               </>
             ) : (
               <section className={`${sectionCardClass(isDark, "blue")} p-5`}>
@@ -1320,7 +1464,7 @@ export function Simulator() {
                   type="button"
                   onClick={runSimulation}
                   disabled={loading}
-                  className="mt-4 w-full rounded-xl bg-[#0A2240] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#12305b] disabled:opacity-60"
+                  className="mt-4 w-full rounded-xl bg-[#0A2240] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#123662] disabled:opacity-60"
                 >
                   {loading ? ui.loading : ui.runSavings}
                 </button>
@@ -1328,8 +1472,8 @@ export function Simulator() {
             )}
           </div>
 
-          <aside className="space-y-4 self-start xl:sticky xl:top-6">
-            <section className={`${sectionCardClass(isDark, "amber")} p-5`}>
+          {mode === "savings" && (
+          <section className={`${sectionCardClass(isDark, "amber")} p-5`}>
               <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <span className={sectionIconClass(isDark, "amber")}>
                   <BarChart3 className="h-4 w-4" />
@@ -1341,8 +1485,8 @@ export function Simulator() {
                 <div
                   className={`mb-4 flex items-center gap-2 rounded-xl border p-3 text-sm ${
                     isDark
-                      ? "border-red-800 bg-red-950/30 text-red-300"
-                      : "border-red-200 bg-red-50 text-red-700"
+                      ? "border-[#D71920]/40 bg-[#2a1318] text-[#ffd7db]"
+                      : "border-[#f0c7cb] bg-[#fff2f4] text-[#a3222b]"
                   }`}
                 >
                   <AlertCircle className="h-4 w-4" />
@@ -1354,16 +1498,12 @@ export function Simulator() {
                 <div
                   className={`rounded-xl border border-dashed p-4 text-sm ${
                     isDark
-                      ? "border-amber-700/60 bg-amber-950/15 text-amber-100"
-                      : "border-amber-200 bg-amber-50 text-amber-800"
+                      ? "border-[#3e6db1]/60 bg-[#10213e]/40 text-[#d2e3ff]"
+                      : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
                   }`}
                 >
                   <p className="font-medium">{ui.noResultsTitle}</p>
-                  {mode === "loan" ? (
-                    <p className="mt-1">{buildNoResultLoanMessage(language, loanLabelPreview, appliedRate)}</p>
-                  ) : (
-                    <p className="mt-1">{ui.noResultsSavings}</p>
-                  )}
+                  <p className="mt-1">{ui.noResultsSavings}</p>
                 </div>
               )}
 
@@ -1371,28 +1511,28 @@ export function Simulator() {
                 <div className="space-y-4 text-sm">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className={miniStatCardClass(isDark, "blue")}>
-                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-blue-500/15 text-blue-600">
+                      <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#214b89]/30 text-[#cfe1ff]" : "bg-[#214b89]/12 text-[#214b89]"}`}>
                         <Wallet className="h-3.5 w-3.5" />
                       </span>
                       <p className="text-xs opacity-75">{ui.monthlyPayment}</p>
                       <p className="text-base font-semibold">{formatAmount(result.monthly_payment)}</p>
                     </div>
                     <div className={miniStatCardClass(isDark, "emerald")}>
-                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/15 text-emerald-600">
+                      <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#214b89]/30 text-[#cfe1ff]" : "bg-[#214b89]/12 text-[#214b89]"}`}>
                         <TrendingUp className="h-3.5 w-3.5" />
                       </span>
                       <p className="text-xs opacity-75">{ui.totalCost}</p>
                       <p className="text-base font-semibold">{formatAmount(result.total_cost)}</p>
                     </div>
                     <div className={miniStatCardClass(isDark, "indigo")}>
-                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/15 text-indigo-600">
+                      <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#214b89]/30 text-[#cfe1ff]" : "bg-[#214b89]/12 text-[#214b89]"}`}>
                         <BadgePercent className="h-3.5 w-3.5" />
                       </span>
                       <p className="text-xs opacity-75">{ui.totalInterest}</p>
                       <p className="text-base font-semibold">{formatAmount(result.total_interest)}</p>
                     </div>
                     <div className={miniStatCardClass(isDark, "rose")}>
-                      <span className="mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-rose-500/15 text-rose-600">
+                      <span className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-md ${isDark ? "bg-[#D71920]/30 text-[#ffd7db]" : "bg-[#D71920]/12 text-[#a3222b]"}`}>
                         <Calculator className="h-3.5 w-3.5" />
                       </span>
                       <p className="text-xs opacity-75">{ui.duration}</p>
@@ -1400,7 +1540,7 @@ export function Simulator() {
                     </div>
                   </div>
 
-                  <div className={`rounded-xl border p-4 ${isDark ? "border-gray-600 bg-gray-900/40" : "border-gray-200 bg-gray-50"}`}>
+                  <div className={`rounded-xl border p-4 ${isDark ? "border-[#3e6db1]/60 bg-[#10213e]/35" : "border-[#c6d7f1] bg-[#f4f8ff]"}`}>
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <p className="font-medium">{ui.debtRatioEstimated}</p>
                       <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${debtStatus.chipClass}`}>
@@ -1414,12 +1554,12 @@ export function Simulator() {
                         style={{ width: `${Math.min(100, Math.max(0, debtRatioResult))}%` }}
                       />
                     </div>
-                    <p className={`mt-2 text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                    <p className={`mt-2 text-xs ${isDark ? "text-[#bdd5ff]" : "text-[#48648f]"}`}>
                       {debtStatus.message}
                     </p>
                   </div>
 
-                  <div className={`rounded-xl border p-4 ${isDark ? "border-gray-600 bg-gray-900/40" : "border-gray-200 bg-gray-50"}`}>
+                  <div className={`rounded-xl border p-4 ${isDark ? "border-[#3e6db1]/60 bg-[#10213e]/35" : "border-[#c6d7f1] bg-[#f4f8ff]"}`}>
                     <p>
                       {ui.monthlyGrossIncome}: <span className="font-semibold">{formatAmount(result.simulation_meta?.monthlyGrossIncome)}</span>
                     </p>
@@ -1458,46 +1598,8 @@ export function Simulator() {
                   </div>
                 </div>
               )}
-            </section>
-
-            {mode === "loan" && (
-              <section className={`${sectionCardClass(isDark, "rose")} p-5`}>
-                <div className={`mb-4 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <span className={sectionIconClass(isDark, "rose")}>
-                    <ShieldCheck className="h-4 w-4" />
-                  </span>
-                  <h2 className="text-lg font-semibold">{ui.rateRecap}</h2>
-                </div>
-
-                <div className="space-y-2 text-sm">
-                  {RATE_RECAP.map((item) => {
-                    const active = mode === "loan" && item.rate === appliedRate;
-                    const CategoryIcon = LOAN_CATEGORY_ICONS[item.iconKey] || Landmark;
-                    return (
-                      <div
-                        key={item.value}
-                        className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 ${
-                          active
-                            ? "border-[#0A2240] bg-[#0A2240] text-white"
-                            : isDark
-                              ? "border-gray-600 bg-gray-900 text-gray-300"
-                              : "border-gray-200 bg-gray-50 text-gray-700"
-                        }`}
-                      >
-                          <span className="inline-flex items-center gap-2">
-                          <span className={categoryIconBadgeClass(isDark, item.iconKey)}>
-                            <CategoryIcon className="h-4 w-4" />
-                          </span>
-                            {getLocalizedLabel(item.labels, language)}
-                          </span>
-                        <span className="font-semibold">{formatRate(item.rate)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-          </aside>
+          </section>
+          )}
         </div>
       </div>
     </div>

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import {
+  ArrowUpRight,
   BellRing,
   LayoutDashboard,
+  Menu,
   MessageSquare,
   Package,
   Gauge,
@@ -40,7 +42,7 @@ const BETWEEN_NOTIFICATIONS_DELAY_MS = 20000;
 const POPUP_AUTO_CLOSE_MS = 9000;
 const POPUP_AUTO_CLOSE_EXPANDED_MS = 15000;
 const SCROLL_TRIGGER_PX = 220;
-const ONBOARDING_SEEN_PREFIX = "bh_onboarding_seen_";
+const ONBOARDING_FIRST_LOGIN_DONE_PREFIX = "bh_onboarding_first_login_done_";
 
 const notificationPopupCopy = {
   en: {
@@ -175,6 +177,9 @@ const isOnboardingCompleted = (formResponse) => {
   return false;
 };
 
+const getOnboardingFirstLoginDoneKey = (clientId) =>
+  `${ONBOARDING_FIRST_LOGIN_DONE_PREFIX}${clientId}`;
+
 export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -188,19 +193,19 @@ export function Layout() {
   const languageOptions = [
     {
       code: "ar",
-      label: "AR",
+      label: "Arabic",
       flag: flagAr,
       flagAlt: "Tunisia flag",
     },
     {
       code: "en",
-      label: "EN",
+      label: "English",
       flag: flagEn,
       flagAlt: "United Kingdom flag",
     },
     {
       code: "fr",
-      label: "FR",
+      label: "Francais",
       flag: flagFr,
       flagAlt: "France flag",
     },
@@ -219,6 +224,7 @@ export function Layout() {
   const [entryPopupShown, setEntryPopupShown] = useState(false);
   const [scrollPopupShown, setScrollPopupShown] = useState(false);
   const [scrollTriggerReached, setScrollTriggerReached] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const firstPopupTimestampRef = useRef(0);
   const mainScrollRef = useRef(null);
@@ -238,8 +244,8 @@ export function Layout() {
         return;
       }
 
-      const seenKey = `${ONBOARDING_SEEN_PREFIX}${clientId}`;
-      if (sessionStorage.getItem(seenKey) === "1") {
+      const firstLoginDoneKey = getOnboardingFirstLoginDoneKey(clientId);
+      if (localStorage.getItem(firstLoginDoneKey) === "1") {
         if (isMounted) {
           setOnboardingOpen(false);
         }
@@ -265,9 +271,8 @@ export function Layout() {
         const shouldOpen = !completed;
         setOnboardingOpen(shouldOpen);
 
-        if (shouldOpen) {
-          sessionStorage.setItem(seenKey, "1");
-        }
+        // First-login onboarding can be shown only once per client on this browser.
+        localStorage.setItem(firstLoginDoneKey, "1");
       } catch {
         if (!isMounted) return;
 
@@ -284,6 +289,10 @@ export function Layout() {
     return () => {
       isMounted = false;
     };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -418,6 +427,15 @@ export function Layout() {
     { path: "/dashboard/parametres", label: t("settings"), icon: Settings },
   ];
 
+  const activeMenuLabel =
+    [...menuItems]
+      .sort((a, b) => b.path.length - a.path.length)
+      .find(
+        (item) =>
+          location.pathname === item.path ||
+          location.pathname.startsWith(`${item.path}/`),
+      )?.label || t("dashboard");
+
   const handleLogout = () => {
     clearAuthSession();
     navigate("/");
@@ -432,7 +450,7 @@ export function Layout() {
       setOnboardingError("");
       await submitForm(clientId, payload);
       setOnboardingOpen(false);
-      sessionStorage.setItem(`${ONBOARDING_SEEN_PREFIX}${clientId}`, "1");
+      localStorage.setItem(getOnboardingFirstLoginDoneKey(clientId), "1");
     } catch (error) {
       setOnboardingError(
         error?.message || "Impossible d'enregistrer le formulaire."
@@ -458,43 +476,44 @@ export function Layout() {
     navigate(targetPath);
   };
 
-  return (
-    <div
-      className={`flex h-screen ${
-        theme === "dark" ? "bg-gray-900" : "bg-[#f9f9f9]"
-      }`}
-    >
-      {/* Sidebar */}
-      <aside
-        className={`${
-          theme === "dark" ? "bg-gray-900" : "bg-[#f9f9f9]"
-        } flex flex-col py-6 transition-all duration-300 ${
-          isExpanded ? "w-40" : "w-16"
-        }`}
-      >
-        {/* Logo */}
-        <div className="px-3 mb-7">
-          {isExpanded ? (
-            <img src={logoExpanded} alt="BH Bank" className="w-full h-auto" />
-          ) : (
-            <img src={logoCollapsed} alt="BH" className="w-10 h-10 mx-auto" />
-          )}
-        </div>
+  const renderSidebarContent = ({ mobile = false } = {}) => {
+    const sidebarExpanded = mobile ? true : isExpanded;
 
-        {/* Toggle Sidebar */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="mx-3 mb-6 p-2 text-gray-300 hover:bg-white/10 rounded-lg"
-        >
-          {isExpanded ? (
-            <ChevronLeft className="w-5 h-5" />
-          ) : (
-            <ChevronRight className="w-5 h-5" />
-          )}
-        </button>
+    return (
+      <>
+        {mobile ? (
+          <div className={`mb-4 flex items-center justify-between px-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+            <img src={logoExpanded} alt="BH Bank" className="h-8 w-auto" />
+            <button
+              type="button"
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className={`rounded-lg p-2 ${theme === "dark" ? "text-gray-300 hover:bg-white/10" : "text-[#214b89] hover:bg-[#e4ecfb]"}`}
+              aria-label="Close menu"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="mb-7 px-3">
+              {sidebarExpanded ? (
+                <img src={logoExpanded} alt="BH Bank" className="h-auto w-full" />
+              ) : (
+                <img src={logoCollapsed} alt="BH" className="mx-auto h-10 w-10" />
+              )}
+            </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 flex flex-col space-y-2 px-3">
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={`mx-3 mb-6 rounded-lg p-2 transition-colors ${theme === "dark" ? "text-gray-300 hover:bg-white/10" : "text-[#214b89] hover:bg-[#e4ecfb]"}`}
+            >
+              {isExpanded ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+            </button>
+          </>
+        )}
+
+        <nav className="flex flex-1 flex-col space-y-2 px-3">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
 
@@ -502,40 +521,40 @@ export function Layout() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2.5 px-2.5 py-2.5 rounded-2xl transition-colors ${
+                onClick={mobile ? () => setIsMobileSidebarOpen(false) : undefined}
+                className={`flex items-center gap-2.5 rounded-2xl px-2.5 py-2.5 transition-colors ${
                   isActive
                     ? "bg-white text-[#242f54]"
-                    : "text-gray-300 hover:text-[#242f54] hover:bg-white/10"
+                    : theme === "dark"
+                      ? "text-gray-300 hover:bg-white/10 hover:text-white"
+                      : "text-[#4d5f7d] hover:bg-[#e8effb] hover:text-[#242f54]"
                 } ${isRTL ? "flex-row-reverse" : ""}`}
               >
-                <item.icon className="w-4.5 h-5 shrink-0" />
+                <item.icon className="h-5 w-4.5 shrink-0" />
 
-                {isExpanded && (
-                  <span className="text-sm font-medium">{item.label}</span>
-                )}
+                {sidebarExpanded && <span className="text-sm font-medium">{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        {/* Logout */}
-        <div className="px-3 mt-3">
+        <div className="mt-3 px-3">
           <div
             className={`rounded-xl border p-1.5 ${
               theme === "dark"
                 ? "border-gray-600 bg-gray-800"
                 : "border-gray-200 bg-gray-100"
-            } ${isExpanded ? "flex items-center gap-1" : "flex flex-col gap-1"}`}
+            } ${sidebarExpanded ? "flex items-center gap-1" : "flex flex-col gap-1"}`}
           >
             {languageOptions.map((option) => (
               <button
                 key={option.code}
                 onClick={() => setLanguage(option.code)}
-                className={`rounded-md border text-[10px] font-semibold py-1.5 transition-colors flex items-center justify-center gap-1.5 ${
-                  isExpanded ? "flex-1" : "w-full"
+                className={`flex items-center justify-center rounded-md border py-1.5 text-[10px] font-semibold transition-colors ${
+                  sidebarExpanded ? "flex-1" : "w-full"
                 } ${
                   language === option.code
-                    ? "bg-blue-600 border-blue-600 text-white"
+                    ? "border-blue-600 bg-blue-600 text-white"
                     : theme === "dark"
                       ? "border-gray-500 text-gray-300 hover:bg-gray-700"
                       : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
@@ -549,33 +568,97 @@ export function Layout() {
                     language === option.code ? "ring-1 ring-white/80" : ""
                   }`}
                 />
-                {isExpanded && <span>{option.label}</span>}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="px-3 mt-4">
+        <div className="mt-4 px-3">
           <button
-            onClick={handleLogout}
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:text-red-300 hover:bg-white/10 transition-colors w-full ${isRTL ? "flex-row-reverse" : ""}`}
+            type="button"
+            onClick={() => {
+              handleLogout();
+              if (mobile) setIsMobileSidebarOpen(false);
+            }}
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-red-400 transition-colors hover:bg-white/10 hover:text-red-300 ${isRTL ? "flex-row-reverse" : ""}`}
           >
-            <LogOut className="w-4.5 h-5 shrink-0" />
+            <LogOut className="h-5 w-4.5 shrink-0" />
 
-            {isExpanded && (
+            {sidebarExpanded && (
               <span className="text-sm font-medium">{t("logout")}</span>
             )}
           </button>
         </div>
-      </aside>
+      </>
+    );
+  };
 
-      {/* Main Content */}
-      <div
-        className={`flex-1 flex flex-col overflow-hidden shadow-lg bg-white ${
-          isRTL ? "rounded-tr-[25px]" : "rounded-tl-[25px]"
+  return (
+    <div
+      className={`flex min-h-dvh h-dvh overflow-hidden ${
+        theme === "dark" ? "bg-gray-900" : "bg-[#f9f9f9]"
+      }`}
+    >
+      <aside
+        className={`${
+          theme === "dark" ? "bg-gray-900" : "bg-[#f9f9f9]"
+        } hidden flex-col py-6 transition-all duration-300 lg:flex ${
+          isExpanded ? "w-40" : "w-16"
         }`}
       >
-        <main ref={mainScrollRef} className="flex-1 overflow-auto">
+        {renderSidebarContent()}
+      </aside>
+
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close sidebar"
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="absolute inset-0 bg-black/40"
+          />
+
+          <aside
+            className={`absolute inset-y-0 ${isRTL ? "right-0" : "left-0"} flex w-[82vw] max-w-xs flex-col py-5 shadow-2xl ${
+              theme === "dark" ? "bg-gray-900" : "bg-[#f9f9f9]"
+            }`}
+          >
+            {renderSidebarContent({ mobile: true })}
+          </aside>
+        </div>
+      )}
+
+      <div
+        className={`flex min-w-0 flex-1 flex-col overflow-hidden shadow-lg ${
+          theme === "dark" ? "bg-[#0f172a]" : "bg-white"
+        } rounded-none ${
+          isRTL ? "lg:rounded-tr-[25px]" : "lg:rounded-tl-[25px]"
+        }`}
+      >
+        <header
+          className={`flex items-center justify-between border-b px-3 py-2 lg:hidden ${
+            theme === "dark"
+              ? "border-white/10 bg-[#0f172a] text-white"
+              : "border-[#e2e8f2] bg-white text-[#182540]"
+          } ${isRTL ? "flex-row-reverse" : ""}`}
+        >
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${
+              theme === "dark" ? "bg-white/10" : "bg-[#eef3fb]"
+            }`}
+            aria-label="Open menu"
+          >
+            <Menu className="h-4.5 w-4.5" />
+          </button>
+
+          <p className="truncate text-sm font-semibold">{activeMenuLabel}</p>
+
+          <img src={logoCollapsed} alt="BH" className="h-8 w-8" />
+        </header>
+
+        <main ref={mainScrollRef} className="min-h-0 flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
@@ -592,7 +675,7 @@ export function Layout() {
 
       {activePopup && !isChatbotPage && (
         <div
-          className={`pointer-events-none fixed z-50 w-[min(92vw,25rem)] transition-all duration-500 ${
+          className={`pointer-events-none fixed z-50 w-[min(92vw,24rem)] transition-all duration-500 ${
             popupExpanded
               ? "left-1/2 top-4 -translate-x-1/2"
               : isRTL
@@ -602,53 +685,66 @@ export function Layout() {
         >
           {popupExpanded ? (
             <div
-              className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-2xl ${
+              className={`pointer-events-auto relative overflow-hidden rounded-2xl border shadow-[0_20px_56px_-30px_rgba(2,6,23,0.82)] ${
                 theme === "dark"
                   ? "border-slate-700 bg-linear-to-br from-slate-900 via-slate-900 to-slate-800 text-slate-100"
-                  : "border-blue-200 bg-linear-to-br from-white via-[#f7fbff] to-[#eef4ff] text-[#1e2f4a]"
+                  : "border-blue-200 bg-linear-to-br from-white via-[#f8fbff] to-[#e9f3ff] text-[#1e2f4a]"
               }`}
             >
-              <div className="flex items-start gap-2.5 p-4">
+              <div className="relative p-3.5">
                 <div
-                  className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                    theme === "dark" ? "bg-cyan-900/45" : "bg-blue-100"
-                  }`}
+                  className={`mb-2 inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
+                    theme === "dark"
+                      ? "border-slate-600/80 bg-slate-800/80 text-slate-200"
+                      : "border-blue-200 bg-blue-50/90 text-blue-700"
+                  } ${isRTL ? "flex-row-reverse" : ""}`}
                 >
-                  {activePopup.type === "spending_match" ? (
-                    <Sparkles className={`h-4.5 w-4.5 ${theme === "dark" ? "text-cyan-300" : "text-blue-700"}`} />
-                  ) : (
-                    <BellRing className={`h-4.5 w-4.5 ${theme === "dark" ? "text-cyan-300" : "text-blue-700"}`} />
-                  )}
+                  {activePopup.type === "spending_match" ? <Sparkles className="h-3.5 w-3.5" /> : <BellRing className="h-3.5 w-3.5" />}
+                  {popupUi.smartTitle}
                 </div>
 
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold leading-tight">{activePopup.title || popupUi.smartTitle}</p>
-                  {activePopup.message && (
-                    <p className={`mt-1 text-xs leading-relaxed ${theme === "dark" ? "text-slate-300" : "text-[#506689]"}`}>
-                      {activePopup.message}
-                    </p>
-                  )}
-                  <button
-                    type="button"
-                    onClick={openPopupCta}
-                    className={`mt-3 rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-                      theme === "dark"
-                        ? "border-cyan-700/70 text-cyan-300 hover:bg-cyan-950/50"
-                        : "border-blue-200 text-blue-700 hover:bg-blue-50"
+                <div className={`flex items-start gap-2.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div
+                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                      theme === "dark" ? "bg-cyan-900/45 text-cyan-300" : "bg-blue-100 text-blue-700"
                     }`}
                   >
-                    {activePopup.ctaLabel || popupUi.openTarget}
+                    {activePopup.type === "spending_match" ? <Sparkles className="h-4.5 w-4.5" /> : <BellRing className="h-4.5 w-4.5" />}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold leading-tight">{activePopup.title || popupUi.smartTitle}</p>
+                    {activePopup.message && (
+                      <p className={`mt-1 text-xs leading-relaxed ${theme === "dark" ? "text-slate-300" : "text-[#506689]"}`}>
+                        {activePopup.message}
+                      </p>
+                    )}
+
+                    <div className={`mt-3 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <button
+                        type="button"
+                        onClick={openPopupCta}
+                        className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold ${
+                          theme === "dark"
+                            ? "bg-cyan-500/20 text-cyan-200 hover:bg-cyan-500/30"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        } ${isRTL ? "flex-row-reverse" : ""}`}
+                      >
+                        {activePopup.ctaLabel || popupUi.openTarget}
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={closePopup}
+                    aria-label={popupUi.closeLabel}
+                    className={`rounded-md p-1 ${theme === "dark" ? "text-slate-400 hover:bg-slate-800" : "text-gray-500 hover:bg-gray-100"}`}
+                  >
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={closePopup}
-                  aria-label={popupUi.closeLabel}
-                  className={`rounded-md p-1 ${theme === "dark" ? "text-slate-400 hover:bg-slate-800" : "text-gray-500 hover:bg-gray-100"}`}
-                >
-                  <X className="h-4 w-4" />
-                </button>
               </div>
             </div>
           ) : (
@@ -656,18 +752,13 @@ export function Layout() {
               <button
                 type="button"
                 onClick={promotePopupToTop}
-                className={`w-full overflow-hidden rounded-2xl border p-3 text-left shadow-xl ${
+                className={`w-full overflow-hidden rounded-2xl border p-3 text-left shadow-[0_16px_42px_-24px_rgba(2,6,23,0.85)] transition-transform hover:-translate-y-0.5 ${
                   theme === "dark"
                     ? "border-slate-700 bg-slate-900/95 text-slate-100"
                     : "border-blue-200 bg-white/98 text-[#1e2f4a]"
                 }`}
               >
-                <div
-                  className={`pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full ${
-                    theme === "dark" ? "bg-cyan-800/25" : "bg-blue-100"
-                  }`}
-                />
-                <div className="relative flex items-center gap-2.5">
+                <div className={`relative flex items-center gap-2.5 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                       theme === "dark" ? "bg-cyan-900/45" : "bg-blue-100"
@@ -685,6 +776,10 @@ export function Layout() {
                       {popupUi.tapToOpen}
                     </p>
                   </div>
+
+                  <span className={`inline-flex h-6 w-6 items-center justify-center rounded-md ${theme === "dark" ? "bg-slate-800 text-slate-300" : "bg-blue-50 text-blue-700"}`}>
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </span>
                 </div>
               </button>
               <button

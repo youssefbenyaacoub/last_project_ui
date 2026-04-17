@@ -37,11 +37,6 @@ export function UserPreferencesProvider({ children }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
   }, [preferences]);
 
-  useEffect(() => {
-    // Cleanup in case the class remained from a previous app state.
-    document.documentElement.classList.remove("low-vision-mode");
-  }, []);
-
   const updatePreference = (key, value) => {
     setPreferences((prev) => normalizePreferences({ ...prev, [key]: value }));
   };

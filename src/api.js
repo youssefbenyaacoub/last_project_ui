@@ -101,11 +101,19 @@ async function requestWithToken(path, options = {}, token = "") {
 
   if (!response.ok) {
     const validationErrors = Array.isArray(data?.errors) ? data.errors : [];
-    const message =
+    let message =
       data?.error ||
       data?.message ||
       data?.description ||
       (validationErrors.length ? validationErrors.join(" | ") : `HTTP ${response.status}`);
+
+    if (
+      response.status === 404 &&
+      /requested url was not found on the server/i.test(String(message || ""))
+    ) {
+      message = "Endpoint API introuvable sur le backend.";
+    }
+
     const error = new Error(message);
     error.status = response.status;
     error.payload = data;
@@ -123,11 +131,41 @@ async function requestAgent(path, options = {}) {
   return requestWithToken(path, options, getAgentAuthToken());
 }
 
+function extractDownloadFileName(contentDisposition, fallbackName) {
+  const raw = String(contentDisposition || "");
+  if (!raw) return fallbackName;
+
+  const utf8Match = raw.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) {
+    try {
+      return decodeURIComponent(utf8Match[1]).replace(/['"]/g, "") || fallbackName;
+    } catch {
+      return utf8Match[1].replace(/['"]/g, "") || fallbackName;
+    }
+  }
+
+  const simpleMatch = raw.match(/filename="?([^";]+)"?/i);
+  if (simpleMatch?.[1]) {
+    return simpleMatch[1].trim() || fallbackName;
+  }
+
+  return fallbackName;
+}
+
 export const loginUser = (credentials) =>
   request("/auth/login", {
     method: "POST",
     body: JSON.stringify(credentials),
   });
+
+export const checkAgentPortalAccess = () =>
+  requestWithToken(
+    "/auth/agent/portal-access",
+    {
+      method: "GET",
+    },
+    "",
+  );
 
 export const loginAgent = (credentials) =>
   request("/auth/agent/login", {
@@ -135,9 +173,126 @@ export const loginAgent = (credentials) =>
     body: JSON.stringify(credentials),
   });
 
+export const requestAgentPasswordReset = (payload) =>
+  request("/auth/agent/forgot-password-request", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const requestClientPasswordReset = (payload) =>
+  request("/auth/client/forgot-password-request", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const resetAgentPasswordWithLink = (payload) =>
+  request("/auth/agent/reset-password-link", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const resetClientPasswordWithLink = (payload) =>
+  request("/auth/client/reset-password-link", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
 export const getAgentMe = () => requestAgent("/auth/agent/me");
 
+export const changeAgentPassword = (payload) =>
+  requestAgent("/auth/agent/change-password", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
 export const getAgentDashboard = () => requestAgent("/agent/dashboard");
+
+export const downloadAgentMonthlyReport = async (month, format = "xlsx") => {
+  const params = new URLSearchParams();
+  if (month) params.set("month", String(month));
+  const normalizedFormat = String(format || "xlsx").trim().toLowerCase() === "pdf" ? "pdf" : "xlsx";
+  params.set("format", normalizedFormat);
+
+  const fallbackName = `rapport_mensuel_clients_${month || "courant"}.${normalizedFormat}`;
+  const token = getAgentAuthToken();
+  const acceptHeader =
+    normalizedFormat === "pdf"
+      ? "application/pdf"
+      : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  const response = await fetch(`${API_BASE}/agent/reports/monthly${params.toString() ? `?${params.toString()}` : ""}`, {
+    method: "GET",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      Accept: acceptHeader,
+    },
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    const message =
+      payload?.error ||
+      payload?.message ||
+      payload?.description ||
+      `HTTP ${response.status}`;
+    const error = new Error(message);
+    error.status = response.status;
+    error.payload = payload;
+    throw error;
+  }
+
+  const blob = await response.blob();
+  const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+  const filename = extractDownloadFileName(
+    response.headers.get("content-disposition"),
+    fallbackName,
+  );
+
+  const lowerFileName = String(filename || "").toLowerCase();
+  const responseLooksPdf = contentType.includes("application/pdf") || lowerFileName.endsWith(".pdf");
+  const responseLooksXlsx =
+    contentType.includes("spreadsheetml") ||
+    lowerFileName.endsWith(".xlsx") ||
+    lowerFileName.endsWith(".xls");
+
+  if (normalizedFormat === "pdf" && responseLooksXlsx && !responseLooksPdf) {
+    const error = new Error(
+      "Le serveur a renvoye un fichier Excel au lieu d'un PDF. Redemarrez le backend puis reessayez.",
+    );
+    error.status = 409;
+    throw error;
+  }
+
+  if (normalizedFormat === "xlsx" && responseLooksPdf && !responseLooksXlsx) {
+    const error = new Error(
+      "Le serveur a renvoye un PDF au lieu d'un fichier Excel.",
+    );
+    error.status = 409;
+    throw error;
+  }
+
+  return { blob, filename };
+};
+
+export const getAgentComplaints = (status = "open", limit = 120, q = "") => {
+  const params = new URLSearchParams();
+  if (status) params.set("status", String(status));
+  if (limit) params.set("limit", String(limit));
+  if (q) params.set("q", String(q));
+  const suffix = params.toString();
+  return requestAgent(`/agent/complaints${suffix ? `?${suffix}` : ""}`);
+};
+
+export const updateAgentComplaint = (complaintId, payload) =>
+  requestAgent(`/agent/complaints/${encodeURIComponent(complaintId)}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+export const fillAgentClientAgencies = (payload = {}) =>
+  requestAgent("/agent/clients/fill-agences", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 
 export const searchAgentClient = (cin) =>
   requestAgent(`/agent/search?cin=${encodeURIComponent(cin)}`);
@@ -145,8 +300,79 @@ export const searchAgentClient = (cin) =>
 export const getAgentCreditAnalysis = (idPiece) =>
   requestAgent(`/agent/clients/${encodeURIComponent(idPiece)}/credit-analysis`);
 
+export const getAgentClientComplaints = (idPiece) =>
+  requestAgent(`/agent/clients/${encodeURIComponent(idPiece)}/complaints`);
+
+export const updateAgentClientComplaint = (idPiece, complaintId, payload) =>
+  requestAgent(
+    `/agent/clients/${encodeURIComponent(idPiece)}/complaints/${encodeURIComponent(complaintId)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    },
+  );
+
 export const getAgentActivityLog = (limit = 50) =>
   requestAgent(`/agent/activity-log?limit=${encodeURIComponent(limit)}`);
+
+export const getAdminPlatformOverview = (days = 30, failedThreshold = 3) =>
+  requestAgent(
+    `/admin/platform-overview?days=${encodeURIComponent(days)}&failed_threshold=${encodeURIComponent(
+      failedThreshold,
+    )}`,
+  );
+
+export const listAdminAgents = () => requestAgent("/admin/agents");
+
+export const createAdminAgent = (payload) =>
+  requestAgent("/admin/agents", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const resetAdminAgentPassword = (agentId, payload = {}) =>
+  requestAgent(`/admin/agents/${encodeURIComponent(agentId)}/reset-password`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const sendOfferEmailCampaign = (payload) =>
+  requestAgent("/auth/agent/campaigns/offer-email", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const listAdminAgentPasswordResetRequests = (status = "pending", limit = 50) =>
+  requestAgent(
+    `/auth/admin/agent-password-reset-requests?status=${encodeURIComponent(
+      status,
+    )}&limit=${encodeURIComponent(limit)}`,
+  );
+
+export const decideAdminAgentPasswordResetRequest = (requestId, payload) =>
+  requestAgent(
+    `/auth/admin/agent-password-reset-requests/${encodeURIComponent(requestId)}/decision`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+  );
+
+export const listAdminClientPasswordResetRequests = (status = "pending", limit = 50) =>
+  requestAgent(
+    `/auth/admin/client-password-reset-requests?status=${encodeURIComponent(
+      status,
+    )}&limit=${encodeURIComponent(limit)}`,
+  );
+
+export const decideAdminClientPasswordResetRequest = (requestId, payload) =>
+  requestAgent(
+    `/auth/admin/client-password-reset-requests/${encodeURIComponent(requestId)}/decision`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+  );
 
 export const verifyCard = (payload) =>
   request("/auth/verify-card", {
@@ -168,6 +394,30 @@ export const registerAccount = (payload) =>
 
 export const verifyEmail = (payload) =>
   request("/auth/verify-email", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const saveSecurityProof = (payload) =>
+  request("/auth/security-proof", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const requestSigninEmailCode = (payload) =>
+  request("/auth/signin/request-email-code", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const verifySigninEmailCode = (payload) =>
+  request("/auth/signin/verify-email-code", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const completeSigninRegistration = (payload) =>
+  request("/auth/signin/complete", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -229,6 +479,11 @@ export const upsertBudget = (payload) =>
     method: "POST",
     body: JSON.stringify(payload),
   });
+
+export const getMonthlyFinancialHealthReport = (month) =>
+  request(
+    `/auth/financial-health/monthly${month ? `?month=${encodeURIComponent(month)}` : ""}`
+  );
 
 export const getComplaints = () => request("/auth/complaints");
 

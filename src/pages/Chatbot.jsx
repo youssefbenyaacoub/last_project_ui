@@ -9,7 +9,7 @@ import {
   listChatSessions,
   sendChatMessage,
 } from "../api";
-import { PageLoader } from "../components/PageLoader";
+import { Skeleton } from "../components/Skeleton";
 
 const uiByLanguage = {
   en: {
@@ -35,6 +35,10 @@ const uiByLanguage = {
     chatbotTitle: "BH Advisor Chatbot",
     chatbotShortName: "BH Advisor",
     typingLabel: "is thinking...",
+    typingPreview: "Analyzing your request...",
+    hideHistory: "Hide history",
+    showHistory: "Show history",
+    historyHiddenHint: "Conversation history is hidden.",
   },
   fr: {
     conversationsTitle: "Conversations",
@@ -59,6 +63,10 @@ const uiByLanguage = {
     chatbotTitle: "BH Advisor Chatbot",
     chatbotShortName: "BH Advisor",
     typingLabel: "reflechit...",
+    typingPreview: "Analyse de votre demande...",
+    hideHistory: "Masquer l'historique",
+    showHistory: "Afficher l'historique",
+    historyHiddenHint: "L'historique des conversations est masque.",
   },
   ar: {
     conversationsTitle: "المحادثات",
@@ -83,6 +91,10 @@ const uiByLanguage = {
     chatbotTitle: "مساعد BH Advisor",
     chatbotShortName: "BH Advisor",
     typingLabel: "يفكر...",
+    typingPreview: "جاري تحليل طلبك...",
+    hideHistory: "اخفاء السجل",
+    showHistory: "اظهار السجل",
+    historyHiddenHint: "سجل المحادثات مخفي.",
   },
 };
 
@@ -107,6 +119,16 @@ const formatTime = (value, locale) => {
     minute: "2-digit",
   }).format(date);
 };
+
+const createTempId = (prefix) =>
+  `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+
+const toMessageModel = (entry, index) => ({
+  id: entry?.id || `history-${entry?.timestamp || Date.now()}-${index}`,
+  role: entry?.role,
+  content: entry?.content,
+  timestamp: entry?.timestamp,
+});
 
 const renderMessageContent = (content, linkClassName) => {
   const text = String(content || "");
@@ -172,6 +194,7 @@ export function Chatbot() {
   const [error, setError] = useState("");
   const [input, setInput] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(true);
 
   const [sessions, setSessions] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
@@ -256,13 +279,7 @@ export function Chatbot() {
 
           if (hydrateMessages && targetSessionId) {
             const history = await getChatHistory(clientId, targetSessionId);
-            setMessages(
-              (history?.history || []).map((entry) => ({
-                role: entry.role,
-                content: entry.content,
-                timestamp: entry.timestamp,
-              })),
-            );
+            setMessages((history?.history || []).map(toMessageModel));
           }
         } else {
           if (hydrateMessages) {
@@ -292,13 +309,7 @@ export function Chatbot() {
       setActiveSessionId(sessionId);
       setError("");
       const history = await getChatHistory(clientId, sessionId);
-      setMessages(
-        (history?.history || []).map((entry) => ({
-          role: entry.role,
-          content: entry.content,
-          timestamp: entry.timestamp,
-        })),
-      );
+      setMessages((history?.history || []).map(toMessageModel));
       setIsSidebarOpen(false);
     } catch (err) {
       setError(err.message || ui.loadConversationError);
@@ -307,16 +318,36 @@ export function Chatbot() {
 
   const handleNewConversation = async () => {
     if (!clientId) return;
+
+    const previousActiveSessionId = activeSessionId;
+    const optimisticSessionId = createTempId("temp-session");
+    const optimisticSession = {
+      id: optimisticSessionId,
+      title: ui.conversationFallback,
+      updated_at: new Date().toISOString(),
+      optimistic: true,
+    };
+
+    setSessions((prev) => [optimisticSession, ...prev]);
+    setActiveSessionId(optimisticSessionId);
+    setMessages([]);
+    setIsSidebarOpen(false);
+
     try {
       const created = await createChatSession(clientId);
       const session = created?.session;
+
       if (session?.id) {
-        setSessions((prev) => [session, ...prev]);
+        setSessions((prev) =>
+          prev.map((item) => (item.id === optimisticSessionId ? session : item)),
+        );
         setActiveSessionId(session.id);
-        setMessages([]);
-        setIsSidebarOpen(false);
+      } else {
+        throw new Error(ui.createConversationError);
       }
     } catch (err) {
+      setSessions((prev) => prev.filter((item) => item.id !== optimisticSessionId));
+      setActiveSessionId(previousActiveSessionId || null);
       setError(err.message || ui.createConversationError);
     }
   };
@@ -325,35 +356,99 @@ export function Chatbot() {
     const messageText = text.trim();
     if (!messageText || !clientId || sending) return;
 
+    const nowIso = new Date().toISOString();
+    const userMessageId = createTempId("msg-user");
+    const assistantPendingMessageId = createTempId("msg-assistant-pending");
+    const requestSessionId =
+      activeSessionId && !String(activeSessionId).startsWith("temp-session-")
+        ? activeSessionId
+        : undefined;
+
     const optimisticUserMessage = {
+      id: userMessageId,
       role: "user",
       content: messageText,
-      timestamp: new Date().toISOString(),
+      timestamp: nowIso,
     };
 
-    setMessages((prev) => [...prev, optimisticUserMessage]);
+    const optimisticAssistantMessage = {
+      id: assistantPendingMessageId,
+      role: "assistant",
+      content: ui.typingPreview,
+      timestamp: nowIso,
+      pending: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticUserMessage, optimisticAssistantMessage]);
     setInput("");
     setSending(true);
     setError("");
 
     try {
-      const response = await sendChatMessage(clientId, messageText, activeSessionId || undefined);
+      const response = await sendChatMessage(clientId, messageText, requestSessionId);
+      const responseTimestamp = new Date().toISOString();
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: response?.response || ui.noResponse,
-          timestamp: new Date().toISOString(),
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((item) =>
+          item.id === assistantPendingMessageId
+            ? {
+                ...item,
+                pending: false,
+                content: response?.response || ui.noResponse,
+                timestamp: responseTimestamp,
+              }
+            : item,
+        ),
+      );
 
       if (response?.session_id && response.session_id !== activeSessionId) {
         setActiveSessionId(response.session_id);
+
+        setSessions((prev) => {
+          const filtered = prev.filter(
+            (session) =>
+              !(
+                String(activeSessionId || "").startsWith("temp-session-") &&
+                session.id === activeSessionId
+              ),
+          );
+
+          const existingIndex = filtered.findIndex((session) => session.id === response.session_id);
+          if (existingIndex >= 0) {
+            const next = [...filtered];
+            next[existingIndex] = {
+              ...next[existingIndex],
+              updated_at: responseTimestamp,
+            };
+            return next;
+          }
+
+          return [
+            {
+              id: response.session_id,
+              title: messageText.slice(0, 64) || ui.conversationFallback,
+              updated_at: responseTimestamp,
+            },
+            ...filtered,
+          ];
+        });
       }
 
-      await loadSessions({ showLoader: false, hydrateMessages: false });
+      void loadSessions({ showLoader: false, hydrateMessages: false });
     } catch (err) {
+      const fallbackTimestamp = new Date().toISOString();
+      setMessages((prev) =>
+        prev.map((item) =>
+          item.id === assistantPendingMessageId
+            ? {
+                ...item,
+                pending: false,
+                content: err.message || ui.sendError,
+                timestamp: fallbackTimestamp,
+              }
+            : item,
+        ),
+      );
       setError(err.message || ui.sendError);
     } finally {
       setSending(false);
@@ -362,66 +457,95 @@ export function Chatbot() {
 
   const emptyState = useMemo(() => messages.length === 0 && !loading, [messages, loading]);
 
+  const toggleHistoryVisibility = () => {
+    setIsHistoryVisible((prev) => {
+      const next = !prev;
+      if (!next) {
+        setIsSidebarOpen(false);
+      }
+      return next;
+    });
+  };
+
+  const handleHistoryMenuClick = () => {
+    if (!isHistoryVisible) {
+      setIsHistoryVisible(true);
+    }
+    setIsSidebarOpen(true);
+  };
+
   return (
     <div
-      className={`relative flex h-screen overflow-hidden ${
+      className={`relative flex h-full min-h-0 overflow-hidden ${
         isDark ? "bg-[#0f172a] text-white" : "bg-[#f6f8fb] text-[#182540]"
       } ${isRTL ? "flex-row-reverse" : ""}`}
     >
-      <aside
-        className={`hidden w-80 shrink-0 flex-col ${isRTL ? "border-l" : "border-r"} lg:flex ${
-          isDark ? "border-white/10 bg-[#101b2e]" : "border-[#dfe6f1] bg-white/95"
-        }`}
-      >
-        <div className={`border-b px-4 py-4 ${isDark ? "border-white/10" : "border-[#e5ebf4]"}`}>
-          <button
-            type="button"
-            onClick={handleNewConversation}
-            style={{ backgroundColor: accentColor }}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-          >
-            <Plus size={16} />
-            {ui.newConversation}
-          </button>
-        </div>
+      {isHistoryVisible && (
+        <aside
+          className={`hidden w-80 shrink-0 flex-col ${isRTL ? "border-l" : "border-r"} lg:flex ${
+            isDark ? "border-white/10 bg-[#101b2e]" : "border-[#dfe6f1] bg-white/95"
+          }`}
+        >
+          <div className={`border-b px-4 py-4 ${isDark ? "border-white/10" : "border-[#e5ebf4]"}`}>
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              style={{ backgroundColor: accentColor }}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+            >
+              <Plus size={16} />
+              {ui.newConversation}
+            </button>
+          </div>
 
-        <div className="flex-1 space-y-2 overflow-y-auto p-3">
-          {sessions.map((session) => {
-            const isActive = session.id === activeSessionId;
-            return (
-              <button
-                key={session.id}
-                type="button"
-                onClick={() => openSession(session.id)}
-                className={`w-full rounded-xl border px-3 py-2.5 text-left ${
-                  isActive
-                    ? isDark
-                      ? "bg-[#15243b]"
-                      : "bg-[#eef3fb]"
-                    : isDark
-                      ? "border-white/10 hover:bg-white/5"
-                      : "border-[#e2e8f2] hover:bg-[#f5f8fd]"
-                } ${isRTL ? "text-right" : "text-left"}`}
-                style={
-                  isActive
-                    ? {
-                        borderColor: accentColor,
-                        boxShadow: isDark ? "0 0 0 1px rgba(255,255,255,0.04)" : "0 0 0 1px rgba(10,34,64,0.05)",
-                      }
-                    : undefined
-                }
-              >
-                <p className="truncate text-sm font-semibold">{session.title || ui.conversationFallback}</p>
-                <p className={`mt-1 text-xs ${isDark ? "text-white/60" : "text-[#6b7a93]"}`}>
-                  {formatTime(session.updated_at, locale)}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </aside>
+          <div className="flex-1 space-y-2 overflow-y-auto p-3">
+            {loading
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={`session-skeleton-${index}`}
+                    className={`rounded-xl border px-3 py-3 ${isDark ? "border-white/10" : "border-[#e2e8f2]"} ${isDark ? "skeleton-dark" : ""}`}
+                  >
+                    <Skeleton className="h-3 w-28 rounded-md" />
+                    <Skeleton className="mt-2 h-3 w-20 rounded-md" />
+                  </div>
+                ))
+              : sessions.map((session) => {
+              const isActive = session.id === activeSessionId;
+              return (
+                <button
+                  key={session.id}
+                  type="button"
+                  onClick={() => openSession(session.id)}
+                  className={`w-full rounded-xl border px-3 py-2.5 text-left ${
+                    isActive
+                      ? isDark
+                        ? "bg-[#15243b]"
+                        : "bg-[#eef3fb]"
+                      : isDark
+                        ? "border-white/10 hover:bg-white/5"
+                        : "border-[#e2e8f2] hover:bg-[#f5f8fd]"
+                  } ${isRTL ? "text-right" : "text-left"}`}
+                  style={
+                    isActive
+                      ? {
+                          borderColor: accentColor,
+                          boxShadow: isDark ? "0 0 0 1px rgba(255,255,255,0.04)" : "0 0 0 1px rgba(10,34,64,0.05)",
+                        }
+                      : undefined
+                  }
+                >
+                  <p className="truncate text-sm font-semibold">{session.title || ui.conversationFallback}</p>
+                  <p className={`mt-1 text-xs ${isDark ? "text-white/60" : "text-[#6b7a93]"}`}>
+                    {formatTime(session.updated_at, locale)}
+                  </p>
+                </button>
+              );
+              })}
+          </div>
+        </aside>
+      )}
 
-      {isSidebarOpen && (
+      {isHistoryVisible && isSidebarOpen && (
         <div
           className="absolute inset-0 z-40 bg-[#0A2240]/35 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
@@ -449,16 +573,22 @@ export function Chatbot() {
                 {ui.newConversation}
               </button>
               <div className="space-y-2">
-                {sessions.map((session) => (
-                  <button
-                    key={session.id}
-                    type="button"
-                    onClick={() => openSession(session.id)}
-                    className="w-full rounded-lg border p-2 text-left text-sm"
-                  >
-                    {session.title || ui.conversationFallback}
-                  </button>
-                ))}
+                {loading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <div key={`mobile-session-skeleton-${index}`} className={`${isDark ? "skeleton-dark" : ""}`}>
+                        <Skeleton className="h-10 w-full rounded-lg" />
+                      </div>
+                    ))
+                  : sessions.map((session) => (
+                      <button
+                        key={session.id}
+                        type="button"
+                        onClick={() => openSession(session.id)}
+                        className="w-full rounded-lg border p-2 text-left text-sm"
+                      >
+                        {session.title || ui.conversationFallback}
+                      </button>
+                    ))}
               </div>
             </div>
           </aside>
@@ -467,24 +597,40 @@ export function Chatbot() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header
-          className={`sticky top-0 z-20 border-b px-4 py-4 sm:px-6 ${
+          className={`sticky top-0 z-30 border-b px-4 py-3 sm:px-6 ${
             isDark ? "border-white/10 bg-[#0f172a]/95" : "border-[#e2e8f2] bg-[#f6f8fb]/95"
           }`}
         >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <button
                 type="button"
-                onClick={() => setIsSidebarOpen(true)}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg lg:hidden ${
+                onClick={handleHistoryMenuClick}
+                className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg lg:hidden ${
                   isDark ? "bg-white/10" : "bg-white"
                 }`}
               >
                 <Menu size={18} />
               </button>
-              <div>
-                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{ui.chatbotTitle}</h1>
-                <p className={`text-xs sm:text-sm ${isDark ? "text-white/60" : "text-[#6b7a93]"}`}>
+
+              <button
+                type="button"
+                onClick={toggleHistoryVisibility}
+                className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border lg:inline-flex ${
+                  isDark
+                    ? "border-white/15 bg-[#182235] text-white hover:bg-[#1e2b42]"
+                    : "border-[#d9e2ef] bg-white text-[#182540] hover:bg-[#eef3fb]"
+                }`}
+                aria-pressed={isHistoryVisible}
+                aria-label={isHistoryVisible ? ui.hideHistory : ui.showHistory}
+                title={isHistoryVisible ? ui.hideHistory : ui.showHistory}
+              >
+                <Menu size={18} />
+              </button>
+
+              <div className="min-w-0">
+                <h1 className="truncate text-lg font-semibold tracking-tight sm:text-2xl sm:whitespace-normal">{ui.chatbotTitle}</h1>
+                <p className={`truncate text-xs sm:text-sm sm:whitespace-normal ${isDark ? "text-white/60" : "text-[#6b7a93]"}`}>
                   {ui.connectSubtitle}
                 </p>
               </div>
@@ -493,6 +639,18 @@ export function Chatbot() {
         </header>
 
         <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8">
+          {!isHistoryVisible && (
+            <div
+              className={`mx-auto mb-4 w-full max-w-3xl rounded-xl border px-4 py-3 text-sm ${
+                isDark
+                  ? "border-white/15 bg-[#182235] text-white/85"
+                  : "border-[#d9e2ef] bg-white text-[#4c5f7c]"
+              }`}
+            >
+              {ui.historyHiddenHint}
+            </div>
+          )}
+
           {error && (
             <div
               className={`mx-auto mb-4 flex w-full max-w-3xl items-center gap-2 rounded-xl border p-4 text-sm ${
@@ -508,7 +666,17 @@ export function Chatbot() {
 
           <div className="mx-auto w-full max-w-3xl">
             {loading ? (
-              <PageLoader label={ui.loadingConversations} isDark={isDark} compact />
+              <div className={`space-y-4 ${isDark ? "skeleton-dark" : ""}`}>
+                <Skeleton className="h-8 w-56 rounded-lg" />
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={`chat-main-skeleton-${index}`}
+                    className={`flex ${index % 2 === 0 ? "justify-start" : "justify-end"}`}
+                  >
+                    <Skeleton className="h-16 w-[75%] rounded-2xl" />
+                  </div>
+                ))}
+              </div>
             ) : emptyState ? (
               <div className="space-y-4">
                 <h2 className="text-2xl font-semibold">{ui.emptyPromptTitle}</h2>
@@ -531,7 +699,7 @@ export function Chatbot() {
               <div className="space-y-4 pb-2">
                 {messages.map((message, index) => (
                   <div
-                    key={`${message.role}-${index}`}
+                    key={message.id || `${message.role}-${index}`}
                     className={`flex ${
                       message.role === "user"
                         ? isRTL
@@ -543,7 +711,7 @@ export function Chatbot() {
                     }`}
                   >
                     <div
-                      className="max-w-[85%] rounded-2xl border px-4 py-3 text-sm leading-relaxed sm:max-w-[75%]"
+                      className={`max-w-[85%] rounded-2xl border px-4 py-3 text-sm leading-relaxed sm:max-w-[75%] ${message.pending ? "opacity-85" : ""}`}
                       style={message.role === "user" ? userBubbleStyle : assistantBubbleStyle}
                     >
                       <div className="whitespace-pre-wrap" style={{ overflowWrap: "anywhere" }}>

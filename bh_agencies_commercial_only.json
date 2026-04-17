@@ -1,0 +1,3136 @@
+[
+  {
+    "name": "AHMED TLILI",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 184,
+    "map_y": 113,
+    "keywords": [
+      "ahmed tlili",
+      "tunis",
+      "ahmed",
+      "tlili",
+      "angle",
+      "rue",
+      "ibn",
+      "khaldoun",
+      "1001"
+    ],
+    "address": "20 Angle Rue Ahmed Tlili et Avenue Ibn Khaldoun - 1001 - Tunis Médina",
+    "contact": "71,127,273",
+    "email": "a.ahmedtlili@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ALAIN SAVARY",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 116,
+    "keywords": [
+      "alain savary",
+      "tunis",
+      "alain",
+      "savary",
+      "angle",
+      "voie",
+      "1003",
+      "cite",
+      "khadirection"
+    ],
+    "address": "10 Angle Avenue Alain Savary et Voie X2 Tunis - 1003 - Cité El KhaDIRECTION REGIONALEa",
+    "contact": "71,127,272",
+    "email": "a.alainsavary@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ARIANA CITE LES ROSE",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 184,
+    "map_y": 112,
+    "keywords": [
+      "ariana cite les rose",
+      "ariana",
+      "cite",
+      "rose",
+      "mohamed",
+      "salah",
+      "belhaj",
+      "roses",
+      "2080"
+    ],
+    "address": "4 Avenue Mohamed Salah Belhaj- Cité les Roses 2080 - Ariana",
+    "contact": "71,127,205",
+    "email": "ag.ariana@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ARIANA VILLE",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 184,
+    "map_y": 112,
+    "keywords": [
+      "ariana ville",
+      "ariana",
+      "habib",
+      "bourguiba",
+      "2080"
+    ],
+    "address": "02 Avenue Habib Bourguiba - 2080 - Ariana",
+    "contact": "71,127,223",
+    "email": "ag.arianaville@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "AVENUE DE CARTHAGE",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 180,
+    "map_y": 113,
+    "keywords": [
+      "avenue de carthage",
+      "tunis",
+      "carthage",
+      "1001",
+      "medina"
+    ],
+    "address": "23 Avenue de Carthage - 1001 - Tunis Médina",
+    "contact": "71,127,207",
+    "email": "ag.avenuecarthage@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "AVENUE DE LONDRES",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 113,
+    "keywords": [
+      "avenue de londres",
+      "tunis",
+      "londres",
+      "londirection",
+      "regionalees",
+      "1006",
+      "bab",
+      "souika"
+    ],
+    "address": "70 Avenue de LonDIRECTION REGIONALEes - Tunis 1006 - Bab Souika",
+    "contact": "71,127,214",
+    "email": "ag.avedelondres@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BEB SAADOUN",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 184,
+    "map_y": 110,
+    "keywords": [
+      "beb saadoun",
+      "tunis",
+      "beb",
+      "saadoun",
+      "boulvard",
+      "avril",
+      "1006",
+      "bab"
+    ],
+    "address": "12 Boulvard 9 Avril 1006 Tunis- Bab Saadoun",
+    "contact": "71,127,209",
+    "email": "ag.babsaadoun@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BEN AROUS",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 188,
+    "map_y": 114,
+    "keywords": [
+      "ben arous",
+      "ben",
+      "arous",
+      "angle",
+      "france",
+      "rue",
+      "alger",
+      "2300"
+    ],
+    "address": "02 Angle Avenue de France et Rue d'Alger - 2300- Ben Arous",
+    "contact": "71,127,203",
+    "email": "ag.benarous@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BEN GUERDANE",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 115,
+    "keywords": [
+      "ben guerdane",
+      "tunis",
+      "ben",
+      "guerdane",
+      "detunis",
+      "4103"
+    ],
+    "address": "12 Avenue deTunis - 4103 - Ben Guerdane",
+    "contact": "71,127,366",
+    "email": "ag.benguerdane@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BIR KASSAA",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 189,
+    "map_y": 118,
+    "keywords": [
+      "bir kassaa",
+      "ben arous",
+      "bir",
+      "kassaa",
+      "rue",
+      "lin",
+      "bab",
+      "tounes",
+      "2059"
+    ],
+    "address": "12 Rue du lin Bab Tounes -2059 - Bir El Kassaa",
+    "contact": "71,127,246",
+    "email": "ag.birelkassaa@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BOUMHAL",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 188,
+    "map_y": 118,
+    "keywords": [
+      "boumhal",
+      "ben arous",
+      "environnement",
+      "2097"
+    ],
+    "address": "48 Avenue de l'environnement - 2097 Boumhal",
+    "contact": "71,127,390",
+    "email": "ag.boumhel@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Bureau BH BANK La Kasbah",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 113,
+    "keywords": [
+      "bureau bh bank la kasbah",
+      "tunis",
+      "kasbah",
+      "rue",
+      "lie",
+      "avril"
+    ],
+    "address": "Rue de la Kasbah ( Lié à l'agence 9 Avril)",
+    "contact": "71,127,486",
+    "email": "",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CENTRE D'AFFAIRES HEDI NOUIRA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 118,
+    "keywords": [
+      "centre d affaires hedi nouira",
+      "tunis",
+      "hedi",
+      "nouira",
+      "rue",
+      "1002"
+    ],
+    "address": "29 Rue Hedi Nouira Tunis 1002 -Tunis",
+    "contact": "71,126,611",
+    "email": "succursale.commercialekp@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Centre d'Affaires Tunis Sud",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 189,
+    "map_y": 114,
+    "keywords": [
+      "centre d affaires tunis sud",
+      "tunis",
+      "rue",
+      "lin",
+      "bir",
+      "kassaa"
+    ],
+    "address": "Rue du Lin Bir El Kassaa",
+    "contact": "71,126,086",
+    "email": "mohamed.selimbouazizi@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CENTRE URBAIN TUNIS NORD",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 183,
+    "map_y": 117,
+    "keywords": [
+      "centre urbain tunis nord",
+      "tunis",
+      "urbain",
+      "immeuble",
+      "salim",
+      "lotiss",
+      "afh",
+      "bc5",
+      "2035",
+      "centre urbain nord",
+      "bh assurance"
+    ],
+    "address": "45 Immeuble SALIM Lotiss AFH BC5 - Centre Urbain Nord Tunis - 2035 - Cité El Khadhra",
+    "contact": "71,127,327",
+    "email": "a.centreurbainnord@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CHARGUIA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 187,
+    "map_y": 113,
+    "keywords": [
+      "charguia",
+      "tunis",
+      "rue",
+      "8600",
+      "2035",
+      "cite",
+      "khadhra"
+    ],
+    "address": "42 Rue 8600 Z.I Charguia 1-Tunis 2035 - Cité El Khadhra",
+    "contact": "71,127,337",
+    "email": "ag.charguia@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CHARGUIA II",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 113,
+    "keywords": [
+      "charguia ii",
+      "tunis",
+      "charguia",
+      "rue",
+      "industries",
+      "artisanales",
+      "2035"
+    ],
+    "address": "08 Rue des industries artisanales - 2035 La Charguia II",
+    "contact": "71,127,395",
+    "email": "ag.charguia2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CHEDLY KALLALA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 183,
+    "map_y": 115,
+    "keywords": [
+      "chedly kallala",
+      "tunis",
+      "chedly",
+      "kallala",
+      "angle",
+      "kallela",
+      "rue",
+      "oman"
+    ],
+    "address": "Angle de l'avenue Chedly Kallela et de la rue Oman",
+    "contact": "71,127,471",
+    "email": "ag.chedlykallala@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CITE EZZOUHOUR",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 183,
+    "map_y": 116,
+    "keywords": [
+      "cite ezzouhour",
+      "tunis",
+      "cite",
+      "ezzouhour",
+      "aoa"
+    ],
+    "address": "14 Avenue 13 Aoà»t - cité Ezzouhour",
+    "contact": "71,127,430",
+    "email": "ag.ezzouhour@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "DJEBEL EL OUEST",
+    "region": "Grand Tunis",
+    "governorate": "manouba",
+    "map_x": 184,
+    "map_y": 116,
+    "keywords": [
+      "djebel el ouest",
+      "manouba",
+      "djebel",
+      "tahar",
+      "ayari",
+      "zaghouan"
+    ],
+    "address": "12 Avenue Tahar Ayari, DJEBEL EL OUEST - ZAGHOUAN.",
+    "contact": "71,127,456",
+    "email": "ag.jebeleloust@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL GHAZELA",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 181,
+    "map_y": 110,
+    "keywords": [
+      "el ghazela",
+      "ariana",
+      "ghazela",
+      "angle",
+      "rues",
+      "hasdirection",
+      "regionaleubal",
+      "ammar",
+      "dakhlaoui",
+      "cite"
+    ],
+    "address": "14 angle rues hasDIRECTION REGIONALEubal et Ammar DAKHLAOUI -Cité El Ghazela",
+    "contact": "71,127,424",
+    "email": "ag.elghazala@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL M'GHIRA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 115,
+    "keywords": [
+      "el m ghira",
+      "tunis",
+      "ghira",
+      "vie",
+      "zone",
+      "ind",
+      "2082",
+      "fouchana"
+    ],
+    "address": "12 Centre de vie, Zone Ind M'ghira 3 -2082 - Fouchana",
+    "contact": "71,127,324",
+    "email": "ag.elmghira@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL MOUROUJ",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 186,
+    "map_y": 117,
+    "keywords": [
+      "el mourouj",
+      "ben arous",
+      "mourouj",
+      "habib",
+      "thameur",
+      "imm",
+      "mahou",
+      "2308"
+    ],
+    "address": "02 Avenue Habib Thameur Imm-Mahou 2308 - El Mourouj",
+    "contact": "71,127,331",
+    "email": "ag.elmourouj@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL MOUROUJ 5",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 186,
+    "map_y": 118,
+    "keywords": [
+      "el mourouj 5",
+      "ben arous",
+      "mourouj",
+      "janvier",
+      "2308"
+    ],
+    "address": "08 Avenue 14 Janvier - Mourouj V 2308 - El Mourouj",
+    "contact": "71,127,325",
+    "email": "ag.elmourouj5@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL YASMINETTE",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 186,
+    "map_y": 118,
+    "keywords": [
+      "el yasminette",
+      "ben arous",
+      "yasminette",
+      "angle",
+      "rue",
+      "ibn",
+      "roched",
+      "mornag",
+      "ben",
+      "arous"
+    ],
+    "address": "02 Angle de la Rue Ibn Roched et la Route de Mornag, El Yasminette, BEN AROUS",
+    "contact": "71,127,438",
+    "email": "ag.yasminett@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ENNASR 1",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 185,
+    "map_y": 110,
+    "keywords": [
+      "ennasr 1",
+      "ariana",
+      "ennasr",
+      "ere",
+      "nlle",
+      "residence",
+      "salambo",
+      "2100"
+    ],
+    "address": "12 Avenue de l'Ere Nlle Résidence Salambo 2100 - L'Ariana",
+    "contact": "71,127,275",
+    "email": "ag.ennacer@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ENNASR 2",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 184,
+    "map_y": 113,
+    "keywords": [
+      "ennasr 2",
+      "ariana",
+      "ennasr",
+      "residence",
+      "tej",
+      "immeuble",
+      "etturki",
+      "ennasser"
+    ],
+    "address": "18 Résidence TEJ, Immeuble B, Route Etturki, Ennasser II, Ariana",
+    "contact": "71,127,452",
+    "email": "ag.ennasr2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EZZAHRA",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 186,
+    "map_y": 118,
+    "keywords": [
+      "ezzahra",
+      "ben arous",
+      "angle",
+      "habib",
+      "bourguiba",
+      "rue",
+      "juillet",
+      "2034"
+    ],
+    "address": "08 Angle Avenue Habib Bourguiba et rue 25 juillet -2034 - Ezzahra",
+    "contact": "71,127,252",
+    "email": "ag.ezzahra@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "HABIB BOURGUIBA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 184,
+    "map_y": 115,
+    "keywords": [
+      "habib bourguiba",
+      "tunis",
+      "habib",
+      "bourguiba",
+      "angle",
+      "paris",
+      "1001",
+      "medina",
+      "tunis centre",
+      "tunis centre habib bourguiba"
+    ],
+    "address": "05 Angle Avenue Habib Bourguiba et avenue de Paris 1001 - Tunis Médina",
+    "contact": "71,127,230",
+    "email": "succursale2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "HAMMAM CHOTT",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 186,
+    "map_y": 117,
+    "keywords": [
+      "hammam chott",
+      "ben arous",
+      "hammam",
+      "chott",
+      "residence",
+      "imen",
+      "2310"
+    ],
+    "address": "20 Résidence Imen - 2310 - Hammam Chott",
+    "contact": "71,127,271",
+    "email": "ag.hammamchatt@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "HAMMAM SOUSSE",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 113,
+    "keywords": [
+      "hammam sousse",
+      "tunis",
+      "hammam",
+      "sousse",
+      "gp1",
+      "4011"
+    ],
+    "address": "22 Route de Tunis GP1 - 4011 - H. Sousse",
+    "contact": "71,127,302",
+    "email": "ag.hammamsousse@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "HAMMAM-LIF",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 185,
+    "map_y": 117,
+    "keywords": [
+      "hammam lif",
+      "ben arous",
+      "hammam",
+      "lif",
+      "republique",
+      "2050"
+    ],
+    "address": "14 Avenue de la République -2050 - Hammam-Lif",
+    "contact": "71,127,224",
+    "email": "a.hammamlif@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "HEDI CHAKER",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 184,
+    "map_y": 115,
+    "keywords": [
+      "hedi chaker",
+      "tunis",
+      "hedi",
+      "chaker",
+      "1002",
+      "belvedere"
+    ],
+    "address": "85 Avenue Hédi Chaker -1002 - Tunis Bélvedére",
+    "contact": "71,127,308",
+    "email": "ag.diplomat@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "INTERNATIONAL",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 118,
+    "keywords": [
+      "international",
+      "tunis",
+      "espace",
+      "immeuble",
+      "montplaisir",
+      "1002",
+      "belvedere"
+    ],
+    "address": "11 Espace Tunis, Immeuble K- Montplaisir -1002 - Tunis Bélvedére",
+    "contact": "71,127,244",
+    "email": "ag.internationale@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "JARDINS D'EL MENZAH",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 182,
+    "map_y": 114,
+    "keywords": [
+      "jardins d el menzah",
+      "ariana",
+      "jardins",
+      "menzah",
+      "jasmins",
+      "res",
+      "marajene",
+      "2094",
+      "mnihla"
+    ],
+    "address": "10 Avenue Les Jasmins, Res Marajene - 2094- Mnihla",
+    "contact": "71,127,313",
+    "email": "ag.jardins-elmenzah@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "JARDINS DE CARTHAGE",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 187,
+    "map_y": 114,
+    "keywords": [
+      "jardins de carthage",
+      "tunis",
+      "jardins",
+      "carthage",
+      "residence",
+      "horizons",
+      "lot",
+      "ehc"
+    ],
+    "address": "08 Résidence \"Horizons de Carthage\" Lot EHC - Les Jardins de Carthage",
+    "contact": "71,127,426",
+    "email": "ag.jardincarthage@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KHAZNADAR",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 187,
+    "map_y": 113,
+    "keywords": [
+      "khaznadar",
+      "tunis",
+      "independance",
+      "immeuble",
+      "star",
+      "2000",
+      "bardo"
+    ],
+    "address": "08 Avenue de L'independance Immeuble Star - 2000 - Le Bardo",
+    "contact": "71,127,341",
+    "email": "ag.khaznadar@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KHEIREDINE",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 116,
+    "keywords": [
+      "kheiredine",
+      "tunis",
+      "117",
+      "habib",
+      "bourguiba",
+      "2015",
+      "kram"
+    ],
+    "address": "117 Avenue Habib Bourguiba - 2015- Le Kram",
+    "contact": "71,127,245",
+    "email": "ag.kheireddine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "L'AOUINA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 115,
+    "keywords": [
+      "l aouina",
+      "tunis",
+      "aouina",
+      "sidence",
+      "jannet",
+      "rve",
+      "544",
+      "2045",
+      "goulette"
+    ],
+    "address": "02 RÃ©sidence Jannet II Route RVE 544 -2045 - La Goulette",
+    "contact": "",
+    "email": "",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LA MANOUBA",
+    "region": "Grand Tunis",
+    "governorate": "manouba",
+    "map_x": 183,
+    "map_y": 117,
+    "keywords": [
+      "la manouba",
+      "manouba",
+      "habib",
+      "bourguiba",
+      "2010"
+    ],
+    "address": "50 Avenue Habib Bourguiba - 2010- La Manouba",
+    "contact": "71,127,290",
+    "email": "ag.manouba@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LA MARSA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 112,
+    "keywords": [
+      "la marsa",
+      "tunis",
+      "marsa",
+      "habib",
+      "bourguiba",
+      "2070"
+    ],
+    "address": "08 Avenue Habib Bourguiba La Marsa 2070 - La Marsa",
+    "contact": "71,127,227",
+    "email": "ag.marsa@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LA SOUKRA",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 185,
+    "map_y": 109,
+    "keywords": [
+      "la soukra",
+      "ariana",
+      "soukra",
+      "residence",
+      "city"
+    ],
+    "address": "22 Avenue de l'U.M.A. Résidence Soukra City",
+    "contact": "71,127,422",
+    "email": "ag.soukra@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LE BARDO",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 113,
+    "keywords": [
+      "le bardo",
+      "tunis",
+      "bardo",
+      "habib",
+      "bougatfa",
+      "2000"
+    ],
+    "address": "60 Avenue Habib Bougatfa - Le Bardo - 2000 - Tunis",
+    "contact": "71,127,343",
+    "email": "a.lebardo@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LE KRAM",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 187,
+    "map_y": 113,
+    "keywords": [
+      "le kram",
+      "tunis",
+      "kram",
+      "155",
+      "bis",
+      "habib",
+      "bourguiba",
+      "2015"
+    ],
+    "address": "155 Bis Avenue Habib Bourguiba Le Kram 2015 - Tunis",
+    "contact": "71,127,267",
+    "email": "ag.lekram@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LES BERGES DU LAC 2",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 183,
+    "map_y": 112,
+    "keywords": [
+      "les berges du lac 2",
+      "tunis",
+      "berges",
+      "lac",
+      "immeuble",
+      "access",
+      "angle",
+      "monnaie",
+      "rue",
+      "iles",
+      "canaries",
+      "berges du lac 2",
+      "lac 2"
+    ],
+    "address": "06 Immeuble ACCESS - Angle de l'avenue de la Monnaie et rue iles des Canaries - Les Berges du Lac 2",
+    "contact": "71,127,428",
+    "email": "ag.lac2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "LES BERGES DU LAC I",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 115,
+    "keywords": [
+      "les berges du lac i",
+      "tunis",
+      "berges",
+      "lac",
+      "residence",
+      "essaad",
+      "rue",
+      "leman",
+      "1035"
+    ],
+    "address": "05 Residence Essaad, rue Lac Leman -1035 Les Berges du Lac",
+    "contact": "71,127,322",
+    "email": "ag.lac1@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "M'HAMDIA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 182,
+    "map_y": 114,
+    "keywords": [
+      "m hamdia",
+      "tunis",
+      "hamdia",
+      "gp3",
+      "center",
+      "1145"
+    ],
+    "address": "N°20 GP3 M'hamdia Center 1145 - M'hamdia",
+    "contact": "",
+    "email": "",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MANAR II",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 117,
+    "keywords": [
+      "manar ii",
+      "tunis",
+      "manar",
+      "rue",
+      "tahar",
+      "ben",
+      "ammar",
+      "2092"
+    ],
+    "address": "5, Rue Tahar Ben ammar - 2092 - Manar II",
+    "contact": "71,127,388",
+    "email": "ag.manar2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MANZAH 5",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 185,
+    "map_y": 113,
+    "keywords": [
+      "manzah 5",
+      "ariana",
+      "manzah",
+      "liberte",
+      "kssar",
+      "tej",
+      "menzah"
+    ],
+    "address": "08 Avenue de la Liberté, Kssar Tej, EL Menzah 5, Ariana.",
+    "contact": "71,127,446",
+    "email": "agencecarnoy@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Marsa Ville",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 185,
+    "map_y": 116,
+    "keywords": [
+      "marsa ville",
+      "tunis",
+      "marsa",
+      "taieb",
+      "mhiri"
+    ],
+    "address": "24 Avenue Taieb Mhiri, la Marsa",
+    "contact": "71,127,476",
+    "email": "ag.marsaville@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MEGRINE",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 186,
+    "map_y": 118,
+    "keywords": [
+      "megrine",
+      "ben arous",
+      "habib",
+      "bourguiba",
+      "2033"
+    ],
+    "address": "02 Avenue Habib Bourguiba - 2033 - Mégrine",
+    "contact": "71,127,222",
+    "email": "ag.megrine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MENZAH 6",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 183,
+    "map_y": 113,
+    "keywords": [
+      "menzah 6",
+      "ariana",
+      "menzah",
+      "rue",
+      "cheikh",
+      "med",
+      "zaghouani",
+      "1091"
+    ],
+    "address": "3 rue Cheikh Med Zaghouani - 1091 - El Menzah",
+    "contact": "71,127,333",
+    "email": "ag.elmenzahv@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MENZAH 8",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 184,
+    "map_y": 113,
+    "keywords": [
+      "menzah 8",
+      "ariana",
+      "menzah",
+      "angle",
+      "mustapha",
+      "hjeij",
+      "rue",
+      "kehna"
+    ],
+    "address": "22 Angle de l'avenue Mustapha Hjeij et de la Rue kehna, EL MENZAH 8, ARIANA",
+    "contact": "71,127,444",
+    "email": "ag.elmenzah8@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MENZAH IV",
+    "region": "Grand Tunis",
+    "governorate": "ariana",
+    "map_x": 185,
+    "map_y": 112,
+    "keywords": [
+      "menzah iv",
+      "ariana",
+      "menzah",
+      "angle",
+      "rue",
+      "ibn",
+      "syrine",
+      "habib",
+      "bourguiba",
+      "1004"
+    ],
+    "address": "2, Angle de la rue Ibn Syrine et avenue Habib Bourguiba 1004 Menzah 4",
+    "contact": "71,127,386",
+    "email": "ag.menzah4@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MUTUELLE VILLE",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 115,
+    "keywords": [
+      "mutuelle ville",
+      "tunis",
+      "mutuelle",
+      "angle",
+      "jugurta",
+      "rue",
+      "sanhaja"
+    ],
+    "address": "12 Angle avenue Jugurta et rue Sanhaja, Mutuelle ville Tunis",
+    "contact": "71,127,442",
+    "email": "ag.mutuelleville@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "NOUVELLE MEDINA",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 184,
+    "map_y": 119,
+    "keywords": [
+      "nouvelle medina",
+      "ben arous",
+      "nouvelle",
+      "medina",
+      "304",
+      "faycal",
+      "ibn",
+      "abdelaziz",
+      "2063",
+      "nlle"
+    ],
+    "address": "304 Avenue Faycal Ibn Abdelaziz - 2063 - Nlle Médina",
+    "contact": "71,127,225",
+    "email": "ag.nouvellemedina@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "RADES",
+    "region": "Grand Tunis",
+    "governorate": "ben arous",
+    "map_x": 183,
+    "map_y": 119,
+    "keywords": [
+      "rades",
+      "ben arous",
+      "cite",
+      "sportive",
+      "2040"
+    ],
+    "address": "NÂ°5 Radés Cité Sportive 2040 - Radés",
+    "contact": "71,127,250",
+    "email": "ag.rades@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX SAKIT EZZIT",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 184,
+    "map_y": 113,
+    "keywords": [
+      "sfax sakit ezzit",
+      "tunis",
+      "sfax",
+      "sakit",
+      "ezzit",
+      "essedirection",
+      "regionalea",
+      "3014",
+      "sakiet",
+      "ezziet"
+    ],
+    "address": "48 Route Tunis Km 8 Centre EsseDIRECTION REGIONALEa -3014 - Sfax Sakiet Ezziet",
+    "contact": "71,127,293",
+    "email": "a.sekietezzit@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SIDI DAOUED",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 182,
+    "map_y": 113,
+    "keywords": [
+      "sidi daoued",
+      "tunis",
+      "sidi",
+      "daoued",
+      "marsa",
+      "2046"
+    ],
+    "address": "20 Route de La Marsa - 2046- Sidi Daoued",
+    "contact": "71,127,356",
+    "email": "ag.sididaoued@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SIDI HCIN SIJOUMI",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 184,
+    "map_y": 116,
+    "keywords": [
+      "sidi hcin sijoumi",
+      "tunis",
+      "sidi",
+      "hcin",
+      "sijoumi",
+      "113",
+      "rue",
+      "42800",
+      "attar",
+      "1095"
+    ],
+    "address": "113 Rue 42800 Route El Attar 1095 - Sidi H Sijoumi",
+    "contact": "71,127,309",
+    "email": "ag.sidihssinesijoumi@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SUCCURSALE KHEIREDDINE PACHA",
+    "region": "Grand Tunis",
+    "governorate": "tunis",
+    "map_x": 186,
+    "map_y": 115,
+    "keywords": [
+      "succursale kheireddine pacha",
+      "tunis",
+      "kheireddine",
+      "pacha",
+      "khereddine",
+      "belvedere",
+      "1002",
+      "kheireddine pacha"
+    ],
+    "address": "21 Avenue Khereddine Pacha -Tunis Bélvedére -1002",
+    "contact": "71,126,722",
+    "email": "succursale1@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "AOUSJA",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 173,
+    "map_y": 91,
+    "keywords": [
+      "aousja",
+      "bizerte",
+      "environnement",
+      "7014",
+      "ghar",
+      "melh"
+    ],
+    "address": "12 Avenue de L'environnement 7014 - Ghar El Melh",
+    "contact": "71,127,307",
+    "email": "ag.aousja@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BEJA",
+    "region": "Cap Bon & Nord",
+    "governorate": "beja",
+    "map_x": 152,
+    "map_y": 120,
+    "keywords": [
+      "beja",
+      "angle",
+      "habib",
+      "bourguiba",
+      "rue",
+      "tarek",
+      "ibn",
+      "zied",
+      "9000"
+    ],
+    "address": "20 Angle Avenue Habib Bourguiba rue Tarek Ibn Zied - 9000 - Beja",
+    "contact": "71,127,289",
+    "email": "ag.beja@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BENI KHALLED",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 204,
+    "map_y": 135,
+    "keywords": [
+      "beni khalled",
+      "nabeul",
+      "beni",
+      "khalled"
+    ],
+    "address": "BENI KHALLED NABEUL",
+    "contact": "",
+    "email": "",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BIZERTE ERRAWABI",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 172,
+    "map_y": 91,
+    "keywords": [
+      "bizerte errawabi",
+      "bizerte",
+      "errawabi",
+      "octobre",
+      "cite",
+      "rawebi",
+      "7000",
+      "bizerte rawebi"
+    ],
+    "address": "16 Avenue 15 Octobre Cité Rawebi - 7000 - Bizerte Nord",
+    "contact": "71,127,335",
+    "email": "a.rawebi@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BIZERTE IBN KHALDOUN",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 175,
+    "map_y": 88,
+    "keywords": [
+      "bizerte ibn khaldoun",
+      "bizerte",
+      "ibn",
+      "khaldoun",
+      "angle",
+      "rue",
+      "alger",
+      "espagne",
+      "7000"
+    ],
+    "address": "08 Angle Rue d'Alger et rue d'Espagne 7000 - Bizerte Nord",
+    "contact": "71,127,315",
+    "email": "ag.bizerteibnkhaldoun@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BIZERTE THAALBI",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 175,
+    "map_y": 92,
+    "keywords": [
+      "bizerte thaalbi",
+      "bizerte",
+      "thaalbi",
+      "angle",
+      "habib",
+      "bourguiba",
+      "rue",
+      "7000"
+    ],
+    "address": "62 Angle Avenue Habib Bourguiba Et rue Thaalbi -7000 - Bizerte Nord",
+    "contact": "71,127,347",
+    "email": "ag.bizertethaalbi@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BOUFICHA",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 202,
+    "map_y": 133,
+    "keywords": [
+      "bouficha",
+      "nabeul",
+      "environnement",
+      "4010"
+    ],
+    "address": "12 Avenue de l'environnement - 4010- Bouficha",
+    "contact": "71,127,235",
+    "email": "ag.bouficha@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BOUSALEM",
+    "region": "Cap Bon & Nord",
+    "governorate": "beja",
+    "map_x": 153,
+    "map_y": 116,
+    "keywords": [
+      "bousalem",
+      "beja",
+      "mars",
+      "1934",
+      "8170",
+      "boussalem"
+    ],
+    "address": "08 Avenue. 20 Mars 1934 - 8170 - Boussalem",
+    "contact": "71,127,241",
+    "email": "a.boussalem@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Centre d'Affaires Bizerte",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 174,
+    "map_y": 89,
+    "keywords": [
+      "centre d affaires bizerte",
+      "bizerte",
+      "angle",
+      "rue",
+      "espagne",
+      "farhat",
+      "hached"
+    ],
+    "address": "Angle de la rue d'Espagne et de l'Avenue Farhat Hached",
+    "contact": "31,261,007",
+    "email": "thouraya.kamoun@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "DAR CHAABANE",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 203,
+    "map_y": 134,
+    "keywords": [
+      "dar chaabane",
+      "nabeul",
+      "dar",
+      "chaabane",
+      "boulevard",
+      "environnement",
+      "plage",
+      "8075"
+    ],
+    "address": "40 Boulevard de l'environnement Dar Chaabane Plage 8075 - Dar Chaabane El Fehri",
+    "contact": "71,127,316",
+    "email": "ag.darchaaben@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL KEF",
+    "region": "Cap Bon & Nord",
+    "governorate": "kef",
+    "map_x": 135,
+    "map_y": 149,
+    "keywords": [
+      "el kef",
+      "kef",
+      "boulevard",
+      "mongi",
+      "slim",
+      "7100"
+    ],
+    "address": "08 Boulevard Mongi Slim -7100 - Le Kef",
+    "contact": "71,127,231",
+    "email": "ag.lekef@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ETTADHAMEN",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 176,
+    "map_y": 94,
+    "keywords": [
+      "ettadhamen",
+      "bizerte",
+      "cite",
+      "intilaka",
+      "2094",
+      "nihla"
+    ],
+    "address": "12 Route de Bizerte km 3,5- Cité El Intilaka 2094 -M'nihla",
+    "contact": "71,127,247",
+    "email": "a.ettadhamen@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "GROMBELIA",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 203,
+    "map_y": 134,
+    "keywords": [
+      "grombelia",
+      "nabeul",
+      "habib",
+      "bourguiba",
+      "8030",
+      "grombalia"
+    ],
+    "address": "08 Avenue Habib Bourguiba - 8030- Grombalia",
+    "contact": "71,127,278",
+    "email": "ag.grombalia@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "HAMMAMET",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 201,
+    "map_y": 134,
+    "keywords": [
+      "hammamet",
+      "nabeul",
+      "habib",
+      "bourguiba",
+      "8050"
+    ],
+    "address": "10 Avenue Habib Bourguiba 8050 - Hammamet",
+    "contact": "71,127,243",
+    "email": "ag.hammamet@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "JENDOUBA",
+    "region": "Cap Bon & Nord",
+    "governorate": "jendouba",
+    "map_x": 138,
+    "map_y": 134,
+    "keywords": [
+      "jendouba",
+      "hedi",
+      "chaker",
+      "8100"
+    ],
+    "address": "61 Avenue Hédi Chaker -8100- Jendouba",
+    "contact": "71,127,360",
+    "email": "ag.jendouba@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KELIBIA",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 203,
+    "map_y": 134,
+    "keywords": [
+      "kelibia",
+      "nabeul",
+      "martyrs",
+      "8090"
+    ],
+    "address": "Avenue des Martyrs - 8090 - Kélibia",
+    "contact": "71,127,233",
+    "email": "ag.kelibia@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KORBA",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 206,
+    "map_y": 130,
+    "keywords": [
+      "korba",
+      "nabeul",
+      "habib",
+      "bourguiba",
+      "8070"
+    ],
+    "address": "18 Avenue Habib Bourguiba - 8070- Korba",
+    "contact": "71,127,339",
+    "email": "a.korba@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "M'NIHLA",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 173,
+    "map_y": 91,
+    "keywords": [
+      "m nihla",
+      "bizerte",
+      "nihla"
+    ],
+    "address": "06 route de bizerte km 8- M'nihla",
+    "contact": "71,127,420",
+    "email": "ag.mnihla@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MATEUR",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 177,
+    "map_y": 91,
+    "keywords": [
+      "mateur",
+      "bizerte",
+      "taieb",
+      "mhiri",
+      "7030"
+    ],
+    "address": "18 Avenue Taieb Mhiri 7030 - Mateur",
+    "contact": "71,127,306",
+    "email": "ag.mateur@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MEDJEZ ELBAB",
+    "region": "Cap Bon & Nord",
+    "governorate": "beja",
+    "map_x": 152,
+    "map_y": 117,
+    "keywords": [
+      "medjez elbab",
+      "beja",
+      "medjez",
+      "elbab",
+      "habib",
+      "bourguiba",
+      "9070",
+      "mjez",
+      "bab"
+    ],
+    "address": "22 Avenue Habib Bourguiba - 9070 - Mjez El Bab",
+    "contact": "71,127,249",
+    "email": "ag.mejazelbab@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MENZEL ABDERRAHMEN",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 176,
+    "map_y": 87,
+    "keywords": [
+      "menzel abderrahmen",
+      "bizerte",
+      "menzel",
+      "abderrahmen",
+      "habib",
+      "bourguiba",
+      "manzel",
+      "jemil",
+      "7035",
+      "jmil"
+    ],
+    "address": "07 Avenue Habib Bourguiba- Route Manzel Jemil 7035 - Menzel Jmil",
+    "contact": "71,127,345",
+    "email": "a.menzelabderrahmen@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MENZEL BOURGUIBA",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 177,
+    "map_y": 87,
+    "keywords": [
+      "menzel bourguiba",
+      "bizerte",
+      "menzel",
+      "bourguiba",
+      "independance",
+      "7050"
+    ],
+    "address": "05 Avenue de l'independance 7050 - Menzel Bourguiba",
+    "contact": "71,127,268",
+    "email": "ag.menzelbourguiba@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MENZEL TEMIME",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 205,
+    "map_y": 133,
+    "keywords": [
+      "menzel temime",
+      "nabeul",
+      "menzel",
+      "temime",
+      "environnement",
+      "8080"
+    ],
+    "address": "06 Avenue de l'environnement - 8080 - Menzel Temime",
+    "contact": "71,127,326",
+    "email": "ag.menzeltemime@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MREZGA",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 203,
+    "map_y": 132,
+    "keywords": [
+      "mrezga",
+      "nabeul",
+      "residence",
+      "agoramis",
+      "8050"
+    ],
+    "address": "02 Résidence AGORAMIS - 8050 Mrezga",
+    "contact": "71,127,407",
+    "email": "ag.mrazga@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "NABEUL",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 205,
+    "map_y": 138,
+    "keywords": [
+      "nabeul",
+      "habib",
+      "bourguiba",
+      "8000"
+    ],
+    "address": "30 Avenue Habib Bourguiba - 8000- Nabeul",
+    "contact": "71,127,277",
+    "email": "ag.nabeul@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "NEFZA",
+    "region": "Cap Bon & Nord",
+    "governorate": "beja",
+    "map_x": 152,
+    "map_y": 121,
+    "keywords": [
+      "nefza",
+      "beja",
+      "habib",
+      "bourguiba"
+    ],
+    "address": "06 Avenue Habib Bourguiba, NEFZA, BEJA.",
+    "contact": "71,127,450",
+    "email": "ag.nefza@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "RAFRAF",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 178,
+    "map_y": 88,
+    "keywords": [
+      "rafraf",
+      "bizerte",
+      "place",
+      "rmila",
+      "7015",
+      "ras",
+      "jbel"
+    ],
+    "address": "14 Place Rmila - Rafraf 7015 - Ras Jbel",
+    "contact": "71,127,305",
+    "email": "ag.rafraf@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "RAS JEBEL",
+    "region": "Cap Bon & Nord",
+    "governorate": "bizerte",
+    "map_x": 175,
+    "map_y": 92,
+    "keywords": [
+      "ras jebel",
+      "bizerte",
+      "ras",
+      "jebel",
+      "rue",
+      "hassen",
+      "belkhouja",
+      "7070"
+    ],
+    "address": "12 Rue Hassen Belkhouja -7070- Ras Jebel",
+    "contact": "71,127,354",
+    "email": "ag.rasjebel@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX Cdt BEJAOUI",
+    "region": "Cap Bon & Nord",
+    "governorate": "beja",
+    "map_x": 153,
+    "map_y": 120,
+    "keywords": [
+      "sfax cdt bejaoui",
+      "beja",
+      "sfax",
+      "cdt",
+      "bejaoui",
+      "rue",
+      "commandantbejaoui",
+      "3000"
+    ],
+    "address": "10 Rue CommandantBejaoui -3000- Sfax Ville",
+    "contact": "71,127,215",
+    "email": "ag.sfaxbejaoui@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SILIANA",
+    "region": "Cap Bon & Nord",
+    "governorate": "siliana",
+    "map_x": 159,
+    "map_y": 153,
+    "keywords": [
+      "siliana",
+      "janvier",
+      "1952",
+      "6100"
+    ],
+    "address": "02 Avenue 18 Janvier 1952- 6100 - Siliana",
+    "contact": "71,127,298",
+    "email": "ag.siliana@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE BEJAOUI",
+    "region": "Cap Bon & Nord",
+    "governorate": "beja",
+    "map_x": 153,
+    "map_y": 120,
+    "keywords": [
+      "sousse bejaoui",
+      "beja",
+      "sousse",
+      "bejaoui",
+      "commandant",
+      "urbain"
+    ],
+    "address": "02 Avenue Commandant Bejaoui, Centre Urbain, Sousse.",
+    "contact": "71,127,440",
+    "email": "ag.soussebejaoui@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "TABARKA",
+    "region": "Cap Bon & Nord",
+    "governorate": "jendouba",
+    "map_x": 141,
+    "map_y": 130,
+    "keywords": [
+      "tabarka",
+      "jendouba",
+      "habib",
+      "bourguiba",
+      "8110"
+    ],
+    "address": "12, Avenue Habib Bourguiba - 8110 - Tabarka",
+    "contact": "71,127,265",
+    "email": "ag.tabarka@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ZAGHOUAN",
+    "region": "Cap Bon & Nord",
+    "governorate": "zaghouan",
+    "map_x": 184,
+    "map_y": 136,
+    "keywords": [
+      "zaghouan",
+      "janvier",
+      "1100"
+    ],
+    "address": "02 Avenue 14 janvier - 1100 - Zaghouan",
+    "contact": "71,127,279",
+    "email": "ag.zaghouan@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ZAOUIT JEDIDI",
+    "region": "Cap Bon & Nord",
+    "governorate": "nabeul",
+    "map_x": 207,
+    "map_y": 136,
+    "keywords": [
+      "zaouit jedidi",
+      "nabeul",
+      "zaouit",
+      "jedidi",
+      "mars",
+      "8099",
+      "zaouiet"
+    ],
+    "address": "05 Avenue 20 Mars - 8099- Zaouiet-Jedidi",
+    "contact": "71,127,276",
+    "email": "ag.zaouietjedidi@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CENTRE AFFAIRES SOUSSE",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 200,
+    "map_y": 168,
+    "keywords": [
+      "centre affaires sousse",
+      "sousse"
+    ],
+    "address": "CENTRE AFFAIRES SOUSSE SOUSSE",
+    "contact": "",
+    "email": "",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Centre d'Affaires Sousse",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 199,
+    "map_y": 164,
+    "keywords": [
+      "centre d affaires sousse",
+      "sousse",
+      "residence",
+      "hana",
+      "mongi",
+      "slim",
+      "4000",
+      "medina"
+    ],
+    "address": "26 Résidence El Hana Avenue Mongi Slim 4000 - Sousse Medina",
+    "contact": "71,127,485",
+    "email": "mohamedanouar.benhassine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "CHOTT MERIAM",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 200,
+    "map_y": 168,
+    "keywords": [
+      "chott meriam",
+      "sousse",
+      "chott",
+      "meriam",
+      "touristique",
+      "hergla",
+      "4042",
+      "akouda",
+      "chott mariem"
+    ],
+    "address": "14 Route Touristique Sousse-Hergla - 4042 - Akouda",
+    "contact": "71,127,303",
+    "email": "ag.chottmeriam@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "EL JEM",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 206,
+    "map_y": 171,
+    "keywords": [
+      "el jem",
+      "monastir",
+      "jem",
+      "hedi",
+      "chaker",
+      "5160"
+    ],
+    "address": "02 Avenue Hédi Chaker -5160- El jem",
+    "contact": "71,127,403",
+    "email": "ag.eljem@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "JEMMEL",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 203,
+    "map_y": 169,
+    "keywords": [
+      "jemmel",
+      "monastir",
+      "rue",
+      "kassas",
+      "5003"
+    ],
+    "address": "45 Rue El Kassas - 5003 - Jemmel",
+    "contact": "71,127,296",
+    "email": "ag.jammel@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KAIROUAN CENTRE",
+    "region": "Sahel & Centre",
+    "governorate": "mahdia",
+    "map_x": 214,
+    "map_y": 184,
+    "keywords": [
+      "kairouan centre",
+      "mahdia",
+      "kairouan",
+      "3100"
+    ],
+    "address": "86 Avenue de Mahdia - 3100 - Kairouan",
+    "contact": "71,127,310",
+    "email": "ag.kairouan@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KAIROUAN IBN EL JAZZAR",
+    "region": "Sahel & Centre",
+    "governorate": "kairouan",
+    "map_x": 183,
+    "map_y": 177,
+    "keywords": [
+      "kairouan ibn el jazzar",
+      "kairouan",
+      "ibn",
+      "jazzar",
+      "rue",
+      "3100"
+    ],
+    "address": "2 Rue Ibn El Jazzar - 3100- Kairouan",
+    "contact": "71,127,239",
+    "email": "ag.kairouan2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KALAA KEBIRA",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 202,
+    "map_y": 167,
+    "keywords": [
+      "kalaa kebira",
+      "sousse",
+      "kalaa",
+      "kebira",
+      "farhat",
+      "hached",
+      "4060"
+    ],
+    "address": "08 Avenue. Farhat Hached - 4060 - Kalaa Kebira",
+    "contact": "71,127,251",
+    "email": "ag.kalaakobra@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KALAA SEGHIRA",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 200,
+    "map_y": 165,
+    "keywords": [
+      "kalaa seghira",
+      "sousse",
+      "kalaa",
+      "seghira",
+      "habib",
+      "bourguiba",
+      "kala",
+      "sghira"
+    ],
+    "address": "28 Avenue Habib Bourguiba - Kalà¢a Sghira",
+    "contact": "71,127,434",
+    "email": "ag.kalaasghira@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KARKAR",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 207,
+    "map_y": 167,
+    "keywords": [
+      "karkar",
+      "monastir",
+      "rte",
+      "nationale",
+      "gp1",
+      "5112"
+    ],
+    "address": "02 Rte Nationale GP1 -5112 - Karkar",
+    "contact": "71,127,295",
+    "email": "ag.karkar@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KSAR HELLAL",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 206,
+    "map_y": 171,
+    "keywords": [
+      "ksar hellal",
+      "monastir",
+      "ksar",
+      "hellal",
+      "angle",
+      "habib",
+      "bourguiba",
+      "rue",
+      "hedi",
+      "nouira",
+      "5004"
+    ],
+    "address": "18 Angle Av. Habib Bourguiba et rue Hédi Nouira -5004- Ksar Helal",
+    "contact": "71,127,297",
+    "email": "ag.ksarhellal@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KSSOUR ESSAF",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 205,
+    "map_y": 171,
+    "keywords": [
+      "kssour essaf",
+      "monastir",
+      "kssour",
+      "essaf",
+      "bvrd",
+      "environnement",
+      "5180",
+      "ksour",
+      "essef"
+    ],
+    "address": "17 Bvrd de l'Environnement -5180 -Ksour Essef",
+    "contact": "71,127,287",
+    "email": "ag.ksouressef@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MAHDIA",
+    "region": "Sahel & Centre",
+    "governorate": "mahdia",
+    "map_x": 213,
+    "map_y": 185,
+    "keywords": [
+      "mahdia",
+      "106",
+      "habib",
+      "bourguiba",
+      "5100"
+    ],
+    "address": "106 Avenue Habib Bourguiba - 5100 - Mahdia",
+    "contact": "71,127,312",
+    "email": "ag.mahdia@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MOKNINE",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 203,
+    "map_y": 170,
+    "keywords": [
+      "moknine",
+      "monastir",
+      "habib",
+      "bourguiba"
+    ],
+    "address": "06 Avenue Habib Bourguiba - Moknine",
+    "contact": "71,127,432",
+    "email": "ag.moknine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MONASTIR I",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 205,
+    "map_y": 170,
+    "keywords": [
+      "monastir i",
+      "monastir",
+      "taieb",
+      "hiri",
+      "immeuble",
+      "medina",
+      "5001"
+    ],
+    "address": "12 Avenue Taieb M'hiri, Immeuble Medina - 5001 - Monastir",
+    "contact": "71,127,266",
+    "email": "ag.monastir@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MONASTIR Leader",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 205,
+    "map_y": 170,
+    "keywords": [
+      "monastir leader",
+      "monastir",
+      "leader",
+      "rue",
+      "5001",
+      "monastir rue du leader"
+    ],
+    "address": "9 Rue du Leader - 5001 - Monastir",
+    "contact": "71,127,311",
+    "email": "ag.monastir2@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MSAKEN",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 200,
+    "map_y": 169,
+    "keywords": [
+      "msaken",
+      "sousse",
+      "angle",
+      "taieb",
+      "hchichi",
+      "rue",
+      "oranges",
+      "4070",
+      "saken"
+    ],
+    "address": "05 Angle Avenue Taieb Hchichi et rue des oranges - 4070 - M'saken",
+    "contact": "71,127,274",
+    "email": "ag.msaken@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Msaken Ennour",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 199,
+    "map_y": 165,
+    "keywords": [
+      "msaken ennour",
+      "sousse",
+      "msaken",
+      "ennour",
+      "angle",
+      "taieb",
+      "hachicha",
+      "rue",
+      "gafsa"
+    ],
+    "address": "Angle de l'avenue Taieb Hachicha et rue Gafsa",
+    "contact": "71,127,479",
+    "email": "ag.msakenennour@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "REGUEB",
+    "region": "Sahel & Centre",
+    "governorate": "sidi bouzid",
+    "map_x": 162,
+    "map_y": 208,
+    "keywords": [
+      "regueb",
+      "sidi bouzid",
+      "environnement",
+      "sidibouzid"
+    ],
+    "address": "Avenue de l'environnement, Route Sidibouzid",
+    "contact": "71,127,473",
+    "email": "ag.regueb@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SAYEDA",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 206,
+    "map_y": 171,
+    "keywords": [
+      "sayeda",
+      "monastir",
+      "habib",
+      "bourguiba",
+      "5035"
+    ],
+    "address": "20 Avenue Habib Bourguiba -5035- Sayeda",
+    "contact": "71,127,264",
+    "email": "a.sayada@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SBEITLA",
+    "region": "Sahel & Centre",
+    "governorate": "sidi bouzid",
+    "map_x": 162,
+    "map_y": 209,
+    "keywords": [
+      "sbeitla",
+      "sidi bouzid",
+      "parc"
+    ],
+    "address": "14, Avenue du Parc",
+    "contact": "71,127,392",
+    "email": "ag.sbitla@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX SAKIET EDDAYER",
+    "region": "Sahel & Centre",
+    "governorate": "mahdia",
+    "map_x": 216,
+    "map_y": 184,
+    "keywords": [
+      "sfax sakiet eddayer",
+      "mahdia",
+      "sfax",
+      "sakiet",
+      "eddayer",
+      "aenue",
+      "hedi",
+      "chaker"
+    ],
+    "address": "34 Aenue Hédi CHAKER Route de Mahdia km 7",
+    "contact": "71,127,436",
+    "email": "ag.sakieteddaier@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SIDI BOUZID",
+    "region": "Sahel & Centre",
+    "governorate": "sidi bouzid",
+    "map_x": 166,
+    "map_y": 209,
+    "keywords": [
+      "sidi bouzid",
+      "sidi",
+      "bouzid",
+      "habib",
+      "bourguiba",
+      "9100"
+    ],
+    "address": "42 Avenue Habib Bourguiba - 9100- Sidi Bouzid",
+    "contact": "71,127,269",
+    "email": "ag.sidibouzid@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE CORNICHE",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 199,
+    "map_y": 169,
+    "keywords": [
+      "sousse corniche",
+      "sousse",
+      "corniche",
+      "angle",
+      "abdelhamid",
+      "belkhadi",
+      "rue",
+      "qods"
+    ],
+    "address": "Angle de l'avenue Abdelhamid Belkhadi et de la rue El Qods, Sousse.",
+    "contact": "71,127,288",
+    "email": "ag.soussecorniche@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE EL KANTAOUI",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 196,
+    "map_y": 168,
+    "keywords": [
+      "sousse el kantaoui",
+      "sousse",
+      "kantaoui",
+      "complexe",
+      "maisons",
+      "jardins",
+      "4011",
+      "hammam"
+    ],
+    "address": "10 Complexe Les maisons des jardins - 4011 - Hammam Sousse",
+    "contact": "71,127,261",
+    "email": "ag.elkantaoui@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE ERRIADH",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 200,
+    "map_y": 168,
+    "keywords": [
+      "sousse erriadh",
+      "sousse",
+      "erriadh",
+      "cite",
+      "riadh",
+      "4023"
+    ],
+    "address": "06 Cite Riadh - 4023 - Sousse Riadh",
+    "contact": "71,127,301",
+    "email": "ag.sousseriadh@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE HACHED",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 200,
+    "map_y": 168,
+    "keywords": [
+      "sousse hached",
+      "sousse",
+      "hached",
+      "place",
+      "farhat",
+      "4000",
+      "medina"
+    ],
+    "address": "14 Place Farhat Hached - 4000- Sousse Medina",
+    "contact": "71,127,368",
+    "email": "ag.soussehached@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE JAWHARA",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 201,
+    "map_y": 167,
+    "keywords": [
+      "sousse jawhara",
+      "sousse",
+      "jawhara",
+      "angle",
+      "rues",
+      "ibn",
+      "jazzar",
+      "sakli",
+      "4000",
+      "medina"
+    ],
+    "address": "12 Angle Rues Ibn El Jazzar et Sakli-4000 - Sousse Medina",
+    "contact": "71,127,304",
+    "email": "a.jawhara@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE KHEZAMA",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 204,
+    "map_y": 171,
+    "keywords": [
+      "sousse khezama",
+      "sousse",
+      "khezama",
+      "boulevard",
+      "janvier",
+      "4051"
+    ],
+    "address": "10 Boulevard 14 Janvier - 4051 - Sousse Khezama",
+    "contact": "71,127,299",
+    "email": "ag.soussekhezama@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE MALL",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 202,
+    "map_y": 166,
+    "keywords": [
+      "sousse mall",
+      "sousse",
+      "mall",
+      "nationale",
+      "kalaa",
+      "kbira"
+    ],
+    "address": "Mall Of Sousse Route Nationale 1, Kalaa Kbira",
+    "contact": "71,127,467",
+    "email": "ag.mallofsousse@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE MENCHIA",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 197,
+    "map_y": 170,
+    "keywords": [
+      "sousse menchia",
+      "sousse",
+      "menchia",
+      "janvier",
+      "touristique",
+      "kantaoui"
+    ],
+    "address": "08 Avenue 14 Janvier, Route touristique Kantaoui, SOUSSE",
+    "contact": "71,127,448",
+    "email": "ag.sousseelmenchia@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE SAHLOUL",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 197,
+    "map_y": 167,
+    "keywords": [
+      "sousse sahloul",
+      "sousse",
+      "sahloul",
+      "farhat",
+      "hached",
+      "4000",
+      "medina"
+    ],
+    "address": "12 Avenue Farhat Hached Sahloul II - 4000 - Sousse Medina",
+    "contact": "71,127,291",
+    "email": "ag.soussesahloul@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SOUSSE VILLE",
+    "region": "Sahel & Centre",
+    "governorate": "sousse",
+    "map_x": 201,
+    "map_y": 167,
+    "keywords": [
+      "sousse ville",
+      "sousse",
+      "place",
+      "farhat",
+      "hached",
+      "immeuble",
+      "hadhrumet",
+      "4000",
+      "medina"
+    ],
+    "address": "12 Place Farhat Hached Immeuble Hadhrumet - 4000 - Sousse Medina",
+    "contact": "71,127,284",
+    "email": "ag.sousseville@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "TEBOULBA",
+    "region": "Sahel & Centre",
+    "governorate": "monastir",
+    "map_x": 205,
+    "map_y": 168,
+    "keywords": [
+      "teboulba",
+      "monastir",
+      "habib",
+      "bourguiba",
+      "5080"
+    ],
+    "address": "02 Avenue Habib Bourguiba -5080- Téboulba",
+    "contact": "71,127,253",
+    "email": "a.teboulba@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "BIR LAHMAR",
+    "region": "Sud & Sfax",
+    "governorate": "tataouine",
+    "map_x": 194,
+    "map_y": 323,
+    "keywords": [
+      "bir lahmar",
+      "tataouine",
+      "bir",
+      "lahmar",
+      "angle",
+      "habib",
+      "bourguiba",
+      "rue",
+      "hannibal",
+      "3204"
+    ],
+    "address": "02 Angle Avenue Habib Bourguiba et rue Hannibal 3204 - Bir Lahmar Tataouine",
+    "contact": "71,127,379",
+    "email": "a.birlahmar@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Centre d'Affaires Gabes",
+    "region": "Sud & Sfax",
+    "governorate": "gabes",
+    "map_x": 182,
+    "map_y": 273,
+    "keywords": [
+      "centre d affaires gabes",
+      "gabes",
+      "rue",
+      "mongi",
+      "slim",
+      "immeuble",
+      "oumaima",
+      "1er",
+      "etage",
+      "bloc"
+    ],
+    "address": "Rue Mongi Slim, immeuble Oumaima Centre 1er étage Bloc B, Gabes 6000",
+    "contact": "71,127,483",
+    "email": "ezzeddine.ouerimi@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Centre d'Affaires Sfax",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 204,
+    "map_y": 226,
+    "keywords": [
+      "centre d affaires sfax",
+      "sfax",
+      "environnement",
+      "gabes"
+    ],
+    "address": "Avenue de l'environnement, route de Gabes, Sfax",
+    "contact": "71,127,488",
+    "email": "ahmed.mhiri@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "GABES",
+    "region": "Sud & Sfax",
+    "governorate": "gabes",
+    "map_x": 183,
+    "map_y": 277,
+    "keywords": [
+      "gabes",
+      "174",
+      "farhat",
+      "hached",
+      "6000"
+    ],
+    "address": "174 Avenue Farhat Hached - 6000 - Gabés",
+    "contact": "71,127,260",
+    "email": "ag.gabes@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Gabes Sud",
+    "region": "Sud & Sfax",
+    "governorate": "gabes",
+    "map_x": 183,
+    "map_y": 272,
+    "keywords": [
+      "gabes sud",
+      "gabes",
+      "abu",
+      "kacem",
+      "chebbi",
+      "6011"
+    ],
+    "address": "Avenue Abu el Kacem Chebbi, 6011 Gabes",
+    "contact": "71,127,478",
+    "email": "ag.gabessud@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "GAFSA",
+    "region": "Sud & Sfax",
+    "governorate": "gafsa",
+    "map_x": 141,
+    "map_y": 243,
+    "keywords": [
+      "gafsa",
+      "taieb",
+      "hiri",
+      "2100"
+    ],
+    "address": "27 Avenue Taieb M'hiri -2100 -Gafsa",
+    "contact": "71,127,319",
+    "email": "ag.gafsa@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "Gafsa Ennour",
+    "region": "Sud & Sfax",
+    "governorate": "gafsa",
+    "map_x": 136,
+    "map_y": 239,
+    "keywords": [
+      "gafsa ennour",
+      "gafsa",
+      "ennour",
+      "rue",
+      "palestine",
+      "cite"
+    ],
+    "address": "Rue de Palestine Cité Ennour Gafsa",
+    "contact": "71,127,481",
+    "email": "ag.gafsaennour@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "JERBA MIDOUN",
+    "region": "Sud & Sfax",
+    "governorate": "medenine",
+    "map_x": 199,
+    "map_y": 301,
+    "keywords": [
+      "jerba midoun",
+      "medenine",
+      "jerba",
+      "midoun",
+      "salah",
+      "ben",
+      "youssef",
+      "4106",
+      "djerba",
+      "djerba houmet essouk"
+    ],
+    "address": "48 Avenue Salah Ben Youssef - 4106 - Jerba-Midoun",
+    "contact": "71,127,364",
+    "email": "ag.midoun@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "JERBA MIDOUN BORGO",
+    "region": "Sud & Sfax",
+    "governorate": "medenine",
+    "map_x": 195,
+    "map_y": 300,
+    "keywords": [
+      "jerba midoun borgo",
+      "medenine",
+      "jerba",
+      "midoun",
+      "borgo",
+      "djerba"
+    ],
+    "address": "JERBA MIDOUN BORGO DJERBA",
+    "contact": "",
+    "email": "",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KASSERINE",
+    "region": "Sud & Sfax",
+    "governorate": "kasserine",
+    "map_x": 139,
+    "map_y": 202,
+    "keywords": [
+      "kasserine",
+      "taieb",
+      "hiri",
+      "1200"
+    ],
+    "address": "10 Avenue Taieb M'hiri -1200 - Kasserine",
+    "contact": "71,127,352",
+    "email": "ag.kasserine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "KEBILI",
+    "region": "Sud & Sfax",
+    "governorate": "kebili",
+    "map_x": 145,
+    "map_y": 281,
+    "keywords": [
+      "kebili",
+      "rue",
+      "nalout",
+      "4200"
+    ],
+    "address": "16 Rue Nalout Kebili 4200 - Kebili",
+    "contact": "71,127,270",
+    "email": "ag.kebili@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MAHRES",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 205,
+    "map_y": 225,
+    "keywords": [
+      "mahres",
+      "sfax",
+      "korniche"
+    ],
+    "address": "Route El Korniche",
+    "contact": "71,127,469",
+    "email": "ag.sfaxmahres@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MARETH",
+    "region": "Sud & Sfax",
+    "governorate": "gabes",
+    "map_x": 184,
+    "map_y": 272,
+    "keywords": [
+      "mareth",
+      "gabes",
+      "octobre",
+      "6080"
+    ],
+    "address": "02 Avenue 27 Octobre - 6080 - Mareth - Gabes",
+    "contact": "71,127,219",
+    "email": "agence.mareth@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MEDENINE",
+    "region": "Sud & Sfax",
+    "governorate": "medenine",
+    "map_x": 199,
+    "map_y": 299,
+    "keywords": [
+      "medenine",
+      "mansour",
+      "houch"
+    ],
+    "address": "6 Avenue Mansour El Houch Medenine",
+    "contact": "71,127,375",
+    "email": "ag.medenine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "METLAOUI",
+    "region": "Sud & Sfax",
+    "governorate": "gafsa",
+    "map_x": 138,
+    "map_y": 239,
+    "keywords": [
+      "metlaoui",
+      "gafsa",
+      "moulares"
+    ],
+    "address": "86 Route Moulares - Gafsa",
+    "contact": "71,127,384",
+    "email": "ag.metlaoui@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "MOULARES",
+    "region": "Sud & Sfax",
+    "governorate": "gafsa",
+    "map_x": 139,
+    "map_y": 242,
+    "keywords": [
+      "moulares",
+      "gafsa",
+      "farhat",
+      "hached",
+      "2110"
+    ],
+    "address": "08 Avenue Farhat Hached - 2110 - Moulares",
+    "contact": "71,127,377",
+    "email": "a.moularas@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX CHIHIA",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 206,
+    "map_y": 227,
+    "keywords": [
+      "sfax chihia",
+      "sfax",
+      "chihia",
+      "teniour"
+    ],
+    "address": "Route Teniour KM 5,5",
+    "contact": "71,126,466",
+    "email": "ag.sfaxchihya@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX EL AIN",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 204,
+    "map_y": 228,
+    "keywords": [
+      "sfax el ain",
+      "sfax",
+      "ain"
+    ],
+    "address": "16 Route El Ain, Km 3.5, Sfax",
+    "contact": "71,127,454",
+    "email": "agencesfaxrouteelain@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX HEDI CHAKER",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 205,
+    "map_y": 229,
+    "keywords": [
+      "sfax hedi chaker",
+      "sfax",
+      "hedi",
+      "chaker",
+      "angle",
+      "habib",
+      "thameur",
+      "3001",
+      "sfax chaker"
+    ],
+    "address": "89 Angle Avenue Hedi Chaker Avenue Habib Thameur -3001- Sfax Ville",
+    "contact": "71,127,262",
+    "email": "a.sfaxchaker@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX JARDINS",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 207,
+    "map_y": 223,
+    "keywords": [
+      "sfax jardins",
+      "sfax",
+      "jardins",
+      "cite",
+      "moulin",
+      "3001"
+    ],
+    "address": "18 Cité Jardins Moulin Ville -3001 - Sfax Ville",
+    "contact": "71,127,237",
+    "email": "ag.sfaxjardins@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX JEDIDA",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 207,
+    "map_y": 227,
+    "keywords": [
+      "sfax jedida",
+      "sfax",
+      "jedida",
+      "angle",
+      "janvier",
+      "martyrs",
+      "sfax jadida"
+    ],
+    "address": "22 Angle Av 14 Janvier Avenue des Martyrs",
+    "contact": "71,127,381",
+    "email": "ag.sfaxjedida@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX LAFRANE",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 203,
+    "map_y": 225,
+    "keywords": [
+      "sfax lafrane",
+      "sfax",
+      "lafrane",
+      "km4"
+    ],
+    "address": "Route Lafrane KM4 Sfax",
+    "contact": "71,127,461",
+    "email": "ag.sfaxlafrane@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX MENZEL CHAKER",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 203,
+    "map_y": 223,
+    "keywords": [
+      "sfax menzel chaker",
+      "sfax",
+      "menzel",
+      "chaker",
+      "erramla",
+      "center",
+      "3000"
+    ],
+    "address": "06 Route Menzel Chaker \"erramla center\" km 3,5 - 3000 - sfax",
+    "contact": "71,127,262",
+    "email": "ag.menzelchaker@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX ROUTE DE GABES",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 204,
+    "map_y": 225,
+    "keywords": [
+      "sfax route de gabes",
+      "sfax",
+      "gabes",
+      "environnement",
+      "3003"
+    ],
+    "address": "18 Avenue de l'environnement Route de Gabés -3003 - Sfax Sud",
+    "contact": "71,127,292",
+    "email": "ag.sfaxrtegabes@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX ROUTE DE GREMDA",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 205,
+    "map_y": 228,
+    "keywords": [
+      "sfax route de gremda",
+      "sfax",
+      "gremda",
+      "residence",
+      "lyna",
+      "3080"
+    ],
+    "address": "16 Route Gremda \"Résidence LYNA\" km 6,5 -3080- sfax",
+    "contact": "71,127,402",
+    "email": "ag.gremda@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "SFAX SIDI MANSOUR",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 206,
+    "map_y": 226,
+    "keywords": [
+      "sfax sidi mansour",
+      "sfax",
+      "sidi",
+      "mansour",
+      "km2",
+      "3015",
+      "sakiet",
+      "eddayer"
+    ],
+    "address": "16 Route sidi Mansour Km2 -3015 - Sfax Sakiet Eddayer",
+    "contact": "71,127,294",
+    "email": "ag.sfaxsidimanssour@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "TATAOUINE",
+    "region": "Sud & Sfax",
+    "governorate": "tataouine",
+    "map_x": 193,
+    "map_y": 323,
+    "keywords": [
+      "tataouine",
+      "farhat",
+      "hached",
+      "3207"
+    ],
+    "address": "63 Avenue Farhat Hached 3207 - Tataouine Sud",
+    "contact": "71,127,314",
+    "email": "ag.tataouine@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "THALA KASSERINE",
+    "region": "Sud & Sfax",
+    "governorate": "kasserine",
+    "map_x": 139,
+    "map_y": 204,
+    "keywords": [
+      "thala kasserine",
+      "kasserine",
+      "thala",
+      "angle",
+      "habib",
+      "bourguiba",
+      "rue",
+      "palestine"
+    ],
+    "address": "Angle de l'avenue Habib Bourguiba et rue de Palestine",
+    "contact": "71 127 486",
+    "email": "ag.thala@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "THYNA",
+    "region": "Sud & Sfax",
+    "governorate": "sfax",
+    "map_x": 206,
+    "map_y": 224,
+    "keywords": [
+      "thyna",
+      "sfax",
+      "gabes"
+    ],
+    "address": "Route de Gabes Km 7",
+    "contact": "71,127,463",
+    "email": "ag.sfaxthyna@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "TOZEUR",
+    "region": "Sud & Sfax",
+    "governorate": "tozeur",
+    "map_x": 119,
+    "map_y": 269,
+    "keywords": [
+      "tozeur",
+      "farhat",
+      "hached",
+      "2200"
+    ],
+    "address": "12 Avenue Farhat Hached - 2200 - Tozeur",
+    "contact": "71,127,281",
+    "email": "ag.tozeur@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  },
+  {
+    "name": "ZARZIS",
+    "region": "Sud & Sfax",
+    "governorate": "medenine",
+    "map_x": 197,
+    "map_y": 301,
+    "keywords": [
+      "zarzis",
+      "medenine",
+      "farhat",
+      "hached",
+      "4104"
+    ],
+    "address": "12 Avenue Farhat Hached - 4104 - Zarzis",
+    "contact": "71,127,283",
+    "email": "ag.zarzis@bhbank.tn",
+    "source": "https://www.bhbank.tn/notre-reseau"
+  }
+]

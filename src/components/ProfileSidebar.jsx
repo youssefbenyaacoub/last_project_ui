@@ -181,7 +181,7 @@ export function ProfileSidebar({ isVisible }) {
           <p className={`text-sm ${metaClass}`}>martin.bratik@gmail.com</p>
         </div>
         <button
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate("/dashboard/profile")}
           className="text-sm text-blue-600 hover:text-blue-700"
         >
           {ui.moreInfo}
@@ -272,7 +272,7 @@ export function ProfileSidebar({ isVisible }) {
               </p>
             </div>
             <button
-              onClick={() => navigate("/chatbot")}
+              onClick={() => navigate("/dashboard/chatbot")}
               className="w-full px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg font-medium"
             >
               {ui.askUs}

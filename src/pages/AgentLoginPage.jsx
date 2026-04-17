@@ -1,30 +1,44 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Eye, EyeOff, House, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import logoExpanded from "../assets/BH_logo2.png";
 import {
+  checkAgentPortalAccess,
   clearAgentAuthSession,
   getAgentAuthToken,
   loginAgent,
+  requestAgentPasswordReset,
   setAgentAuthSession,
 } from "../api";
 
 const REMEMBER_AGENT_EMAIL_KEY = "bh_agent_last_email";
+const AGENT_ROLE_STORAGE_KEY = "bh_agent_role";
 
 const copyByLanguage = {
   en: {
     title: "Agent Portal",
     subtitle: "Secure access for BH Bank staff",
-    home: "Home",
-    clientAccess: "Client access",
-    emailLabel: "Agent email",
-    emailPlaceholder: "name@bhbank.tn",
+    accessBadge: "Secure staff session",
+    emailLabel: "Agent email or username",
+    emailPlaceholder: "name@bhbank.tn or AGT-001",
     passwordLabel: "Password",
     passwordPlaceholder: "Enter your password",
     rememberMe: "Remember my agent login",
-    passwordHint: "Use your browser password manager to safely remember the password.",
+    forgotPasswordAction: "Forgot your password?",
+    forgotTitle: "Password reset request",
+    forgotSubtitle: "An administrator must approve your request before a reset link is sent.",
+    forgotIdentifierLabel: "Agent email or username",
+    forgotIdentifierPlaceholder: "name@bhbank.tn or AGT-001",
+    forgotIdentifierRequired: "Please enter your agent email or username.",
+    forgotReasonLabel: "Reason (optional)",
+    forgotReasonPlaceholder: "Example: lost password, locked account",
+    forgotSubmit: "Send request",
+    forgotSubmitting: "Sending...",
+    forgotClose: "Close",
+    forgotSuccess:
+      "Your request was submitted. You will receive an email after the administrator decision.",
     signIn: "Sign in as agent",
     loading: "Signing in...",
     scopeTitle: "After login, your dashboard is categorized",
@@ -35,6 +49,7 @@ const copyByLanguage = {
     workspaceTitle: "BH Agent Workspace",
     workspaceDescription:
       "This portal is reserved for BH Bank staff. Agent sessions use dedicated authentication and isolated local storage keys.",
+    primaryInfoLabel: "Key login information",
     securityTitle: "Security and scope",
     securityEndpoint: "Dedicated endpoint: /api/auth/agent/login",
     securityRoutes: "Dedicated routes: /agent/login and /agent/dashboard",
@@ -43,14 +58,25 @@ const copyByLanguage = {
   fr: {
     title: "Portail Agent",
     subtitle: "Acces securise pour les equipes BH Bank",
-    home: "Accueil",
-    clientAccess: "Acces client",
-    emailLabel: "Email agent",
-    emailPlaceholder: "nom@bhbank.tn",
+    accessBadge: "Session securisee equipes BH",
+    emailLabel: "Email ou username agent",
+    emailPlaceholder: "nom@bhbank.tn ou AGT-001",
     passwordLabel: "Mot de passe",
     passwordPlaceholder: "Entrez votre mot de passe",
     rememberMe: "Se souvenir de ma connexion agent",
-    passwordHint: "Utilisez le gestionnaire de mots de passe du navigateur pour memoriser le mot de passe en securite.",
+    forgotPasswordAction: "Mot de passe oublie ?",
+    forgotTitle: "Demande de reinitialisation",
+    forgotSubtitle: "Un administrateur doit approuver votre demande avant l'envoi du lien de reinitialisation.",
+    forgotIdentifierLabel: "Email ou username agent",
+    forgotIdentifierPlaceholder: "nom@bhbank.tn ou AGT-001",
+    forgotIdentifierRequired: "Veuillez saisir votre email ou username agent.",
+    forgotReasonLabel: "Raison (optionnel)",
+    forgotReasonPlaceholder: "Exemple: mot de passe perdu, compte bloque",
+    forgotSubmit: "Envoyer la demande",
+    forgotSubmitting: "Envoi...",
+    forgotClose: "Fermer",
+    forgotSuccess:
+      "Votre demande a ete envoyee. Vous recevrez un email apres la decision de l'administrateur.",
     signIn: "Connexion agent",
     loading: "Connexion...",
     scopeTitle: "Apres connexion, votre dashboard est categorise",
@@ -61,6 +87,7 @@ const copyByLanguage = {
     workspaceTitle: "Espace Agent BH",
     workspaceDescription:
       "Ce portail est reserve aux equipes BH Bank. Les sessions agent utilisent une authentification dediee et des cles locales isolees.",
+    primaryInfoLabel: "Informations principales",
     securityTitle: "Securite et perimetre",
     securityEndpoint: "Endpoint dedie: /api/auth/agent/login",
     securityRoutes: "Routes dediees: /agent/login et /agent/dashboard",
@@ -69,14 +96,25 @@ const copyByLanguage = {
   ar: {
     title: "Agent Portal",
     subtitle: "Secure BH Bank staff access",
-    home: "Home",
-    clientAccess: "Client access",
-    emailLabel: "Agent email",
-    emailPlaceholder: "name@bhbank.tn",
+    accessBadge: "Secure staff session",
+    emailLabel: "Agent email or username",
+    emailPlaceholder: "name@bhbank.tn or AGT-001",
     passwordLabel: "Password",
     passwordPlaceholder: "Enter your password",
     rememberMe: "Remember my agent login",
-    passwordHint: "Use your browser password manager to safely remember the password.",
+    forgotPasswordAction: "Forgot your password?",
+    forgotTitle: "Password reset request",
+    forgotSubtitle: "An administrator must approve your request before a reset link is sent.",
+    forgotIdentifierLabel: "Agent email or username",
+    forgotIdentifierPlaceholder: "name@bhbank.tn or AGT-001",
+    forgotIdentifierRequired: "Please enter your agent email or username.",
+    forgotReasonLabel: "Reason (optional)",
+    forgotReasonPlaceholder: "Example: lost password, locked account",
+    forgotSubmit: "Send request",
+    forgotSubmitting: "Sending...",
+    forgotClose: "Close",
+    forgotSuccess:
+      "Your request was submitted. You will receive an email after the administrator decision.",
     signIn: "Agent sign in",
     loading: "Signing in...",
     scopeTitle: "After login, your dashboard is categorized",
@@ -87,6 +125,7 @@ const copyByLanguage = {
     workspaceTitle: "BH Agent Workspace",
     workspaceDescription:
       "This portal is reserved for BH Bank staff. Agent sessions use dedicated authentication and isolated local storage keys.",
+    primaryInfoLabel: "Key login information",
     securityTitle: "Security and scope",
     securityEndpoint: "Dedicated endpoint: /api/auth/agent/login",
     securityRoutes: "Dedicated routes: /agent/login and /agent/dashboard",
@@ -113,18 +152,54 @@ export function AgentLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotIdentifier, setForgotIdentifier] = useState("");
+  const [forgotReason, setForgotReason] = useState("");
+  const [forgotSubmitting, setForgotSubmitting] = useState(false);
+  const [forgotError, setForgotError] = useState("");
+  const [forgotFeedback, setForgotFeedback] = useState("");
+  const [isPortalChecking, setIsPortalChecking] = useState(true);
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem(REMEMBER_AGENT_EMAIL_KEY) || "";
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
+    let active = true;
 
-    if (getAgentAuthToken()) {
-      navigate("/agent/dashboard", { replace: true });
-    }
+    const bootstrapPortal = async () => {
+      try {
+        await checkAgentPortalAccess();
+      } catch {
+        if (active) {
+          navigate("/login", { replace: true });
+        }
+        return;
+      }
+
+      if (!active) return;
+
+      const savedEmail = localStorage.getItem(REMEMBER_AGENT_EMAIL_KEY) || "";
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+
+      if (getAgentAuthToken()) {
+        const storedRole = String(localStorage.getItem(AGENT_ROLE_STORAGE_KEY) || "").toLowerCase();
+        navigate(storedRole === "admin" ? "/agent/admin" : "/agent/dashboard", { replace: true });
+        return;
+      }
+
+      setIsPortalChecking(false);
+    };
+
+    bootstrapPortal();
+
+    return () => {
+      active = false;
+    };
   }, [navigate]);
+
+  if (isPortalChecking) {
+    return null;
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -135,19 +210,25 @@ export function AgentLoginPage() {
       setErrorMessage("");
       clearAgentAuthSession();
 
+      const identifier = email.trim();
+      const normalizedIdentifier = identifier.includes("@")
+        ? identifier.toLowerCase()
+        : identifier.toUpperCase();
+
       const payload = await loginAgent({
-        email: email.trim().toLowerCase(),
+        identifier: normalizedIdentifier,
         password,
       });
 
       if (rememberMe) {
-        localStorage.setItem(REMEMBER_AGENT_EMAIL_KEY, email.trim().toLowerCase());
+        localStorage.setItem(REMEMBER_AGENT_EMAIL_KEY, normalizedIdentifier);
       } else {
         localStorage.removeItem(REMEMBER_AGENT_EMAIL_KEY);
       }
 
       setAgentAuthSession(payload);
-      navigate("/agent/dashboard", { replace: true });
+      const role = String(payload?.agent?.role || "").toLowerCase();
+      navigate(role === "admin" ? "/agent/admin" : "/agent/dashboard", { replace: true });
     } catch (error) {
       setErrorMessage(error.message || "Agent login failed.");
     } finally {
@@ -155,60 +236,82 @@ export function AgentLoginPage() {
     }
   };
 
+  const openForgotModal = () => {
+    setForgotIdentifier(email.trim());
+    setForgotReason("");
+    setForgotError("");
+    setForgotFeedback("");
+    setForgotOpen(true);
+  };
+
+  const closeForgotModal = () => {
+    if (forgotSubmitting) return;
+    setForgotOpen(false);
+  };
+
+  const handleForgotSubmit = async (event) => {
+    event.preventDefault();
+    if (forgotSubmitting) return;
+
+    const identifier = forgotIdentifier.trim();
+    if (!identifier) {
+      setForgotError(ui.forgotIdentifierRequired);
+      return;
+    }
+
+    const normalizedIdentifier = identifier.includes("@")
+      ? identifier.toLowerCase()
+      : identifier.toUpperCase();
+
+    try {
+      setForgotSubmitting(true);
+      setForgotError("");
+      setForgotFeedback("");
+
+      const payload = await requestAgentPasswordReset({
+        identifier: normalizedIdentifier,
+        reason: forgotReason,
+      });
+
+      setForgotFeedback(payload?.message || ui.forgotSuccess);
+      setForgotReason("");
+    } catch (error) {
+      setForgotError(error.message || "Unable to submit reset request.");
+    } finally {
+      setForgotSubmitting(false);
+    }
+  };
+
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-[#0f172a]" : "bg-[#f6f8fc]"}`} dir={isRTL ? "rtl" : "ltr"}>
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-5 py-8 sm:px-8">
-        <div className="grid w-full gap-8 lg:grid-cols-[1.2fr_1fr]">
+    <div className={`relative min-h-screen overflow-hidden ${theme === "dark" ? "bg-[#0d1628]" : "bg-[#edf2f9]"}`} dir={isRTL ? "rtl" : "ltr"}>
+      <div className="pointer-events-none absolute -left-12 top-0 h-72 w-72 rounded-full bg-[#0A2240]/15 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[#D71920]/10 blur-3xl" />
+
+      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl items-center px-5 py-8 sm:px-8">
+        <div className="grid w-full gap-8">
           <section
-            className={`rounded-3xl border p-8 sm:p-10 ${
+            className={`rounded-4xl border p-8 sm:p-10 ${
               theme === "dark"
-                ? "border-white/10 bg-[#111d33] text-white"
-                : "border-[#dbe4f2] bg-white text-[#13233f]"
+                ? "border-white/10 bg-[#111f37]/95 text-white shadow-[0_18px_35px_rgba(0,0,0,0.35)]"
+                : "border-[#dbe4f2] bg-white text-[#13233f] shadow-[0_16px_32px_rgba(18,35,65,0.09)]"
             }`}
           >
             <div className={`mb-8 flex items-center justify-between gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
               <img src={logoExpanded} alt="BH Bank" className="h-11 w-auto" />
-              <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <button
-                  type="button"
-                  onClick={() => navigate("/")}
-                  className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${
-                    theme === "dark"
-                      ? "border-white/15 text-white/90 hover:bg-white/10"
-                      : "border-[#d4ddec] text-[#0A2240] hover:bg-[#eff4fb]"
-                  } ${isRTL ? "flex-row-reverse" : ""}`}
-                >
-                  <House size={16} />
-                  {ui.home}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate("/login")}
-                  className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${
-                    theme === "dark"
-                      ? "border-white/15 text-white/90 hover:bg-white/10"
-                      : "border-[#d4ddec] text-[#0A2240] hover:bg-[#eff4fb]"
-                  } ${isRTL ? "flex-row-reverse" : ""}`}
-                >
-                  <UserRound size={16} />
-                  {ui.clientAccess}
-                </button>
+              <div
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                  theme === "dark"
+                    ? "border-[#3e6db1]/70 bg-[#10213e] text-[#bdd5ff]"
+                    : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
+                } ${isRTL ? "flex-row-reverse" : ""}`}
+              >
+                <ShieldCheck size={14} />
+                {ui.accessBadge}
               </div>
             </div>
 
             <div className={`mb-7 ${isRTL ? "text-right" : "text-left"}`}>
-              <h1 className="text-3xl font-extrabold tracking-tight">{ui.title}</h1>
-              <p className={`mt-2 text-sm ${theme === "dark" ? "text-white/70" : "text-[#5f7090]"}`}>{ui.subtitle}</p>
-
-              <div className={`mt-4 rounded-2xl border p-3 text-xs ${theme === "dark" ? "border-white/15 bg-white/5 text-white/80" : "border-[#d7e0ee] bg-[#f8fbff] text-[#4d6286]"}`}>
-                <p className="font-semibold">{ui.scopeTitle}</p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                  <p>- {ui.scopeProfile}</p>
-                  <p>- {ui.scopeFinance}</p>
-                  <p>- {ui.scopeRisk}</p>
-                  <p>- {ui.scopeProducts}</p>
-                </div>
-              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight sm:text-[2.15rem]">{ui.title}</h1>
             </div>
 
             <form className="space-y-5" onSubmit={handleSubmit}>
@@ -277,7 +380,7 @@ export function AgentLoginPage() {
                 </div>
               </div>
 
-              <div className={`space-y-2 ${isRTL ? "text-right" : "text-left"}`}>
+              <div className={`flex flex-wrap items-center justify-between gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <label className={`inline-flex items-center gap-2 text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
                   <input
                     type="checkbox"
@@ -287,9 +390,15 @@ export function AgentLoginPage() {
                   />
                   <span>{ui.rememberMe}</span>
                 </label>
-                <p className={`text-xs ${theme === "dark" ? "text-white/55" : "text-[#6f82a3]"}`}>
-                  {ui.passwordHint}
-                </p>
+                <button
+                  type="button"
+                  onClick={openForgotModal}
+                  className={`inline-flex text-sm font-semibold underline-offset-4 hover:underline ${
+                    theme === "dark" ? "text-[#a8c4ff]" : "text-[#0A2240]"
+                  }`}
+                >
+                  {ui.forgotPasswordAction}
+                </button>
               </div>
 
               {errorMessage && (
@@ -305,42 +414,118 @@ export function AgentLoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0A2240] px-4 py-3.5 font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0A2240] px-4 py-3.5 font-semibold text-white transition hover:bg-[#122f57] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <ShieldCheck size={18} />
                 {isSubmitting ? ui.loading : ui.signIn}
               </button>
             </form>
           </section>
-
-          <aside
-            className={`rounded-3xl border p-8 sm:p-10 ${
-              theme === "dark"
-                ? "border-white/10 bg-[#0b1525] text-white"
-                : "border-[#dbe4f2] bg-[#f1f5fc] text-[#13233f]"
-            }`}
-          >
-            <h2 className="text-xl font-bold">{ui.workspaceTitle}</h2>
-            <p className={`mt-3 text-sm leading-relaxed ${theme === "dark" ? "text-white/75" : "text-[#516484]"}`}>
-              {ui.workspaceDescription}
-            </p>
-            <div className="mt-8 space-y-3">
-              <p className={`text-xs font-semibold uppercase tracking-wide ${theme === "dark" ? "text-white/60" : "text-[#5f7090]"}`}>
-                {ui.securityTitle}
-              </p>
-              <div className={`rounded-2xl border px-4 py-3 text-sm ${theme === "dark" ? "border-white/15 bg-white/5" : "border-[#d6e0ef] bg-white"}`}>
-                {ui.securityEndpoint}
-              </div>
-              <div className={`rounded-2xl border px-4 py-3 text-sm ${theme === "dark" ? "border-white/15 bg-white/5" : "border-[#d6e0ef] bg-white"}`}>
-                {ui.securityRoutes}
-              </div>
-              <div className={`rounded-2xl border px-4 py-3 text-sm ${theme === "dark" ? "border-white/15 bg-white/5" : "border-[#d6e0ef] bg-white"}`}>
-                {ui.securityStorage}
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
+
+      {forgotOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#081326]/65 px-4" onClick={closeForgotModal}>
+          <div
+            className={`w-full max-w-lg rounded-3xl border p-6 sm:p-7 ${
+              theme === "dark"
+                ? "border-white/15 bg-[#0f1e36] text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+                : "border-[#d8e1ef] bg-white text-[#14233e] shadow-[0_20px_40px_rgba(18,35,65,0.2)]"
+            }`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className={`mb-3 flex items-center justify-between gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+              <h2 className="text-xl font-bold">{ui.forgotTitle}</h2>
+              <button
+                type="button"
+                onClick={closeForgotModal}
+                className={`rounded-xl border px-3 py-1.5 text-sm font-medium ${
+                  theme === "dark"
+                    ? "border-white/20 text-white/90 hover:bg-white/10"
+                    : "border-[#d4ddec] text-[#0A2240] hover:bg-[#eff4fb]"
+                }`}
+              >
+                {ui.forgotClose}
+              </button>
+            </div>
+
+            <p className={`text-sm ${theme === "dark" ? "text-white/75" : "text-[#5d7091]"}`}>{ui.forgotSubtitle}</p>
+
+            <form className="mt-5 space-y-4" onSubmit={handleForgotSubmit}>
+              <div>
+                <label className={`mb-2 block text-sm font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                  {ui.forgotIdentifierLabel}
+                </label>
+                <input
+                  type="text"
+                  value={forgotIdentifier}
+                  onChange={(event) => setForgotIdentifier(event.target.value)}
+                  placeholder={ui.forgotIdentifierPlaceholder}
+                  className={`w-full rounded-xl border px-3 py-3 ${
+                    isRTL ? "text-right" : "text-left"
+                  } ${
+                    theme === "dark"
+                      ? "border-white/15 bg-[#0c1628] text-white placeholder:text-white/35"
+                      : "border-[#d7e0ee] bg-[#fbfcff] text-[#13233f] placeholder:text-[#95a2b9]"
+                  }`}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={`mb-2 block text-sm font-medium ${isRTL ? "text-right" : "text-left"}`}>
+                  {ui.forgotReasonLabel}
+                </label>
+                <textarea
+                  rows={3}
+                  value={forgotReason}
+                  onChange={(event) => setForgotReason(event.target.value)}
+                  placeholder={ui.forgotReasonPlaceholder}
+                  className={`w-full rounded-xl border px-3 py-2.5 ${
+                    isRTL ? "text-right" : "text-left"
+                  } ${
+                    theme === "dark"
+                      ? "border-white/15 bg-[#0c1628] text-white placeholder:text-white/35"
+                      : "border-[#d7e0ee] bg-[#fbfcff] text-[#13233f] placeholder:text-[#95a2b9]"
+                  }`}
+                />
+              </div>
+
+              {forgotError && (
+                <p
+                  className={`rounded-xl border px-3 py-2 text-sm ${
+                    theme === "dark"
+                      ? "border-red-900/60 bg-red-950/40 text-red-300"
+                      : "border-red-200 bg-red-50 text-red-700"
+                  } ${isRTL ? "text-right" : "text-left"}`}
+                >
+                  {forgotError}
+                </p>
+              )}
+
+              {forgotFeedback && (
+                <p
+                  className={`rounded-xl border px-3 py-2 text-sm ${
+                    theme === "dark"
+                      ? "border-emerald-800/60 bg-emerald-950/35 text-emerald-200"
+                      : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  } ${isRTL ? "text-right" : "text-left"}`}
+                >
+                  {forgotFeedback}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={forgotSubmitting}
+                className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0A2240] px-4 py-3 font-semibold text-white transition hover:bg-[#122f57] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {forgotSubmitting ? ui.forgotSubmitting : ui.forgotSubmit}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

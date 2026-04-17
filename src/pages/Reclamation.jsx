@@ -3,7 +3,7 @@ import { AlertCircle, CheckCircle2, FileText, Send } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { createComplaint, getComplaints } from "../api";
-import { PageLoader } from "../components/PageLoader";
+import { Skeleton, SkeletonLines } from "../components/Skeleton";
 
 const TYPE_OPTIONS = [
   {
@@ -81,6 +81,7 @@ const UI_COPY = {
     submitSuccess: "Claim sent successfully.",
     loadError: "Unable to load claims.",
     submitError: "Unable to send claim.",
+    syncing: "Syncing with server...",
   },
   fr: {
     pageTitle: "Gestion des reclamations",
@@ -98,6 +99,7 @@ const UI_COPY = {
     submitSuccess: "Reclamation envoyee avec succes.",
     loadError: "Impossible de charger les reclamations.",
     submitError: "Envoi de la reclamation impossible.",
+    syncing: "Synchronisation avec le serveur...",
   },
   ar: {
     pageTitle: "ادارة الشكاوى",
@@ -115,11 +117,13 @@ const UI_COPY = {
     submitSuccess: "تم ارسال الشكوى بنجاح.",
     loadError: "تعذر تحميل الشكاوى.",
     submitError: "تعذر ارسال الشكوى.",
+    syncing: "جاري المزامنة مع الخادم...",
   },
 };
 
 const STATUS_LABELS = {
   submitted: { en: "Submitted", fr: "Soumise", ar: "مقدمة" },
+  pending_sync: { en: "Syncing", fr: "Synchronisation", ar: "قيد المزامنة" },
   in_progress: { en: "In progress", fr: "En cours", ar: "قيد المعالجة" },
   resolved: { en: "Resolved", fr: "Resolue", ar: "تم الحل" },
   rejected: { en: "Rejected", fr: "Rejetee", ar: "مرفوضة" },
@@ -158,6 +162,16 @@ const getStatusLabel = (statusValue, language) => {
   return STATUS_LABELS[key]?.[language] || STATUS_LABELS[key]?.en || statusValue || "submitted";
 };
 
+const buildOptimisticComplaint = ({ complaintType, subject, message }) => ({
+  id: `optimistic-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+  complaint_type: complaintType,
+  subject,
+  message,
+  status: "pending_sync",
+  created_at: new Date().toISOString(),
+  optimistic: true,
+});
+
 export function Reclamation() {
   const { theme } = useTheme();
   const { isRTL, language } = useLanguage();
@@ -173,17 +187,23 @@ export function Reclamation() {
   const [complaintType, setComplaintType] = useState(TYPE_OPTIONS[0].value);
   const [message, setMessage] = useState("");
 
-  const loadComplaints = useCallback(async () => {
+  const loadComplaints = useCallback(async ({ showLoader = true } = {}) => {
     try {
-      setLoading(true);
-      setError("");
+      if (showLoader) {
+        setLoading(true);
+        setError("");
+      }
       const data = await getComplaints();
       setComplaints(Array.isArray(data?.complaints) ? data.complaints : []);
     } catch (err) {
-      setError(err.message || ui.loadError);
-      setComplaints([]);
+      if (showLoader) {
+        setError(err.message || ui.loadError);
+        setComplaints([]);
+      }
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   }, [ui.loadError]);
 
@@ -198,22 +218,45 @@ export function Reclamation() {
   const submitComplaint = async (event) => {
     event.preventDefault();
 
+    const nextType = complaintType;
+    const nextMessage = message.trim();
+    const nextSubject = getTypeLabel(nextType, language) || nextType;
+    const optimisticComplaint = buildOptimisticComplaint({
+      complaintType: nextType,
+      subject: nextSubject,
+      message: nextMessage,
+    });
+
     try {
       setSubmitting(true);
       setError("");
       setSuccess("");
 
-      await createComplaint({
-        complaint_type: complaintType,
-        subject: getTypeLabel(complaintType, language) || complaintType,
-        message: message.trim(),
-      });
-
+      setComplaints((prev) => [optimisticComplaint, ...prev]);
       setSuccess(ui.submitSuccess);
       setComplaintType(TYPE_OPTIONS[0].value);
       setMessage("");
-      await loadComplaints();
+
+      await createComplaint({
+        complaint_type: nextType,
+        subject: nextSubject,
+        message: nextMessage,
+      });
+
+      setComplaints((prev) =>
+        prev.map((item) =>
+          item.id === optimisticComplaint.id
+            ? { ...item, optimistic: false, status: "submitted" }
+            : item,
+        ),
+      );
+
+      void loadComplaints({ showLoader: false });
     } catch (err) {
+      setComplaints((prev) => prev.filter((item) => item.id !== optimisticComplaint.id));
+      setComplaintType(nextType);
+      setMessage(nextMessage);
+      setSuccess("");
       setError(err.message || ui.submitError);
     } finally {
       setSubmitting(false);
@@ -302,7 +345,21 @@ export function Reclamation() {
           <h2 className="mb-4 text-lg font-semibold">{ui.historyTitle}</h2>
 
           {loading ? (
-            <PageLoader label={ui.loading} isDark={isDark} compact />
+            <div className={`space-y-3 ${isDark ? "skeleton-dark" : ""}`}>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={`complaint-skeleton-${index}`}
+                  className={`rounded-lg border p-4 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-gray-50"}`}
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <Skeleton className="h-4 w-52 rounded-md" />
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                  </div>
+                  <SkeletonLines lines={2} lineClassName="h-3 rounded-md" lastLineClassName="w-5/6" />
+                  <Skeleton className="mt-3 h-3 w-28 rounded-md" />
+                </div>
+              ))}
+            </div>
           ) : sortedComplaints.length === 0 ? (
             <p className={isDark ? "text-gray-400" : "text-gray-600"}>{ui.empty}</p>
           ) : (
@@ -310,13 +367,29 @@ export function Reclamation() {
               {sortedComplaints.map((complaint) => (
                 <article
                   key={complaint.id || `${complaint.subject}-${complaint.created_at}`}
-                  className={`rounded-lg border p-4 ${isDark ? "border-gray-700 bg-gray-900" : "border-gray-200 bg-gray-50"}`}
+                  className={`rounded-lg border p-4 ${
+                    complaint.optimistic
+                      ? isDark
+                        ? "border-blue-700/60 bg-blue-950/20"
+                        : "border-blue-200 bg-blue-50/70"
+                      : isDark
+                        ? "border-gray-700 bg-gray-900"
+                        : "border-gray-200 bg-gray-50"
+                  }`}
                 >
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <h3 className="font-semibold">
                       {getTypeLabel(complaint.complaint_type, language) || complaint.subject || ui.untitled}
                     </h3>
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ${isDark ? "bg-gray-800 text-gray-300" : "bg-white text-gray-600"}`}>
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ${
+                      complaint.optimistic
+                        ? isDark
+                          ? "bg-blue-900/45 text-blue-200"
+                          : "bg-blue-100 text-blue-700"
+                        : isDark
+                          ? "bg-gray-800 text-gray-300"
+                          : "bg-white text-gray-600"
+                    }`}>
                       <FileText className="h-3 w-3" />
                       {getStatusLabel(complaint.status, language)}
                     </span>
@@ -336,6 +409,12 @@ export function Reclamation() {
                   <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                     {formatDate(complaint.created_at, language)}
                   </p>
+
+                  {complaint.optimistic && (
+                    <p className={`mt-2 text-xs ${isDark ? "text-blue-200" : "text-blue-700"}`}>
+                      {ui.syncing}
+                    </p>
+                  )}
                 </article>
               ))}
             </div>

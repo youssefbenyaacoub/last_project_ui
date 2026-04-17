@@ -8,6 +8,7 @@ const translations = {
     dashboard: "Dashboard",
     chatbot: "Chatbot",
     products: "Products",
+    comparator: "Comparator",
     simulator: "Simulator",
     budget: "Budget",
     objectives: "Objectives",
@@ -113,6 +114,7 @@ const translations = {
     dashboard: "Tableau de bord",
     chatbot: "Chatbot",
     products: "Produits",
+    comparator: "Comparateur",
     simulator: "Simulateur",
     budget: "Budget",
     objectives: "Objectifs",
@@ -218,6 +220,7 @@ const translations = {
     dashboard: "لوحة التحكم",
     chatbot: "المساعد الذكي",
     products: "المنتجات",
+    comparator: "المقارن",
     simulator: "المحاكي",
     budget: "الميزانية",
     objectives: "الأهداف",
@@ -357,6 +360,7 @@ export function LanguageProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {

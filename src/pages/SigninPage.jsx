@@ -1,998 +1,1011 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import {
-  Mail,
-  Lock,
-  User,
-  Phone,
+  AlertCircle,
+  Check,
+  CreditCard,
   Eye,
   EyeOff,
-  CreditCard,
-  Check,
-  Calendar,
   House,
+  KeyRound,
+  Lock,
+  Mail,
+  ShieldCheck,
+  User,
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import logoExpanded from "../assets/BH_logo2.png";
+import logoWhite from "../assets/bh_logo_blanc.png";
 import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
 import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
 import flagFr from "../assets/flags/Flag_of_France.svg.png";
 import {
-  registerAccount,
-  resendEmailOTP,
+  completeSigninRegistration,
+  requestSigninEmailCode,
   setAuthSession,
-  verifyCard,
-  verifyEmail,
-  verifyOTP,
+  verifySigninEmailCode,
 } from "../api";
+
+const LABELS = {
+  fr: {
+    steps: ["Email", "Code email", "Securite", "Mot de passe"],
+    stepSidebarTitles: [
+      "Identification Email",
+      "Code de Verification",
+      "Validation Securite",
+      "Mot de Passe",
+    ],
+    stepDetails: [
+      "Verification de votre adresse email associee au compte BH",
+      "Authentification par code a 6 chiffres",
+      "Controle des informations personnelles",
+      "Configuration de vos acces securises",
+    ],
+    activeTag: "EN COURS",
+    title: "Activez votre espace client BH",
+    subtitle: "Parcours securise en 4 etapes pour finaliser votre acces.",
+    hintEmail: "Saisissez l'email deja associe a votre compte BH.",
+    hintCode: "Saisissez le code a 6 chiffres envoye par email.",
+    hintSecurity: "Choisissez une seule preuve de securite.",
+    hintPassword: "Creez un mot de passe fort pour vos prochaines connexions.",
+    sendCode: "Envoyer code",
+    verifyCode: "Verifier code",
+    continue: "Continuer",
+    create: "Creer compte",
+    back: "Retour",
+    home: "Accueil",
+    resend: "Renvoyer",
+    noCode: "Code non recu ?",
+    emailPlaceholder: "Entrez votre email",
+    modePhrase: "Phrase secrete",
+    modeTransaction: "Derniere transaction",
+    phrasePlaceholder: "Votre phrase secrete",
+    amountPlaceholder: "Montant de la derniere transaction",
+    passwordPlaceholder: "Mot de passe",
+    confirmPasswordPlaceholder: "Confirmer mot de passe",
+    passwordHint: "8+ caracteres, 1 majuscule, 1 chiffre",
+    haveAccount: "Vous avez deja un compte ?",
+    signIn: "Se connecter",
+    faq: "FAQ",
+    leftBadge: "",
+    leftText: "",
+    loading: "Traitement...",
+    errCode: "Le code doit contenir 6 chiffres.",
+    errPhrase: "La phrase secrete doit contenir au moins 4 caracteres.",
+    errAmount: "Montant invalide.",
+    errPassword: "Mot de passe faible.",
+    errMatch: "Les mots de passe ne correspondent pas.",
+    errEmail: "Entrez une adresse email valide.",
+    errCodeInvalid: "Code invalide ou expire. Verifiez le code recu puis reessayez.",
+    errSecurityProof: "La preuve de securite est invalide. Verifiez les informations saisies.",
+    errNetwork: "Erreur reseau. Verifiez votre connexion puis reessayez.",
+    errTooMany: "Trop de tentatives. Merci de patienter avant de reessayer.",
+    errSendCodeFailed: "Impossible d'envoyer le code de verification pour le moment.",
+    errVerifyCodeFailed: "Impossible de verifier le code pour le moment.",
+    errCreateFailed: "Impossible de finaliser l'inscription pour le moment.",
+    errResendFailed: "Impossible de renvoyer le code pour le moment.",
+    errRouteMissing: "Service d'inscription indisponible. Redemarrez le backend puis reessayez.",
+  },
+  en: {
+    steps: ["Email", "Email code", "Security", "Password"],
+    stepSidebarTitles: [
+      "Email Identification",
+      "Verification Code",
+      "Security Validation",
+      "Password Setup",
+    ],
+    stepDetails: [
+      "Verification of the email linked to your BH account",
+      "Two-factor authentication with your 6-digit code",
+      "Personal information security check",
+      "Configuration of your secure access",
+    ],
+    activeTag: "IN PROGRESS",
+    title: "Activate your BH client space",
+    subtitle: "Complete this secure 4-step journey to finalize your access.",
+    hintEmail: "Enter the email already linked to your BH account.",
+    hintCode: "Enter the 6-digit code sent by email.",
+    hintSecurity: "Choose one security proof.",
+    hintPassword: "Create a strong password for your next sign-ins.",
+    sendCode: "Send code",
+    verifyCode: "Verify code",
+    continue: "Continue",
+    create: "Create account",
+    back: "Back",
+    home: "Home",
+    resend: "Resend",
+    noCode: "Code not received?",
+    emailPlaceholder: "Enter your email",
+    modePhrase: "Secret phrase",
+    modeTransaction: "Last transaction",
+    phrasePlaceholder: "Your secret phrase",
+    amountPlaceholder: "Last transaction amount",
+    passwordPlaceholder: "Password",
+    confirmPasswordPlaceholder: "Confirm password",
+    passwordHint: "8+ chars, 1 uppercase, 1 digit",
+    haveAccount: "Already have an account?",
+    signIn: "Sign in",
+    faq: "FAQ",
+    leftBadge: "",
+    leftText: "",
+    loading: "Processing...",
+    errCode: "Code must contain 6 digits.",
+    errPhrase: "Secret phrase must contain at least 4 characters.",
+    errAmount: "Invalid amount.",
+    errPassword: "Password is too weak.",
+    errMatch: "Passwords do not match.",
+    errEmail: "Enter a valid email address.",
+    errCodeInvalid: "Invalid or expired code. Check your email and try again.",
+    errSecurityProof: "Security proof is invalid. Check your information and try again.",
+    errNetwork: "Network error. Check your connection and try again.",
+    errTooMany: "Too many attempts. Please wait before trying again.",
+    errSendCodeFailed: "Unable to send verification code right now.",
+    errVerifyCodeFailed: "Unable to verify the code right now.",
+    errCreateFailed: "Unable to complete sign-up right now.",
+    errResendFailed: "Unable to resend code right now.",
+    errRouteMissing: "Sign-in service is unavailable. Restart the backend and try again.",
+  },
+  ar: {
+    steps: ["البريد الإلكتروني", "رمز البريد", "الأمان", "كلمة المرور"],
+    stepSidebarTitles: [
+      "تحديد البريد الإلكتروني",
+      "رمز التحقق",
+      "التحقق الأمني",
+      "كلمة المرور",
+    ],
+    stepDetails: [
+      "التحقق من البريد الإلكتروني المرتبط بحسابك لدى BH",
+      "مصادقة ثنائية عبر رمز مكون من 6 أرقام",
+      "مراجعة معلومات الأمان الشخصية",
+      "إعداد وصول آمن إلى حسابك",
+    ],
+    activeTag: "قيد التنفيذ",
+    title: "تفعيل فضاء الحريف لدى BH",
+    subtitle: "أكمل هذا المسار الآمن المكوّن من 4 مراحل لإتمام الوصول.",
+    hintEmail: "أدخل البريد الإلكتروني المرتبط مسبقًا بحسابك لدى BH.",
+    hintCode: "أدخل الرمز المكوّن من 6 أرقام المرسل عبر البريد الإلكتروني.",
+    hintSecurity: "اختر وسيلة واحدة لإثبات الأمان.",
+    hintPassword: "أنشئ كلمة مرور قوية لعمليات الدخول القادمة.",
+    sendCode: "إرسال الرمز",
+    verifyCode: "تأكيد الرمز",
+    continue: "متابعة",
+    create: "إنشاء الحساب",
+    back: "رجوع",
+    home: "الرئيسية",
+    resend: "إعادة الإرسال",
+    noCode: "لم يصلك الرمز؟",
+    emailPlaceholder: "أدخل بريدك الإلكتروني",
+    modePhrase: "عبارة سرية",
+    modeTransaction: "آخر عملية",
+    phrasePlaceholder: "عبارتك السرية",
+    amountPlaceholder: "مبلغ آخر عملية",
+    passwordPlaceholder: "كلمة المرور",
+    confirmPasswordPlaceholder: "تأكيد كلمة المرور",
+    passwordHint: "8 أحرف على الأقل، حرف كبير واحد، ورقم واحد",
+    haveAccount: "لديك حساب بالفعل؟",
+    signIn: "تسجيل الدخول",
+    faq: "الأسئلة الشائعة",
+    leftBadge: "",
+    leftText: "",
+    loading: "جارٍ المعالجة...",
+    errCode: "يجب أن يتكون الرمز من 6 أرقام.",
+    errPhrase: "يجب أن تحتوي العبارة السرية على 4 أحرف على الأقل.",
+    errAmount: "مبلغ غير صالح.",
+    errPassword: "كلمة المرور ضعيفة.",
+    errMatch: "كلمتا المرور غير متطابقتين.",
+    errEmail: "يرجى إدخال بريد إلكتروني صالح.",
+    errCodeInvalid: "الرمز غير صالح أو منتهي الصلاحية. تحقق من الرمز ثم أعد المحاولة.",
+    errSecurityProof: "بيانات التحقق الأمني غير صحيحة. يرجى المراجعة والمحاولة مجددًا.",
+    errNetwork: "مشكلة في الشبكة. تحقق من الاتصال ثم أعد المحاولة.",
+    errTooMany: "محاولات كثيرة جدا. يرجى الانتظار قبل إعادة المحاولة.",
+    errSendCodeFailed: "تعذر إرسال رمز التحقق حاليا.",
+    errVerifyCodeFailed: "تعذر التحقق من الرمز حاليا.",
+    errCreateFailed: "تعذر إكمال إنشاء الحساب حاليا.",
+    errResendFailed: "تعذر إعادة إرسال الرمز حاليا.",
+    errRouteMissing: "خدمة التسجيل غير متاحة حاليا. أعد تشغيل الخادم ثم حاول مجددًا.",
+  },
+};
+
+const LANGUAGE_OPTIONS = [
+  {
+    code: "ar",
+    label: "AR",
+    flag: flagAr,
+    flagAlt: "Tunisia flag",
+    aria: "Switch to Arabic",
+  },
+  {
+    code: "en",
+    label: "EN",
+    flag: flagEn,
+    flagAlt: "United Kingdom flag",
+    aria: "Switch to English",
+  },
+  {
+    code: "fr",
+    label: "FR",
+    flag: flagFr,
+    flagAlt: "France flag",
+    aria: "Switch to French",
+  },
+];
+
+const CODE_LENGTH = 6;
+
+const toAsciiDigits = (value) =>
+  String(value || "")
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 1632))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 1776));
+
+const extractCodeDigits = (value) =>
+  toAsciiDigits(value)
+    .replace(/\D/g, "")
+    .slice(0, CODE_LENGTH)
+    .split("");
+
+const isStrongPassword = (value) => {
+  const password = String(value || "");
+  return password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password);
+};
+
+const isRouteMissingMessage = (message) =>
+  /(endpoint api introuvable|requested url was not found on the server)/i.test(String(message || ""));
+
+const isLikelyNetworkError = (error) => {
+  if (!error) return false;
+  if (typeof error.status === "number") return false;
+  const message = String(error.message || "").toLowerCase();
+  return message.includes("failed to fetch") || message.includes("network") || message.includes("offline");
+};
+
+const resolveSigninApiError = (error, labels, context = "generic") => {
+  const rawMessage = String(error?.message || "").trim();
+  const normalized = rawMessage.toLowerCase();
+
+  if (error?.status === 404 || isRouteMissingMessage(rawMessage)) {
+    return labels.errRouteMissing;
+  }
+
+  if (isLikelyNetworkError(error)) {
+    return labels.errNetwork;
+  }
+
+  if (error?.status === 429 || /(too many|trop de tentatives|locked)/i.test(rawMessage)) {
+    return labels.errTooMany;
+  }
+
+  if (/email invalide|invalid email/.test(normalized)) {
+    return labels.errEmail;
+  }
+
+  if (/code invalide|invalid code|expire/.test(normalized)) {
+    return labels.errCodeInvalid;
+  }
+
+  if (/phrase secrete invalide|transaction invalide|does not match/.test(normalized)) {
+    return labels.errSecurityProof;
+  }
+
+  if (context === "requestCode") {
+    if (error?.status === 400) return labels.errEmail;
+    return labels.errSendCodeFailed;
+  }
+
+  if (context === "verifyCode") {
+    if (error?.status === 400 || error?.status === 401 || error?.status === 403) {
+      return labels.errCodeInvalid;
+    }
+    return labels.errVerifyCodeFailed;
+  }
+
+  if (context === "complete") {
+    if (error?.status === 401 || error?.status === 403) {
+      return labels.errSecurityProof;
+    }
+    return labels.errCreateFailed;
+  }
+
+  if (context === "resend") {
+    if (error?.status === 400) return labels.errEmail;
+    return labels.errResendFailed;
+  }
+
+  return rawMessage || labels.errCreateFailed;
+};
+
+const STEP_ANIMATION = {
+  initial: { opacity: 0, x: -20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 20 },
+  transition: { duration: 0.3, ease: "easeOut" },
+};
+
+const STEP_ICONS = [Mail, KeyRound, ShieldCheck, Lock];
 
 export function SignInPage() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { language, setLanguage, isRTL } = useLanguage();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [clientId, setClientId] = useState("");
-  const [phoneVerificationRequired, setPhoneVerificationRequired] = useState(true);
+  const t = useMemo(() => LABELS[language] || LABELS.fr, [language]);
 
-  // Step 1: Personal Information
-  const [cardNumber, setCardNumber] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Step 2: Phone Verification
-  const [phoneCode, setPhoneCode] = useState(["", "", "", "", "", ""]);
-
-  // Step 3: Account credentials
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState(() => Array.from({ length: CODE_LENGTH }, () => ""));
+  const [securityMode, setSecurityMode] = useState("phrase");
+  const [securityPhrase, setSecurityPhrase] = useState("");
+  const [lastTransactionAmount, setLastTransactionAmount] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Step 4: Email Verification
-  const [emailCode, setEmailCode] = useState(["", "", "", "", "", ""]);
+  const isDark = theme === "dark";
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const languageOptions = [
-    {
-      code: "ar",
-      label: "AR",
-      flag: flagAr,
-      flagAlt: "Tunisia flag",
-      aria: "Switch to Arabic",
-    },
-    {
-      code: "en",
-      label: "EN",
-      flag: flagEn,
-      flagAlt: "United Kingdom flag",
-      aria: "Switch to English",
-    },
-    {
-      code: "fr",
-      label: "FR",
-      flag: flagFr,
-      flagAlt: "France flag",
-      aria: "Switch to French",
-    },
-  ];
+  const alignClass = isRTL ? "text-right" : "text-left";
+  const baseInputClass = `w-full border rounded-xl py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
+    isDark
+      ? "bg-gray-800 border-gray-700 text-white"
+      : "bg-white border-gray-300 text-gray-900"
+  } ${alignClass}`;
+  const inputStyle = isRTL
+    ? { paddingRight: "3rem", paddingLeft: "1rem" }
+    : { paddingLeft: "3rem", paddingRight: "1rem" };
+  const iconStyle = isRTL ? { right: "1rem" } : { left: "1rem" };
+  const toggleStyle = isRTL ? { left: "1rem" } : { right: "1rem" };
 
-  const stepLabels = {
-    fr: [
-      "Vérification Carte",
-      "Code SMS",
-      "Créer le Compte",
-      "Vérifier Email",
-    ],
-    en: [
-      "Card Verification",
-      "SMS Code",
-      "Create Account",
-      "Verify Email",
-    ],
-    ar: [
-      "التحقق من البطاقة",
-      "رمز SMS",
-      "إنشاء الحساب",
-      "تحقق من البريد",
-    ],
-  };
+  const currentHint =
+    step === 1
+      ? t.hintEmail
+      : step === 2
+        ? t.hintCode
+        : step === 3
+          ? t.hintSecurity
+          : t.hintPassword;
 
-  const localizedSteps = stepLabels[language] || stepLabels.en;
-  const visibleSteps = phoneVerificationRequired
-    ? localizedSteps
-    : [localizedSteps[0], localizedSteps[2], localizedSteps[3]];
-  const visualCurrentStep = phoneVerificationRequired
-    ? currentStep
-    : currentStep === 4
-      ? 3
-      : currentStep;
+  const errorBanner = error ? (
+    <Motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`rounded-2xl border p-3 ${
+        isDark ? "border-red-800/45 bg-red-950/30" : "border-red-200 bg-red-50"
+      }`}
+    >
+      <div className={`flex items-start gap-2.5 ${isRTL ? "flex-row-reverse text-right" : "text-left"}`}>
+        <AlertCircle className={`mt-0.5 h-4 w-4 shrink-0 ${isDark ? "text-red-300" : "text-red-700"}`} />
+        <p className={`text-sm ${isDark ? "text-red-100" : "text-red-700"}`}>{error}</p>
+      </div>
+    </Motion.div>
+  ) : null;
 
-  const signInCopy = {
-    en: {
-      home: "Home",
-      step1Hint: "Card Number (Client ID), full name, birth date and phone number",
-      cardLabel: "Card Number (Client ID)",
-      fullNameLabel: "Full Name",
-      birthDateLabel: "Birth Date",
-      birthDatePlaceholder: "dd/mm/yyyy",
-      phoneLabel: "Phone Number",
-      step1Cta: "Send OTP code",
-      step2DescPrefix: "You received an OTP code at",
-      codeNotReceived: "Didn't receive the code? ",
-      resend: "Resend",
-      back: "Back",
-      verify: "Verify",
-      step3Hint: "Enter email, password and confirm password",
-      emailLabel: "Email Address",
-      emailPlaceholder: "Enter your email",
-      passwordLabel: "Password",
-      passwordPlaceholder: "Create a password",
-      confirmPasswordLabel: "Confirm Password",
-      confirmPasswordPlaceholder: "Confirm your password",
-      passwordMismatch: "Passwords do not match",
-      continue: "Continue",
-      step4DescPrefix: "Enter the OTP code sent to",
-      complete: "Complete",
-      haveAccount: "Already have an account? ",
-      signIn: "Sign in",
-      faq: "FAQ",
-    },
-    fr: {
-      home: "Accueil",
-      step1Hint:
-        "Numero de Carte (ID Client), nom complet, date de naissance et numero de telephone",
-      cardLabel: "Numéro de Carte (ID Client)",
-      fullNameLabel: "Nom Complet",
-      birthDateLabel: "Date de Naissance",
-      birthDatePlaceholder: "jj/mm/aaaa",
-      phoneLabel: "Numéro de téléphone",
-      step1Cta: "Envoyer le code OTP",
-      step2DescPrefix: "Vous avez recu un OTP au",
-      codeNotReceived: "Code non reçu? ",
-      resend: "Renvoyer",
-      back: "Retour",
-      verify: "Vérifier",
-      step3Hint: "Ajoutez email, mot de passe et confirmation",
-      emailLabel: "Adresse email",
-      emailPlaceholder: "Entrez votre email",
-      passwordLabel: "Mot de passe",
-      passwordPlaceholder: "Créer un mot de passe",
-      confirmPasswordLabel: "Confirmer le mot de passe",
-      confirmPasswordPlaceholder: "Confirmer votre mot de passe",
-      passwordMismatch: "Les mots de passe ne correspondent pas",
-      continue: "Continuer",
-      step4DescPrefix: "Entrez le code OTP envoye a",
-      complete: "Terminer",
-      haveAccount: "Vous avez déjà un compte? ",
-      signIn: "Se connecter",
-      faq: "FAQ",
-    },
-    ar: {
-      home: "الرئيسية",
-      step1Hint: "رقم البطاقة (معرف العميل)، الاسم الكامل، تاريخ الميلاد ورقم الهاتف",
-      cardLabel: "رقم البطاقة (معرف العميل)",
-      fullNameLabel: "الاسم الكامل",
-      birthDateLabel: "تاريخ الميلاد",
-      birthDatePlaceholder: "يوم/شهر/سنة",
-      phoneLabel: "رقم الهاتف",
-      step1Cta: "إرسال رمز OTP",
-      step2DescPrefix: "لقد استلمت رمز OTP على",
-      codeNotReceived: "لم يصلك الرمز؟ ",
-      resend: "إعادة الإرسال",
-      back: "رجوع",
-      verify: "تحقق",
-      step3Hint: "أدخل البريد الإلكتروني وكلمة المرور وتأكيدها",
-      emailLabel: "البريد الإلكتروني",
-      emailPlaceholder: "أدخل بريدك الإلكتروني",
-      passwordLabel: "كلمة المرور",
-      passwordPlaceholder: "أنشئ كلمة مرور",
-      confirmPasswordLabel: "تأكيد كلمة المرور",
-      confirmPasswordPlaceholder: "أكد كلمة المرور",
-      passwordMismatch: "كلمتا المرور غير متطابقتين",
-      continue: "متابعة",
-      step4DescPrefix: "أدخل رمز OTP المرسل إلى",
-      complete: "إنهاء",
-      haveAccount: "لديك حساب بالفعل؟ ",
-      signIn: "تسجيل الدخول",
-      faq: "الأسئلة الشائعة",
-    },
-  };
+  const verifyStepTwoCode = async (rawCode, { showLengthError = true } = {}) => {
+    if (step !== 2 || loading) return false;
 
-  const ui = signInCopy[language] || signInCopy.en;
-
-  const handlePhoneCodeChange = (index, value) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newCode = [...phoneCode];
-      newCode[index] = value;
-      setPhoneCode(newCode);
-
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`phone-code-${index + 1}`);
-        nextInput?.focus();
-      }
+    const joinedCode = extractCodeDigits(rawCode).join("");
+    if (joinedCode.length !== CODE_LENGTH) {
+      if (showLengthError) setError(t.errCode);
+      return false;
     }
-  };
-
-  const handleEmailCodeChange = (index, value) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newCode = [...emailCode];
-      newCode[index] = value;
-      setEmailCode(newCode);
-
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`email-code-${index + 1}`);
-        nextInput?.focus();
-      }
-    }
-  };
-
-  const handleResendCode = async (channel) => {
-    setErrorMessage("");
 
     try {
-      setIsSubmitting(true);
-
-      if (channel === "phone") {
-        if (!phoneVerificationRequired) {
-          return;
-        }
-
-        await verifyCard({
-          card_number: cardNumber.trim(),
-          full_name: fullName.trim(),
-          birthday: birthDate.trim(),
-          phone: phoneNumber.trim(),
-        });
-        return;
-      }
-
-      const normalizedEmail = email.trim().toLowerCase();
-      if (!normalizedEmail) {
-        setErrorMessage("Email is required before resending code.");
-        return;
-      }
-
-      await resendEmailOTP({ email: normalizedEmail });
-    } catch (error) {
-      setErrorMessage(error.message || "Unable to resend code.");
+      setLoading(true);
+      setError("");
+      await verifySigninEmailCode({ email: normalizedEmail, code: joinedCode });
+      setStep(3);
+      return true;
+    } catch (e) {
+      setError(resolveSigninApiError(e, t, "verifyCode"));
+      return false;
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  const handleNextStep = async () => {
-    setErrorMessage("");
+  const updateCodeDigit = (index, value) => {
+    const normalized = toAsciiDigits(value).replace(/\D/g, "").slice(-1);
+    const next = [...code];
+    next[index] = normalized;
+    setCode(next);
+    setError("");
 
-    try {
-      setIsSubmitting(true);
+    if (normalized && index < CODE_LENGTH - 1) {
+      document.getElementById(`signin-code-${index + 1}`)?.focus();
+    }
 
-      if (currentStep === 1) {
-        const payload = await verifyCard({
-          card_number: cardNumber.trim(),
-          full_name: fullName.trim(),
-          birthday: birthDate.trim(),
-          phone: phoneNumber.trim(),
-        });
-
-        setClientId(String(payload?.client_id || "").trim());
-        if (payload?.client_name) {
-          setFullName(String(payload.client_name));
-        }
-        const shouldVerifyPhone = payload?.phone_verification_required !== false;
-        setPhoneVerificationRequired(shouldVerifyPhone);
-        setCurrentStep(shouldVerifyPhone ? 2 : 3);
-        return;
-      }
-
-      if (currentStep === 2) {
-        const otp = phoneCode.join("");
-        if (otp.length !== 6) {
-          setErrorMessage("OTP code must contain 6 digits.");
-          return;
-        }
-
-        await verifyOTP({
-          phone: phoneNumber.trim(),
-          code: otp,
-          purpose: "registration",
-        });
-
-        setCurrentStep(3);
-        return;
-      }
-
-      if (currentStep === 3) {
-        if (password !== confirmPassword) {
-          setErrorMessage(ui.passwordMismatch);
-          return;
-        }
-
-        const resolvedClientId = clientId.trim();
-        if (!resolvedClientId) {
-          setErrorMessage("Card verification is required first.");
-          return;
-        }
-
-        const normalizedEmail = email.trim().toLowerCase();
-        const payload = await registerAccount({
-          client_id: resolvedClientId,
-          card_number: cardNumber.trim(),
-          email: normalizedEmail,
-          password,
-          phone: phoneNumber.trim(),
-        });
-
-        setAuthSession({ ...payload, email: normalizedEmail });
-        setCurrentStep(4);
-        return;
-      }
-
-      if (currentStep === 4) {
-        const otp = emailCode.join("");
-        if (otp.length !== 6) {
-          setErrorMessage("Email OTP code must contain 6 digits.");
-          return;
-        }
-
-        await verifyEmail({
-          email: email.trim().toLowerCase(),
-          code: otp,
-        });
-
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      setErrorMessage(error.message || "Sign up failed.");
-    } finally {
-      setIsSubmitting(false);
+    if (next.every((digit) => digit !== "")) {
+      void verifyStepTwoCode(next.join(""), { showLengthError: false });
     }
   };
 
-  const handlePreviousStep = () => {
-    setErrorMessage("");
+  const handleCodePaste = (event) => {
+    event.preventDefault();
+    const pastedDigits = extractCodeDigits(
+      event.clipboardData?.getData("text") || event.nativeEvent?.clipboardData?.getData("text") || "",
+    );
+    if (pastedDigits.length === 0) return;
 
-    if (currentStep === 3 && !phoneVerificationRequired) {
-      setCurrentStep(1);
+    const next = Array.from({ length: CODE_LENGTH }, (_, index) => pastedDigits[index] || "");
+    setCode(next);
+    setError("");
+
+    if (pastedDigits.length === CODE_LENGTH) {
+      void verifyStepTwoCode(next.join(""), { showLengthError: false });
       return;
     }
 
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+    const nextIndex = Math.min(pastedDigits.length, CODE_LENGTH - 1);
+    document.getElementById(`signin-code-${nextIndex}`)?.focus();
+  };
+
+  const handleContinue = async () => {
+    setError("");
+    if (step === 1) {
+      const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+      if (!hasValidEmail) {
+        setError(t.errEmail);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        await requestSigninEmailCode({ email: normalizedEmail });
+        setStep(2);
+      } catch (e) {
+        setError(resolveSigninApiError(e, t, "requestCode"));
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (step === 2) {
+      await verifyStepTwoCode(code.join(""));
+      return;
+    }
+
+    if (step === 3) {
+      if (securityMode === "phrase" && securityPhrase.trim().length < 4) {
+        setError(t.errPhrase);
+        return;
+      }
+      if (securityMode === "transaction") {
+        const amount = String(lastTransactionAmount || "").trim().replace(",", ".");
+        if (!amount || Number.isNaN(Number(amount))) {
+          setError(t.errAmount);
+          return;
+        }
+      }
+      setStep(4);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError(t.errMatch);
+      return;
+    }
+    if (!isStrongPassword(password)) {
+      setError(t.errPassword);
+      return;
+    }
+
+    const payload = { email: normalizedEmail, password };
+    if (securityMode === "phrase") {
+      payload.login_phrase = securityPhrase;
+    } else {
+      payload.last_transaction_amount = String(lastTransactionAmount || "").trim();
+    }
+
+    try {
+      setLoading(true);
+      const authPayload = await completeSigninRegistration(payload);
+      setAuthSession(authPayload);
+      navigate("/dashboard");
+    } catch (e) {
+      setError(resolveSigninApiError(e, t, "complete"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    setError("");
+    if (step > 1) setStep((prev) => prev - 1);
+  };
+
+  const resendCode = async () => {
+    const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+    if (!hasValidEmail) {
+      setError(t.errEmail);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+      await requestSigninEmailCode({ email: normalizedEmail });
+    } catch (e) {
+      setError(resolveSigninApiError(e, t, "resend"));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
-      className={`min-h-screen flex lg:flex-row-reverse ${theme === "dark" ? "bg-gray-900" : ""}`}
+      className={`min-h-screen flex ${isDark ? "bg-gray-900" : ""}`}
     >
-      {/* Left Side - Aesthetic Background */}
       <div
-        className={`hidden lg:flex lg:w-1/2 ${
-          theme === "dark"
-            ? "bg-linear-to-br from-[#10203c] via-[#0d1a30] to-[#0a1424]"
-            : "bg-linear-to-br from-[#10203c] via-[#0d1a30] to-[#0a1424]"
-        } items-center justify-center p-12 relative overflow-hidden`}
+        className={`w-full lg:w-1/2 ${isDark ? "bg-gray-900" : "bg-white"} flex items-center justify-center p-8 overflow-y-auto`}
       >
-        {/* Animated background elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-
-        <div
-          className={`relative z-10 w-full h-[76vh] px-8 lg:px-12 flex items-center ${
-            isRTL ? "justify-start" : "justify-end"
-          }`}
-        >
-          {/* Vertical step indicators across the blue side */}
-          <div className="relative h-full w-full max-w-sm">
-            <div
-              className="absolute top-6 bottom-6 left-5 w-0.5 bg-white/20"
-            />
-
-            <div className="h-full flex flex-col justify-between">
-              {visibleSteps.map((text, index) => {
-                const step = index + 1;
-                const isDone = visualCurrentStep > step;
-                const isActive = visualCurrentStep === step;
-
-                return (
-                  <div
-                    key={step}
-                    className={`relative flex items-center gap-4 ${
-                      isRTL ? "flex-row-reverse text-right" : "text-left"
-                    }`}
-                  >
-                    <div
-                      className={`w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${
-                        isDone || isActive
-                          ? "bg-white text-[#10203c]"
-                          : "bg-white/20 text-white/70"
-                      }`}
-                    >
-                      {isDone ? <Check size={18} /> : step}
-                    </div>
-                    <p
-                      className={`text-base lg:text-lg ${
-                        isActive
-                          ? "text-white font-semibold"
-                          : "text-white/80 font-medium"
-                      }`}
-                    >
-                      {text}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - Signup Form */}
-      <div
-        className={`w-full lg:w-1/2 ${theme === "dark" ? "bg-[#020917]" : "bg-white"} flex items-center justify-center p-8 overflow-y-auto`}
-      >
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
+        <Motion.div
+          initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="w-full max-w-md"
         >
-          {/* Logo - Always at top center */}
-          <div className="mb-8 flex justify-center">
-            <img src={logoExpanded} alt="BH Bank" className="h-12" />
-          </div>
-
           <div
-            className={`mb-6 flex ${isRTL ? "justify-start" : "justify-end"}`}
+            className={`mb-8 flex items-center ${isRTL ? "justify-end" : "justify-start"}`}
           >
             <button
               type="button"
               onClick={() => navigate("/")}
-              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
-                theme === "dark"
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                isDark
                   ? "border border-gray-700 text-gray-200 hover:bg-gray-800"
                   : "border border-[#242f54]/20 text-[#242f54] hover:bg-[#242f54]/5"
               } ${isRTL ? "flex-row-reverse" : ""}`}
             >
               <House size={16} />
-              {ui.home}
+              {t.home}
             </button>
           </div>
 
-          <AnimatePresence mode="wait">
-            {errorMessage && (
-              <p
-                className={`mb-4 text-sm ${
-                  theme === "dark" ? "text-red-400" : "text-red-600"
-                } ${isRTL ? "text-right" : "text-left"}`}
-              >
-                {errorMessage}
-              </p>
-            )}
-
-            {/* Step 1: Personal Information */}
-            {currentStep === 1 && (
-              <motion.div
-                key="step1"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h1
-                  className={`text-4xl mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+          <div className="mb-5 flex flex-wrap gap-2 lg:hidden">
+            {t.steps.map((label, index) => {
+              const current = index + 1;
+              const done = step > current;
+              const active = step === current;
+              return (
+                <span
+                  key={label}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
+                    active
+                      ? "bg-[#242f54] text-white"
+                      : done
+                        ? "bg-emerald-100 text-emerald-700"
+                        : isDark
+                          ? "bg-gray-800 text-gray-300"
+                          : "bg-gray-100 text-gray-700"
+                  }`}
                 >
-                  {localizedSteps[0]}
+                  {done ? <Check size={12} /> : current}
+                  {label}
+                </span>
+              );
+            })}
+          </div>
+
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <Motion.div key="step1" {...STEP_ANIMATION}>
+                <h1
+                  className={`mb-2 text-[36px] ${
+                    isDark ? "text-white" : "text-gray-900"
+                  } ${alignClass}`}
+                >
+                  {t.title}
                 </h1>
                 <p
-                  className={`mb-8 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                  className={`mb-1 ${
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  } ${alignClass}`}
                 >
-                  {ui.step1Hint}
+                  {t.subtitle}
+                </p>
+                <p
+                  className={`mb-8 text-sm ${
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  } ${alignClass}`}
+                >
+                  {currentHint}
                 </p>
 
-                <form className="space-y-6">
-                  {/* Card Number */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                <div className="space-y-6">
+                  <div className="relative">
+                    <div
+                      className={`absolute top-1/2 -translate-y-1/2 ${
+                        isDark ? "text-gray-500" : "text-gray-400"
+                      }`}
+                      style={iconStyle}
                     >
-                      {ui.cardLabel}
-                    </label>
-                    <div className="relative">
-                      <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
-                      >
-                        <CreditCard size={20} />
-                      </div>
+                      <Mail size={20} />
+                    </div>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t.emailPlaceholder}
+                      autoComplete="email"
+                      inputMode="email"
+                      className={baseInputClass}
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  {errorBanner}
+
+                  <button
+                    type="button"
+                    onClick={handleContinue}
+                    disabled={loading}
+                    className="w-full bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {loading ? t.loading : t.sendCode}
+                  </button>
+                </div>
+              </Motion.div>
+            )}
+
+            {step === 2 && (
+              <Motion.div key="step2" {...STEP_ANIMATION}>
+                <h1
+                  className={`mb-2 text-[36px] ${
+                    isDark ? "text-white" : "text-gray-900"
+                  } ${alignClass}`}
+                >
+                  {t.steps[1]}
+                </h1>
+                <p
+                  className={`mb-8 ${
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  } ${alignClass}`}
+                >
+                  {currentHint}
+                </p>
+
+                <div className="space-y-6">
+                  <div className="flex gap-3 justify-center" style={{ direction: "ltr" }}>
+                    {code.map((digit, index) => (
                       <input
+                        key={index}
+                        id={`signin-code-${index}`}
                         type="text"
-                        value={cardNumber}
-                        onChange={(e) =>
-                          setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 19))
-                        }
-                        placeholder="1234567812345678"
+                        dir="ltr"
                         inputMode="numeric"
-                        maxLength={19}
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
+                        maxLength={1}
+                        disabled={loading}
+                        autoComplete={index === 0 ? "one-time-code" : "off"}
+                        value={digit}
+                        onChange={(e) => updateCodeDigit(index, e.target.value)}
+                        onPaste={handleCodePaste}
+                        onKeyDown={(e) => {
+                          if (e.key === "Backspace" && !digit && index > 0) {
+                            document
+                              .getElementById(`signin-code-${index - 1}`)
+                              ?.focus();
+                          }
+                        }}
+                        className={`h-12 w-12 rounded-xl border text-center text-xl font-semibold tabular-nums focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text disabled:opacity-70 ${
+                          isDark
                             ? "bg-gray-800 border-gray-700 text-white"
                             : "bg-white border-gray-300 text-gray-900"
                         }`}
                       />
-                    </div>
+                    ))}
                   </div>
 
-                  {/* Full Name */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                  <p
+                    className={`text-center text-sm ${
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {t.noCode}{" "}
+                    <button
+                      type="button"
+                      onClick={resendCode}
+                      className="text-[#242f54] hover:underline cursor-pointer"
                     >
-                      {ui.fullNameLabel}
-                    </label>
+                      {t.resend}
+                    </button>
+                  </p>
+
+                  {errorBanner}
+
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      disabled={loading}
+                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer disabled:opacity-60 ${
+                        isDark
+                          ? "border-gray-700 text-gray-300 hover:bg-gray-800"
+                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {t.back}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleContinue}
+                      disabled={loading}
+                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60"
+                    >
+                      {loading ? t.loading : t.verifyCode}
+                    </button>
+                  </div>
+                </div>
+              </Motion.div>
+            )}
+
+            {step === 3 && (
+              <Motion.div key="step3" {...STEP_ANIMATION}>
+                <h1
+                  className={`mb-2 text-[36px] ${
+                    isDark ? "text-white" : "text-gray-900"
+                  } ${alignClass}`}
+                >
+                  {t.steps[2]}
+                </h1>
+                <p
+                  className={`mb-8 ${
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  } ${alignClass}`}
+                >
+                  {currentHint}
+                </p>
+
+                <div className="space-y-6">
+                  <div
+                    className={`grid grid-cols-2 rounded-xl border p-1 ${
+                      isDark
+                        ? "border-gray-700 bg-gray-800"
+                        : "border-gray-300 bg-gray-100"
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setSecurityMode("phrase")}
+                      className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                        securityMode === "phrase"
+                          ? "bg-[#242f54] text-white"
+                          : isDark
+                            ? "text-gray-200 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-white"
+                      }`}
+                    >
+                      {t.modePhrase}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSecurityMode("transaction")}
+                      className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                        securityMode === "transaction"
+                          ? "bg-[#242f54] text-white"
+                          : isDark
+                            ? "text-gray-200 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-white"
+                      }`}
+                    >
+                      {t.modeTransaction}
+                    </button>
+                  </div>
+
+                  {securityMode === "phrase" ? (
                     <div className="relative">
                       <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
+                        className={`absolute top-1/2 -translate-y-1/2 ${
+                          isDark ? "text-gray-500" : "text-gray-400"
+                        }`}
+                        style={iconStyle}
                       >
                         <User size={20} />
                       </div>
                       <input
                         type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Full name"
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
+                        value={securityPhrase}
+                        onChange={(e) => setSecurityPhrase(e.target.value)}
+                        placeholder={t.phrasePlaceholder}
+                        className={baseInputClass}
+                        style={inputStyle}
                       />
                     </div>
-                  </div>
-
-                  {/* Birth Date */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                    >
-                      {ui.birthDateLabel}
-                    </label>
+                  ) : (
                     <div className="relative">
                       <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
+                        className={`absolute top-1/2 -translate-y-1/2 ${
+                          isDark ? "text-gray-500" : "text-gray-400"
+                        }`}
+                        style={iconStyle}
                       >
-                        <Calendar size={20} />
+                        <CreditCard size={20} />
                       </div>
                       <input
                         type="text"
-                        value={birthDate}
-                        onChange={(e) => setBirthDate(e.target.value)}
-                        placeholder={ui.birthDatePlaceholder}
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
+                        value={lastTransactionAmount}
+                        onChange={(e) => setLastTransactionAmount(e.target.value)}
+                        placeholder={t.amountPlaceholder}
+                        className={baseInputClass}
+                        style={inputStyle}
                       />
                     </div>
-                  </div>
+                  )}
 
-                  {/* Phone Number */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                    >
-                      {ui.phoneLabel}
-                    </label>
-                    <div className="relative">
-                      <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
-                      >
-                        <Phone size={20} />
-                      </div>
-                      <input
-                        type="tel"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="+216 XX XXX XXX"
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                    </div>
-                  </div>
+                  {errorBanner}
 
-                  {/* Submit Button */}
-                  <button
-                    type="button"
-                    onClick={handleNextStep}
-                    disabled={isSubmitting}
-                    className="w-full bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
-                  >
-                    {isSubmitting ? "..." : ui.step1Cta}
-                  </button>
-                </form>
-              </motion.div>
-            )}
-
-            {/* Step 2: Phone Verification */}
-            {currentStep === 2 && (
-              <motion.div
-                key="step2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h1
-                  className={`text-4xl mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
-                >
-                  {localizedSteps[1]}
-                </h1>
-                <p
-                  className={`mb-8 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                >
-                  {`${ui.step2DescPrefix} ${phoneNumber}`}
-                </p>
-
-                <div className="space-y-6">
-                  {/* SMS Code Input */}
-                  <div className="flex gap-3 justify-center">
-                    {phoneCode.map((digit, index) => (
-                      <input
-                        key={index}
-                        id={`phone-code-${index}`}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) =>
-                          handlePhoneCodeChange(index, e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !digit && index > 0) {
-                            document
-                              .getElementById(`phone-code-${index - 1}`)
-                              ?.focus();
-                          }
-                        }}
-                        className={`w-14 h-14 text-center border rounded-xl text-2xl focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <p
-                    className={`text-center text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {ui.codeNotReceived}
-                    <button
-                      type="button"
-                      onClick={() => handleResendCode("phone")}
-                      disabled={isSubmitting}
-                      className="text-[#242f54] hover:underline cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {ui.resend}
-                    </button>
-                  </p>
-
-                  {/* Buttons */}
                   <div className="flex gap-4">
                     <button
                       type="button"
-                      onClick={handlePreviousStep}
-                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer ${
-                        theme === "dark"
+                      onClick={handleBack}
+                      disabled={loading}
+                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer disabled:opacity-60 ${
+                        isDark
                           ? "border-gray-700 text-gray-300 hover:bg-gray-800"
                           : "border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
                     >
-                      {ui.back}
+                      {t.back}
                     </button>
                     <button
                       type="button"
-                      onClick={handleNextStep}
-                      disabled={isSubmitting}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      onClick={handleContinue}
+                      disabled={loading}
+                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60"
                     >
-                      {isSubmitting ? "..." : ui.verify}
+                      {loading ? t.loading : t.continue}
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             )}
 
-            {/* Step 3: Create Account */}
-            {currentStep === 3 && (
-              <motion.div
-                key="step3"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
+            {step === 4 && (
+              <Motion.div key="step4" {...STEP_ANIMATION}>
                 <h1
-                  className={`text-4xl mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                  className={`mb-2 text-[36px] ${
+                    isDark ? "text-white" : "text-gray-900"
+                  } ${alignClass}`}
                 >
-                  {localizedSteps[2]}
+                  {t.steps[3]}
                 </h1>
                 <p
-                  className={`mb-8 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                  className={`mb-8 ${
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  } ${alignClass}`}
                 >
-                  {ui.step3Hint}
-                </p>
-
-                <form className="space-y-6">
-                  {/* Email */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                    >
-                      {ui.emailLabel}
-                    </label>
-                    <div className="relative">
-                      <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
-                      >
-                        <Mail size={20} />
-                      </div>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder={ui.emailPlaceholder}
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                    >
-                      {ui.passwordLabel}
-                    </label>
-                    <div className="relative">
-                      <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
-                      >
-                        <Lock size={20} />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder={ui.passwordPlaceholder}
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer ${
-                          theme === "dark"
-                            ? "text-gray-500 hover:text-gray-400"
-                            : "text-gray-400 hover:text-gray-600"
-                        }`}
-                      >
-                        {showPassword ? (
-                          <EyeOff size={20} />
-                        ) : (
-                          <Eye size={20} />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div>
-                    <label
-                      className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                    >
-                      {ui.confirmPasswordLabel}
-                    </label>
-                    <div className="relative">
-                      <div
-                        className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}
-                      >
-                        <Lock size={20} />
-                      </div>
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder={ui.confirmPasswordPlaceholder}
-                        className={`w-full border rounded-xl px-12 py-4 placeholder:text-gray-400 focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer ${
-                          theme === "dark"
-                            ? "text-gray-500 hover:text-gray-400"
-                            : "text-gray-400 hover:text-gray-600"
-                        }`}
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff size={20} />
-                        ) : (
-                          <Eye size={20} />
-                        )}
-                      </button>
-                    </div>
-                    {password &&
-                      confirmPassword &&
-                      password !== confirmPassword && (
-                        <p className="text-red-500 text-sm mt-2">
-                          {ui.passwordMismatch}
-                        </p>
-                      )}
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={handlePreviousStep}
-                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer ${
-                        theme === "dark"
-                          ? "border-gray-700 text-gray-300 hover:bg-gray-800"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {ui.back}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleNextStep}
-                      disabled={isSubmitting}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {isSubmitting ? "..." : ui.continue}
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
-            )}
-
-            {/* Step 4: Email Verification */}
-            {currentStep === 4 && (
-              <motion.div
-                key="step4"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h1
-                  className={`text-4xl mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
-                >
-                  {localizedSteps[3]}
-                </h1>
-                <p
-                  className={`mb-8 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                >
-                  {`${ui.step4DescPrefix} ${email}`}
+                  {currentHint}
                 </p>
 
                 <div className="space-y-6">
-                  {/* Email Code Input */}
-                  <div className="flex gap-3 justify-center">
-                    {emailCode.map((digit, index) => (
-                      <input
-                        key={index}
-                        id={`email-code-${index}`}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) =>
-                          handleEmailCodeChange(index, e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !digit && index > 0) {
-                            document
-                              .getElementById(`email-code-${index - 1}`)
-                              ?.focus();
-                          }
-                        }}
-                        className={`w-14 h-14 text-center border rounded-xl text-2xl focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                    ))}
+                  <div className="relative">
+                    <div
+                      className={`absolute top-1/2 -translate-y-1/2 ${
+                        isDark ? "text-gray-500" : "text-gray-400"
+                      }`}
+                      style={iconStyle}
+                    >
+                      <Lock size={20} />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t.passwordPlaceholder}
+                      className={baseInputClass}
+                      style={inputStyle}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((value) => !value)}
+                      className={`absolute top-1/2 -translate-y-1/2 cursor-pointer ${
+                        isDark
+                          ? "text-gray-500 hover:text-gray-400"
+                          : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      style={toggleStyle}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+
+                  <div className="relative">
+                    <div
+                      className={`absolute top-1/2 -translate-y-1/2 ${
+                        isDark ? "text-gray-500" : "text-gray-400"
+                      }`}
+                      style={iconStyle}
+                    >
+                      <Lock size={20} />
+                    </div>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder={t.confirmPasswordPlaceholder}
+                      className={baseInputClass}
+                      style={inputStyle}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((value) => !value)}
+                      className={`absolute top-1/2 -translate-y-1/2 cursor-pointer ${
+                        isDark
+                          ? "text-gray-500 hover:text-gray-400"
+                          : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      style={toggleStyle}
+                    >
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                   </div>
 
                   <p
-                    className={`text-center text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                    className={`text-xs ${
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    } ${alignClass}`}
                   >
-                    {ui.codeNotReceived}
-                    <button
-                      type="button"
-                      onClick={() => handleResendCode("email")}
-                      disabled={isSubmitting}
-                      className="text-[#242f54] hover:underline cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {ui.resend}
-                    </button>
+                    {t.passwordHint}
                   </p>
 
-                  {/* Buttons */}
+                  {errorBanner}
+
                   <div className="flex gap-4">
                     <button
                       type="button"
-                      onClick={handlePreviousStep}
-                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer ${
-                        theme === "dark"
+                      onClick={handleBack}
+                      disabled={loading}
+                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer disabled:opacity-60 ${
+                        isDark
                           ? "border-gray-700 text-gray-300 hover:bg-gray-800"
                           : "border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
                     >
-                      {ui.back}
+                      {t.back}
                     </button>
                     <button
                       type="button"
-                      onClick={handleNextStep}
-                      disabled={isSubmitting}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      onClick={handleContinue}
+                      disabled={loading}
+                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60"
                     >
-                      {isSubmitting ? "..." : ui.complete}
+                      {loading ? t.loading : t.create}
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             )}
           </AnimatePresence>
 
-          {/* Sign in link */}
           <p
-            className={`text-center text-sm mt-8 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+            className={`text-center text-sm mt-8 ${
+              isDark ? "text-gray-400" : "text-gray-600"
+            }`}
           >
-            {ui.haveAccount}
+            {t.haveAccount}{" "}
             <button
+              type="button"
               onClick={() => navigate("/login")}
               className="text-[#242f54] hover:underline cursor-pointer"
             >
-              {ui.signIn}
+              {t.signIn}
             </button>
           </p>
 
-          {/* Bottom Section: Language & FAQ */}
-          <div className="flex items-center justify-center space-x-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div
+            className={`flex items-center justify-center gap-4 mt-6 pt-6 border-t ${
+              isDark ? "border-gray-700" : "border-gray-200"
+            }`}
+          >
             <div
               className={`flex items-center gap-1.5 rounded-2xl p-1.5 ${
-                theme === "dark" ? "bg-gray-800" : "bg-gray-100"
+                isDark ? "bg-gray-800" : "bg-gray-100"
               }`}
             >
-              {languageOptions.map((option) => {
+              {LANGUAGE_OPTIONS.map((option) => {
                 const isActive = language === option.code;
                 return (
                   <button
@@ -1003,7 +1016,7 @@ export function SignInPage() {
                     className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all duration-200 cursor-pointer ${
                       isActive
                         ? "bg-[#0A2240] text-white shadow-sm"
-                        : theme === "dark"
+                        : isDark
                           ? "text-gray-300 hover:bg-gray-700"
                           : "text-gray-700 hover:bg-white"
                     }`}
@@ -1024,20 +1037,90 @@ export function SignInPage() {
             </div>
 
             <div
-              className={`h-6 w-px ${theme === "dark" ? "bg-gray-700" : "bg-gray-300"}`}
+              className={`h-6 w-px ${
+                isDark ? "bg-gray-700" : "bg-gray-300"
+              }`}
             />
+
             <button
+              type="button"
               onClick={() => navigate("/faq")}
               className={`text-sm font-medium cursor-pointer hover:underline ${
-                theme === "dark"
+                isDark
                   ? "text-gray-400 hover:text-white"
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              {ui.faq}
+              {t.faq}
             </button>
           </div>
-        </motion.div>
+        </Motion.div>
+      </div>
+
+      <div
+        className={`hidden lg:flex lg:w-1/2 bg-linear-to-br from-[#10203c] via-[#0d1a30] to-[#0a1424] items-stretch justify-stretch p-6 relative overflow-hidden`}
+      >
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+
+        <div className="relative z-10 flex h-full w-full items-center justify-center text-white">
+          <div className="relative flex h-full w-full max-w-sm flex-col items-center justify-center py-10">
+            <img
+              src={logoWhite}
+              alt="BH Bank"
+              className="mb-12 h-12 w-auto drop-shadow-2xl"
+            />
+
+            <div className="relative z-10 flex w-full flex-col items-center">
+              {t.steps.map((label, index) => {
+                const current = index + 1;
+                const done = step > current;
+                const active = step === current;
+                const Icon = STEP_ICONS[index] || Check;
+                const displayLabel = t.stepSidebarTitles?.[index] || label;
+
+                return (
+                  <div key={label} className="flex flex-col items-center">
+                    <span
+                      className={`relative inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_10px_28px_-22px_rgba(0,0,0,0.95)] ${
+                        active
+                          ? "border-white bg-white text-[#0f172a]"
+                          : done
+                            ? "border-white bg-[#10203c] text-white"
+                            : "border-white/45 bg-[#10203c] text-white/80"
+                      }`}
+                    >
+                      <Icon size={18} />
+                      <span
+                        className={`absolute -bottom-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
+                          isRTL ? "-left-1" : "-right-1"
+                        } ${
+                          active
+                            ? "bg-white text-[#0f172a]"
+                            : done
+                              ? "bg-white/95 text-[#0f172a]"
+                              : "bg-white/22 text-white"
+                        }`}
+                      >
+                        {current}
+                      </span>
+                    </span>
+
+                    <p className={`mt-3 px-2 text-center text-base font-semibold tracking-wide md:text-lg ${active ? "text-white" : "text-white/82"}`}>
+                      {displayLabel}
+                    </p>
+
+                    {index < t.steps.length - 1 ? (
+                      <span className="mt-5 h-10 w-px bg-white/42" />
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

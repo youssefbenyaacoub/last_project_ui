@@ -92,8 +92,8 @@ const initialObjectives = [
 export function Obj() {
   const { theme } = useTheme();
   const { language } = useLanguage();
-  const [objectives, setObjectives] = useState(initialObjectives);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [objectives, _setObjectives] = useState(initialObjectives);
+  const [_showAddModal, setShowAddModal] = useState(false);
 
   const totalTargetAmount = objectives.reduce(
     (sum, obj) => sum + obj.targetAmount,
