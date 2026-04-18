@@ -355,6 +355,9 @@ export function SignInPage() {
   const inputStyle = isRTL
     ? { paddingRight: "3rem", paddingLeft: "1rem" }
     : { paddingLeft: "3rem", paddingRight: "1rem" };
+  const passwordInputStyle = isRTL
+    ? { paddingRight: "3rem", paddingLeft: "3.5rem" }
+    : { paddingLeft: "3rem", paddingRight: "3.5rem" };
   const iconStyle = isRTL ? { right: "1rem" } : { left: "1rem" };
   const toggleStyle = isRTL ? { left: "1rem" } : { right: "1rem" };
 
@@ -896,12 +899,14 @@ export function SignInPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={t.passwordPlaceholder}
                       className={baseInputClass}
-                      style={inputStyle}
+                      style={passwordInputStyle}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((value) => !value)}
-                      className={`absolute top-1/2 -translate-y-1/2 cursor-pointer ${
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      title={showPassword ? "Hide password" : "Show password"}
+                      className={`absolute top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-lg cursor-pointer ${
                         isDark
                           ? "text-gray-500 hover:text-gray-400"
                           : "text-gray-400 hover:text-gray-600"
@@ -927,12 +932,14 @@ export function SignInPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder={t.confirmPasswordPlaceholder}
                       className={baseInputClass}
-                      style={inputStyle}
+                      style={passwordInputStyle}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword((value) => !value)}
-                      className={`absolute top-1/2 -translate-y-1/2 cursor-pointer ${
+                      aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                      title={showConfirmPassword ? "Hide password" : "Show password"}
+                      className={`absolute top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-lg cursor-pointer ${
                         isDark
                           ? "text-gray-500 hover:text-gray-400"
                           : "text-gray-400 hover:text-gray-600"

@@ -24,8 +24,6 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getBudget, upsertBudget } from "../api";
 import { Skeleton, SkeletonLines } from "../components/Skeleton";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 import bhLogo from "../assets/BH_logo2.png";
 
 const currentMonth = () => new Date().toISOString().slice(0, 7);
@@ -939,6 +937,11 @@ export function Budget() {
       setDownloadingPdf(true);
       setError("");
       setFeedback("");
+
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
 
       const printableRows = categories.map((item, index) => {
         const budgetValue = Number(item.budget || 0);

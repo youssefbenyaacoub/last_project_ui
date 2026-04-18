@@ -14,6 +14,9 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import logoExpanded from "../assets/BH_logo2.png";
+import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
+import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
+import flagFr from "../assets/flags/Flag_of_France.svg.png";
 import {
   clearAgentAuthSession,
   createAdminAgent,
@@ -30,8 +33,7 @@ import {
 const copyByLanguage = {
   fr: {
     title: "Plateforme admin",
-    subtitle: "Visiteurs app, risques de connexion et gestion des agents",
-    backDashboard: "Retour dashboard agent",
+    subtitle: "Pilotage risques login, visiteurs et gestion des agents",
     logout: "Deconnexion",
     loading: "Chargement de la plateforme admin...",
     notAdmin: "Acces reserve aux administrateurs BH Bank.",
@@ -91,7 +93,7 @@ const copyByLanguage = {
   en: {
     title: "Admin platform",
     subtitle: "App visitors, login risk and agent management",
-    backDashboard: "Back to agent dashboard",
+    
     logout: "Log out",
     loading: "Loading admin platform...",
     notAdmin: "Admin access only.",
@@ -149,9 +151,9 @@ const copyByLanguage = {
     clientRejectRequest: "Reject client",
   },
   ar: {
-    title: "Admin platform",
-    subtitle: "App visitors, login risk and agent management",
-    backDashboard: "Back to dashboard",
+    title: "منصة الادارة",
+    subtitle: "متابعة الزيارات ومخاطر تسجيل الدخول وادارة الوكلاء",
+    
     logout: "Log out",
     loading: "Loading admin platform...",
     notAdmin: "Admin access only.",
@@ -216,6 +218,30 @@ const getLangKey = (language) => {
   return "fr";
 };
 
+const languageOptions = [
+  {
+    code: "fr",
+    label: "FR",
+    flag: flagFr,
+    flagAlt: "France flag",
+    aria: "Switch to French",
+  },
+  {
+    code: "en",
+    label: "EN",
+    flag: flagEn,
+    flagAlt: "United Kingdom flag",
+    aria: "Switch to English",
+  },
+  {
+    code: "ar",
+    label: "AR",
+    flag: flagAr,
+    flagAlt: "Tunisia flag",
+    aria: "Switch to Arabic",
+  },
+];
+
 const formatDateTime = (value, fallback = "-") => {
   if (!value) return fallback;
   const date = new Date(value);
@@ -226,7 +252,7 @@ const formatDateTime = (value, fallback = "-") => {
 export function AdminPlatformPage() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { language, isRTL } = useLanguage();
+  const { language, setLanguage, isRTL } = useLanguage();
 
   const ui = copyByLanguage[getLangKey(language)] || copyByLanguage.fr;
 
@@ -502,27 +528,41 @@ export function AdminPlatformPage() {
       dir={isRTL ? "rtl" : "ltr"}
     >
       <header className={`border-b ${isDark ? "border-white/10 bg-[#101b31]" : "border-[#d8e3f3] bg-white"}`}>
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-6 py-4">
-          <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <img src={logoExpanded} alt="BH Bank" className="h-10 w-auto" />
-            <div className={isRTL ? "text-right" : "text-left"}>
-              <h1 className="text-xl font-extrabold">{ui.title}</h1>
-              <p className={`text-xs ${isDark ? "text-white/65" : "text-[#5e7393]"}`}>{ui.subtitle}</p>
-            </div>
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-6 py-4">
+          <div className={`${isRTL ? "text-right" : "text-left"}`}>
+            <p className="text-sm font-bold">{ui.title}</p>
+            <p className={`text-xs ${isDark ? "text-white/70" : "text-[#5e7393]"}`}>{ui.subtitle}</p>
           </div>
 
-          <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <button
-              type="button"
-              onClick={() => navigate("/agent/dashboard")}
-              className={
-                isDark
-                  ? "rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10"
-                  : "rounded-xl border border-[#cddcf0] bg-[#f4f8ff] px-3 py-2 text-sm font-semibold text-[#20406c] hover:bg-[#eaf2ff]"
-              }
-            >
-              {ui.backDashboard}
-            </button>
+          <div className="flex justify-center">
+            <img src={logoExpanded} alt="BH Bank" className="h-10 w-auto sm:h-11" />
+          </div>
+
+          <div className={`flex items-center justify-end gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+            {languageOptions.map((item) => {
+              const isActive = language === item.code;
+              return (
+                <button
+                  key={item.code}
+                  type="button"
+                  onClick={() => setLanguage(item.code)}
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-semibold transition ${
+                    isActive
+                      ? isDark
+                        ? "bg-[#1f4b8f] text-white"
+                        : "bg-[#0A2240] text-white"
+                      : isDark
+                        ? "text-white/85 hover:bg-white/10"
+                        : "text-[#3d5174] hover:bg-[#e7eef9]"
+                  }`}
+                  aria-pressed={isActive}
+                  aria-label={item.aria}
+                >
+                  <img src={item.flag} alt={item.flagAlt} className="h-4 w-4 rounded-full object-cover" />
+                </button>
+              );
+            })}
+
             <button
               type="button"
               onClick={handleUnauthorized}

@@ -4,6 +4,9 @@ import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import logoExpanded from "../assets/BH_logo2.png";
+import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
+import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
+import flagFr from "../assets/flags/Flag_of_France.svg.png";
 import {
   checkAgentPortalAccess,
   clearAgentAuthSession,
@@ -15,6 +18,92 @@ import {
 
 const REMEMBER_AGENT_EMAIL_KEY = "bh_agent_last_email";
 const AGENT_ROLE_STORAGE_KEY = "bh_agent_role";
+
+const languageOptions = [
+  {
+    code: "fr",
+    label: "FR",
+    flag: flagFr,
+    flagAlt: "France flag",
+    aria: "Switch to French",
+  },
+  {
+    code: "en",
+    label: "EN",
+    flag: flagEn,
+    flagAlt: "United Kingdom flag",
+    aria: "Switch to English",
+  },
+  {
+    code: "ar",
+    label: "AR",
+    flag: flagAr,
+    flagAlt: "Tunisia flag",
+    aria: "Switch to Arabic",
+  },
+];
+
+const isRouteMissingMessage = (message) =>
+  /(endpoint api introuvable|requested url was not found on the server)/i.test(String(message || ""));
+
+const isLikelyNetworkError = (error) => {
+  if (!error) return false;
+  if (typeof error.status === "number") return false;
+  const message = String(error.message || "").toLowerCase();
+  return message.includes("failed to fetch") || message.includes("network") || message.includes("offline");
+};
+
+const resolveAgentLoginError = (error, ui) => {
+  const rawMessage = String(error?.message || "").trim();
+
+  if (
+    error?.status === 429 ||
+    error?.status === 423 ||
+    /(verrouill|locked|lockout|too many|trop de tentatives|retry|minutes?)/i.test(rawMessage)
+  ) {
+    return rawMessage || ui.lockoutMessage;
+  }
+
+  if (error?.status === 401) {
+    return ui.invalidCredentials;
+  }
+
+  if (error?.status === 400) {
+    return ui.invalidLoginInput;
+  }
+
+  if (error?.status === 404 || isRouteMissingMessage(rawMessage)) {
+    return ui.serviceUnavailable;
+  }
+
+  if (isLikelyNetworkError(error)) {
+    return ui.networkError;
+  }
+
+  return rawMessage || ui.loginFailedFallback;
+};
+
+const resolveAgentForgotError = (error, ui) => {
+  const rawMessage = String(error?.message || "").trim();
+
+  if (error?.status === 400) {
+    return ui.forgotIdentifierRequired;
+  }
+
+  if (error?.status === 429) {
+    return ui.forgotTooManyRequests;
+  }
+
+  if (error?.status === 404 || isRouteMissingMessage(rawMessage)) {
+    return ui.serviceUnavailable;
+  }
+
+  if (isLikelyNetworkError(error)) {
+    return ui.networkError;
+  }
+
+  return rawMessage || ui.forgotRequestFailed;
+};
 
 const copyByLanguage = {
   en: {
@@ -37,9 +126,18 @@ const copyByLanguage = {
     forgotSubmit: "Send request",
     forgotSubmitting: "Sending...",
     forgotClose: "Close",
+    forgotTooManyRequests: "Too many reset requests. Please wait before trying again.",
     forgotSuccess:
       "Your request was submitted. You will receive an email after the administrator decision.",
-    signIn: "Sign in as agent",
+    forgotRequestFailed: "Unable to submit your reset request right now.",
+    emailPasswordRequired: "Email/username and password are required.",
+    invalidCredentials: "Email/username or password is incorrect.",
+    invalidLoginInput: "Please verify your login details and try again.",
+    lockoutMessage: "Too many attempts. Your account is temporarily locked.",
+    networkError: "Network error. Check your connection and try again.",
+    serviceUnavailable: "Authentication service is unavailable. Try again shortly.",
+    loginFailedFallback: "Agent login failed.",
+    signIn: "Sign in",
     loading: "Signing in...",
     scopeTitle: "After login, your dashboard is categorized",
     scopeProfile: "Client profile and household context",
@@ -75,9 +173,18 @@ const copyByLanguage = {
     forgotSubmit: "Envoyer la demande",
     forgotSubmitting: "Envoi...",
     forgotClose: "Fermer",
+    forgotTooManyRequests: "Trop de demandes de reinitialisation. Veuillez patienter.",
     forgotSuccess:
       "Votre demande a ete envoyee. Vous recevrez un email apres la decision de l'administrateur.",
-    signIn: "Connexion agent",
+    forgotRequestFailed: "Impossible d'envoyer la demande de reinitialisation pour le moment.",
+    emailPasswordRequired: "Email/username et mot de passe sont obligatoires.",
+    invalidCredentials: "Email/username ou mot de passe incorrect.",
+    invalidLoginInput: "Verifiez vos informations puis reessayez.",
+    lockoutMessage: "Trop de tentatives. Votre compte est temporairement verrouille.",
+    networkError: "Erreur reseau. Verifiez votre connexion puis reessayez.",
+    serviceUnavailable: "Le service d'authentification est indisponible pour le moment.",
+    loginFailedFallback: "Connexion agent impossible.",
+    signIn: "Connexion",
     loading: "Connexion...",
     scopeTitle: "Apres connexion, votre dashboard est categorise",
     scopeProfile: "Profil client et contexte familial",
@@ -94,42 +201,51 @@ const copyByLanguage = {
     securityStorage: "Cles de stockage dediees: bh_agent_*",
   },
   ar: {
-    title: "Agent Portal",
-    subtitle: "Secure BH Bank staff access",
-    accessBadge: "Secure staff session",
-    emailLabel: "Agent email or username",
-    emailPlaceholder: "name@bhbank.tn or AGT-001",
-    passwordLabel: "Password",
-    passwordPlaceholder: "Enter your password",
-    rememberMe: "Remember my agent login",
-    forgotPasswordAction: "Forgot your password?",
-    forgotTitle: "Password reset request",
-    forgotSubtitle: "An administrator must approve your request before a reset link is sent.",
-    forgotIdentifierLabel: "Agent email or username",
-    forgotIdentifierPlaceholder: "name@bhbank.tn or AGT-001",
-    forgotIdentifierRequired: "Please enter your agent email or username.",
-    forgotReasonLabel: "Reason (optional)",
-    forgotReasonPlaceholder: "Example: lost password, locked account",
-    forgotSubmit: "Send request",
-    forgotSubmitting: "Sending...",
-    forgotClose: "Close",
+    title: "بوابة الوكيل",
+    subtitle: "دخول آمن لموظفي بنك BH",
+    accessBadge: "جلسة موظفين آمنة",
+    emailLabel: "بريد الوكيل أو اسم المستخدم",
+    emailPlaceholder: "name@bhbank.tn أو AGT-001",
+    passwordLabel: "كلمة المرور",
+    passwordPlaceholder: "أدخل كلمة المرور",
+    rememberMe: "تذكر تسجيل دخول الوكيل",
+    forgotPasswordAction: "هل نسيت كلمة المرور؟",
+    forgotTitle: "طلب إعادة تعيين كلمة المرور",
+    forgotSubtitle: "يجب أن يوافق المسؤول على طلبك قبل إرسال رابط إعادة التعيين.",
+    forgotIdentifierLabel: "بريد الوكيل أو اسم المستخدم",
+    forgotIdentifierPlaceholder: "name@bhbank.tn أو AGT-001",
+    forgotIdentifierRequired: "يرجى إدخال بريد الوكيل أو اسم المستخدم.",
+    forgotReasonLabel: "السبب (اختياري)",
+    forgotReasonPlaceholder: "مثال: فقدان كلمة المرور، حساب مقفل",
+    forgotSubmit: "إرسال الطلب",
+    forgotSubmitting: "جارٍ الإرسال...",
+    forgotClose: "إغلاق",
+    forgotTooManyRequests: "طلبات إعادة التعيين كثيرة جدًا. حاول لاحقًا.",
     forgotSuccess:
-      "Your request was submitted. You will receive an email after the administrator decision.",
-    signIn: "Agent sign in",
-    loading: "Signing in...",
-    scopeTitle: "After login, your dashboard is categorized",
-    scopeProfile: "Client profile and household context",
-    scopeFinance: "Financial indicators and borrowing capacity",
-    scopeRisk: "Risk level and credit decision reasons",
-    scopeProducts: "Existing products and cross-sell opportunities",
-    workspaceTitle: "BH Agent Workspace",
+      "تم إرسال طلبك. ستتلقى رسالة بريد إلكتروني بعد قرار المسؤول.",
+    forgotRequestFailed: "تعذر إرسال طلب إعادة التعيين حاليًا.",
+    emailPasswordRequired: "بريد/اسم المستخدم وكلمة المرور مطلوبان.",
+    invalidCredentials: "بريد/اسم المستخدم أو كلمة المرور غير صحيحة.",
+    invalidLoginInput: "يرجى التحقق من بيانات الدخول ثم المحاولة مرة أخرى.",
+    lockoutMessage: "محاولات كثيرة جدًا. تم قفل الحساب مؤقتًا.",
+    networkError: "مشكلة في الشبكة. تحقق من الاتصال ثم أعد المحاولة.",
+    serviceUnavailable: "خدمة المصادقة غير متاحة حاليًا. حاول بعد قليل.",
+    loginFailedFallback: "فشل تسجيل دخول الوكيل.",
+    signIn:  "تسجيل الدخول",
+    loading: "جارٍ تسجيل الدخول...",
+    scopeTitle: "بعد تسجيل الدخول، تصبح لوحة التحكم مصنفة",
+    scopeProfile: "ملف العميل والسياق العائلي",
+    scopeFinance: "المؤشرات المالية والقدرة على الاقتراض",
+    scopeRisk: "مستوى المخاطر وأسباب قرار الائتمان",
+    scopeProducts: "المنتجات الحالية وفرص البيع الإضافي",
+    workspaceTitle: "مساحة وكيل BH",
     workspaceDescription:
-      "This portal is reserved for BH Bank staff. Agent sessions use dedicated authentication and isolated local storage keys.",
-    primaryInfoLabel: "Key login information",
-    securityTitle: "Security and scope",
-    securityEndpoint: "Dedicated endpoint: /api/auth/agent/login",
-    securityRoutes: "Dedicated routes: /agent/login and /agent/dashboard",
-    securityStorage: "Dedicated storage keys: bh_agent_*",
+      "هذه البوابة مخصصة لموظفي بنك BH. جلسات الوكيل تستخدم مصادقة مخصصة ومفاتيح تخزين محلية معزولة.",
+    primaryInfoLabel: "معلومات تسجيل الدخول الأساسية",
+    securityTitle: "الأمان والنطاق",
+    securityEndpoint: "نقطة نهاية مخصصة: /api/auth/agent/login",
+    securityRoutes: "مسارات مخصصة: /agent/login و /agent/dashboard",
+    securityStorage: "مفاتيح تخزين مخصصة: bh_agent_*",
   },
 };
 
@@ -142,7 +258,7 @@ const getLangKey = (language) => {
 export function AgentLoginPage() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { language, isRTL } = useLanguage();
+  const { language, setLanguage, isRTL } = useLanguage();
 
   const ui = copyByLanguage[getLangKey(language)] || copyByLanguage.fr;
 
@@ -205,12 +321,17 @@ export function AgentLoginPage() {
     event.preventDefault();
     if (isSubmitting) return;
 
+    const identifier = email.trim();
+    if (!identifier || !password.trim()) {
+      setErrorMessage(ui.emailPasswordRequired);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setErrorMessage("");
       clearAgentAuthSession();
 
-      const identifier = email.trim();
       const normalizedIdentifier = identifier.includes("@")
         ? identifier.toLowerCase()
         : identifier.toUpperCase();
@@ -230,7 +351,7 @@ export function AgentLoginPage() {
       const role = String(payload?.agent?.role || "").toLowerCase();
       navigate(role === "admin" ? "/agent/admin" : "/agent/dashboard", { replace: true });
     } catch (error) {
-      setErrorMessage(error.message || "Agent login failed.");
+      setErrorMessage(resolveAgentLoginError(error, ui));
     } finally {
       setIsSubmitting(false);
     }
@@ -276,7 +397,7 @@ export function AgentLoginPage() {
       setForgotFeedback(payload?.message || ui.forgotSuccess);
       setForgotReason("");
     } catch (error) {
-      setForgotError(error.message || "Unable to submit reset request.");
+      setForgotError(resolveAgentForgotError(error, ui));
     } finally {
       setForgotSubmitting(false);
     }
@@ -287,31 +408,58 @@ export function AgentLoginPage() {
       <div className="pointer-events-none absolute -left-12 top-0 h-72 w-72 rounded-full bg-[#0A2240]/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[#D71920]/10 blur-3xl" />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl items-center px-5 py-8 sm:px-8">
-        <div className="grid w-full gap-8">
+      <div className="fixed right-3 top-1/2 z-30 -translate-y-1/2 sm:right-5">
+        <div
+          className={`inline-flex flex-col items-stretch gap-1 rounded-2xl border p-1.5 ${
+            theme === "dark" ? "border-white/20 bg-[#0f1d34]" : "border-[#d4ddec] bg-[#f4f7fc]"
+          }`}
+        >
+          {languageOptions.map((item) => {
+            const isActive = language === item.code;
+            return (
+              <button
+                key={item.code}
+                type="button"
+                onClick={() => setLanguage(item.code)}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-semibold transition ${
+                  isActive
+                    ? theme === "dark"
+                      ? "bg-[#1f4b8f] text-white"
+                      : "bg-[#0A2240] text-white"
+                    : theme === "dark"
+                      ? "text-white/85 hover:bg-white/10"
+                      : "text-[#3d5174] hover:bg-[#e7eef9]"
+                }`}
+                aria-pressed={isActive}
+                aria-label={item.aria}
+              >
+                <img src={item.flag} alt={item.flagAlt} className="h-4 w-4 rounded-full object-cover" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="relative mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center px-4 py-6 sm:px-6">
+        <div className="grid w-full max-w-2xl gap-6">
           <section
-            className={`rounded-4xl border p-8 sm:p-10 ${
+            className={`rounded-3xl border p-6 sm:p-7 ${
               theme === "dark"
                 ? "border-white/10 bg-[#111f37]/95 text-white shadow-[0_18px_35px_rgba(0,0,0,0.35)]"
                 : "border-[#dbe4f2] bg-white text-[#13233f] shadow-[0_16px_32px_rgba(18,35,65,0.09)]"
             }`}
           >
-            <div className={`mb-8 flex items-center justify-between gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <img src={logoExpanded} alt="BH Bank" className="h-11 w-auto" />
-              <div
-                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                  theme === "dark"
-                    ? "border-[#3e6db1]/70 bg-[#10213e] text-[#bdd5ff]"
-                    : "border-[#c6d7f1] bg-[#eef4ff] text-[#214b89]"
-                } ${isRTL ? "flex-row-reverse" : ""}`}
-              >
-                <ShieldCheck size={14} />
-                {ui.accessBadge}
+            <div className="mb-7 space-y-4">
+              <div className="flex justify-center">
+                <img src={logoExpanded} alt="BH Bank" className="h-10 w-auto" />
               </div>
-            </div>
 
-            <div className={`mb-7 ${isRTL ? "text-right" : "text-left"}`}>
-              <h1 className="text-3xl font-extrabold tracking-tight sm:text-[2.15rem]">{ui.title}</h1>
+              <div className="text-center">
+                <h1 className="text-2xl font-extrabold tracking-tight sm:text-[1.85rem]">{ui.title}</h1>
+                <p className={`mt-1 text-sm ${theme === "dark" ? "text-white/75" : "text-[#60718f]"}`}>
+                  {ui.subtitle}
+                </p>
+              </div>
             </div>
 
             <form className="space-y-5" onSubmit={handleSubmit}>
@@ -325,13 +473,13 @@ export function AgentLoginPage() {
                     } ${theme === "dark" ? "text-white/50" : "text-[#7384a4]"}`}
                   />
                   <input
-                    type="email"
+                    type="text"
                     name="username"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     autoComplete="username"
                     placeholder={ui.emailPlaceholder}
-                    className={`w-full rounded-xl border py-3.5 ${
+                    className={`w-full rounded-xl border py-3 text-sm ${
                       isRTL ? "pr-11 pl-3 text-right" : "pl-11 pr-3 text-left"
                     } ${
                       theme === "dark"
@@ -359,7 +507,7 @@ export function AgentLoginPage() {
                     onChange={(event) => setPassword(event.target.value)}
                     autoComplete="current-password"
                     placeholder={ui.passwordPlaceholder}
-                    className={`w-full rounded-xl border py-3.5 ${
+                    className={`w-full rounded-xl border py-3 text-sm ${
                       isRTL ? "pr-11 pl-11 text-right" : "pl-11 pr-11 text-left"
                     } ${
                       theme === "dark"
@@ -380,7 +528,7 @@ export function AgentLoginPage() {
                 </div>
               </div>
 
-              <div className={`flex flex-wrap items-center justify-between gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div className={`flex flex-wrap items-center justify-between gap-3 pt-1 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <label className={`inline-flex items-center gap-2 text-sm ${isRTL ? "flex-row-reverse" : ""}`}>
                   <input
                     type="checkbox"
@@ -414,9 +562,9 @@ export function AgentLoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0A2240] px-4 py-3.5 font-semibold text-white transition hover:bg-[#122f57] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0A2240] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#122f57] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <ShieldCheck size={18} />
+                
                 {isSubmitting ? ui.loading : ui.signIn}
               </button>
             </form>
@@ -427,7 +575,7 @@ export function AgentLoginPage() {
       {forgotOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#081326]/65 px-4" onClick={closeForgotModal}>
           <div
-            className={`w-full max-w-lg rounded-3xl border p-6 sm:p-7 ${
+            className={`w-full max-w-md rounded-3xl border p-5 sm:p-6 ${
               theme === "dark"
                 ? "border-white/15 bg-[#0f1e36] text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
                 : "border-[#d8e1ef] bg-white text-[#14233e] shadow-[0_20px_40px_rgba(18,35,65,0.2)]"
@@ -435,7 +583,7 @@ export function AgentLoginPage() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className={`mb-3 flex items-center justify-between gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <h2 className="text-xl font-bold">{ui.forgotTitle}</h2>
+              <h2 className="text-lg font-bold">{ui.forgotTitle}</h2>
               <button
                 type="button"
                 onClick={closeForgotModal}
@@ -518,7 +666,7 @@ export function AgentLoginPage() {
               <button
                 type="submit"
                 disabled={forgotSubmitting}
-                className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0A2240] px-4 py-3 font-semibold text-white transition hover:bg-[#122f57] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0A2240] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#122f57] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {forgotSubmitting ? ui.forgotSubmitting : ui.forgotSubmit}
               </button>

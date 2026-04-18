@@ -134,7 +134,7 @@ export function ClientResetPasswordPage() {
 
   return (
     <div className={`min-h-screen ${isDark ? "bg-[#0d1628] text-white" : "bg-[#edf2f9] text-[#13233f]"}`} dir={isRTL ? "rtl" : "ltr"}>
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl items-center px-5 py-8 sm:px-8">
+      <main className="mx-auto flex min-h-screen w-full max-w-5xl items-center px-5 py-8 sm:px-8">
         <section className={`mx-auto w-full max-w-xl rounded-3xl border p-8 sm:p-10 ${isDark ? "border-white/10 bg-[#111f37]/95" : "border-[#dbe4f2] bg-white"}`}>
           <div className="mb-7 flex items-center justify-between gap-3">
             <img src={logoExpanded} alt="BH Bank" className="h-11 w-auto" />
@@ -157,7 +157,7 @@ export function ClientResetPasswordPage() {
 
           <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className={`mb-2 block text-sm font-medium ${isRTL ? "text-right" : "text-left"}`}>{ui.passwordLabel}</label>
+              <label htmlFor="client-reset-password" className={`mb-2 block text-sm font-medium ${isRTL ? "text-right" : "text-left"}`}>{ui.passwordLabel}</label>
               <div className="relative">
                 <Lock
                   size={18}
@@ -166,12 +166,13 @@ export function ClientResetPasswordPage() {
                   } ${isDark ? "text-white/50" : "text-[#7384a4]"}`}
                 />
                 <input
+                  id="client-reset-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="new-password"
                   className={`w-full rounded-xl border py-3.5 ${
-                    isRTL ? "pr-11 pl-11 text-right" : "pl-11 pr-11 text-left"
+                    isRTL ? "pr-12 pl-12 text-right" : "pl-12 pr-12 text-left"
                   } ${
                     isDark
                       ? "border-white/15 bg-[#0c1628] text-white placeholder:text-white/35"
@@ -182,7 +183,9 @@ export function ClientResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? "left-4" : "right-4"} ${
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  title={showPassword ? "Hide password" : "Show password"}
+                  className={`absolute top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-lg ${isRTL ? "left-2" : "right-2"} ${
                     isDark ? "text-white/65" : "text-[#7384a4]"
                   }`}
                 >
@@ -192,7 +195,7 @@ export function ClientResetPasswordPage() {
             </div>
 
             <div>
-              <label className={`mb-2 block text-sm font-medium ${isRTL ? "text-right" : "text-left"}`}>{ui.confirmLabel}</label>
+              <label htmlFor="client-reset-confirm-password" className={`mb-2 block text-sm font-medium ${isRTL ? "text-right" : "text-left"}`}>{ui.confirmLabel}</label>
               <div className="relative">
                 <Lock
                   size={18}
@@ -201,12 +204,13 @@ export function ClientResetPasswordPage() {
                   } ${isDark ? "text-white/50" : "text-[#7384a4]"}`}
                 />
                 <input
+                  id="client-reset-confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   autoComplete="new-password"
                   className={`w-full rounded-xl border py-3.5 ${
-                    isRTL ? "pr-11 pl-11 text-right" : "pl-11 pr-11 text-left"
+                    isRTL ? "pr-12 pl-12 text-right" : "pl-12 pr-12 text-left"
                   } ${
                     isDark
                       ? "border-white/15 bg-[#0c1628] text-white placeholder:text-white/35"
@@ -217,14 +221,16 @@ export function ClientResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? "left-4" : "right-4"} ${
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  title={showConfirmPassword ? "Hide password" : "Show password"}
+                  className={`absolute top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-lg ${isRTL ? "left-2" : "right-2"} ${
                     isDark ? "text-white/65" : "text-[#7384a4]"
                   }`}
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              <p className={`mt-2 text-xs ${isDark ? "text-white/55" : "text-[#6f82a3]"}`}>{ui.passwordHint}</p>
+              <p className={`mt-2 text-xs ${isDark ? "text-white/75" : "text-[#4b5f80]"}`}>{ui.passwordHint}</p>
             </div>
 
             {error && (
@@ -270,7 +276,7 @@ export function ClientResetPasswordPage() {
             </button>
           </form>
         </section>
-      </div>
+      </main>
     </div>
   );
 }

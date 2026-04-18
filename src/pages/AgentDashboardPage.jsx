@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   AlertCircle,
-  Building2,
   CheckCircle2,
   Download,
   FileCheck2,
@@ -10,7 +9,6 @@ import {
   MapPinned,
   RefreshCw,
   Search,
-  Users,
   XCircle,
 } from "lucide-react";
 import {
@@ -24,6 +22,9 @@ import "leaflet/dist/leaflet.css";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import logoExpanded from "../assets/BH_logo2.png";
+import flagAr from "../assets/flags/Flag_of_Tunisia.svg.webp";
+import flagEn from "../assets/flags/Flag_of_the_United_Kingdom_(3-5).svg.webp";
+import flagFr from "../assets/flags/Flag_of_France.svg.png";
 import { Skeleton, SkeletonLines } from "../components/Skeleton";
 import {
   clearAgentAuthSession,
@@ -76,6 +77,8 @@ const copyByLanguage = {
     loginExpired: "Session expired. Please sign in again.",
     changePassword: "Change password",
     logout: "Log out",
+    welcomeLabel: "Welcome",
+    agentFallbackName: "Agent",
     yes: "Yes",
     no: "No",
     idLabel: "Client ID",
@@ -174,6 +177,17 @@ const copyByLanguage = {
     tabComplaints: "Complaints inbox",
     tabClients: "Client desk",
     workspaceNavHint: "Quick switch: click a tab to open its live view.",
+    ultraPrev: "Previous",
+    ultraNext: "Next",
+    ultraPageLabel: "Page",
+    clientPrev: "Previous",
+    clientNext: "Next",
+    clientPageLabel: "Client section",
+    eligibilityCirclesTitle: "Eligibility and client volume",
+    eligibleCircleLabel: "Eligible",
+    partiallyCircleLabel: "Partially eligible",
+    notEligibleCircleLabel: "Not eligible",
+    clientsTargetCircleLabel: "Clients (target 5000)",
     ultraDataMissingTitle: "Ultra data not fully available",
     ultraDataMissingHint: "The analytics source did not return enough fields. Refresh after backend sync.",
   },
@@ -212,6 +226,8 @@ const copyByLanguage = {
     loginExpired: "Session expiree. Reconnectez-vous.",
     changePassword: "Changer mot de passe",
     logout: "Deconnexion",
+    welcomeLabel: "Bienvenue",
+    agentFallbackName: "Agent",
     yes: "Oui",
     no: "Non",
     idLabel: "ID client",
@@ -310,6 +326,17 @@ const copyByLanguage = {
     tabComplaints: "Boite reclamations",
     tabClients: "Dossiers clients",
     workspaceNavHint: "Navigation rapide: cliquez un onglet pour afficher la vue.",
+    ultraPrev: "Precedent",
+    ultraNext: "Suivant",
+    ultraPageLabel: "Page",
+    clientPrev: "Precedent",
+    clientNext: "Suivant",
+    clientPageLabel: "Section dossier",
+    eligibilityCirclesTitle: "Eligibilite et volume clients",
+    eligibleCircleLabel: "Eligible",
+    partiallyCircleLabel: "Partiel",
+    notEligibleCircleLabel: "Non eligible",
+    clientsTargetCircleLabel: "Clients (objectif 5000)",
     ultraDataMissingTitle: "Donnees ultra incompletes",
     ultraDataMissingHint: "La source analytics n'a pas renvoye assez de champs. Relancez apres synchronisation backend.",
   },
@@ -348,6 +375,8 @@ const copyByLanguage = {
     loginExpired: "Session expired. Please sign in again.",
     changePassword: "Change password",
     logout: "Log out",
+    welcomeLabel: "مرحبا",
+    agentFallbackName: "الوكيل",
     yes: "Yes",
     no: "No",
     idLabel: "Client ID",
@@ -440,12 +469,23 @@ const copyByLanguage = {
     openComplaintsLabel: "Open complaints",
     closedComplaintsLabel: "Closed complaints",
     noStatsYet: "No stats available yet.",
-    tabPortfolio: "Network pulse",
-    tabUltra: "Ultra analytics",
-    tabAgencies: "Agencies",
-    tabComplaints: "Complaints inbox",
-    tabClients: "Client desk",
-    workspaceNavHint: "Quick switch: click a tab to open its live view.",
+    tabPortfolio: "نبض الشبكة",
+    tabUltra: "تحليلات متقدمة",
+    tabAgencies: "الوكالات",
+    tabComplaints: "صندوق الشكاوى",
+    tabClients: "ملفات العملاء",
+    workspaceNavHint: "تنقل سريع: اضغط على تبويب لعرض الصفحة.",
+    ultraPrev: "السابق",
+    ultraNext: "التالي",
+    ultraPageLabel: "الصفحة",
+    clientPrev: "السابق",
+    clientNext: "التالي",
+    clientPageLabel: "قسم الملف",
+    eligibilityCirclesTitle: "الاهلية وحجم العملاء",
+    eligibleCircleLabel: "مؤهل",
+    partiallyCircleLabel: "مؤهل جزئيا",
+    notEligibleCircleLabel: "غير مؤهل",
+    clientsTargetCircleLabel: "العملاء (هدف 5000)",
     ultraDataMissingTitle: "Ultra data not fully available",
     ultraDataMissingHint: "The analytics source did not return enough fields. Refresh after backend sync.",
   },
@@ -456,6 +496,30 @@ const getLangKey = (language) => {
   if (language === "en") return "en";
   return "fr";
 };
+
+const languageOptions = [
+  {
+    code: "fr",
+    label: "FR",
+    flag: flagFr,
+    flagAlt: "France flag",
+    aria: "Switch to French",
+  },
+  {
+    code: "en",
+    label: "EN",
+    flag: flagEn,
+    flagAlt: "United Kingdom flag",
+    aria: "Switch to English",
+  },
+  {
+    code: "ar",
+    label: "AR",
+    flag: flagAr,
+    flagAlt: "Tunisia flag",
+    aria: "Switch to Arabic",
+  },
+];
 
 const complaintsUiByLanguage = {
   en: {
@@ -947,9 +1011,9 @@ function AgencyBubbleMap({ agencies, selectedAgencyName, onSelectAgency, ui, isD
               >
                 <Popup>
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold">{agency?.name || "Agence"}</p>
+                    <p className="text-sm font-semibold">{agency?.name || ui.selectedAgency || "Agency"}</p>
                     <p className="text-xs">{agency?.region || "Autres zones"}</p>
-                    <p className="text-xs font-semibold">{count.toLocaleString()} client(s)</p>
+                    <p className="text-xs font-semibold">{count.toLocaleString()} {ui.totalClientsLabel}</p>
                   </div>
                 </Popup>
               </CircleMarker>
@@ -957,6 +1021,44 @@ function AgencyBubbleMap({ agencies, selectedAgencyName, onSelectAgency, ui, isD
           })}
         </MapContainer>
       </div>
+    </div>
+  );
+}
+
+function CircleStatCard({ label, value, total, strokeColor = "#0A4DB3" }) {
+  const rawValue = Number(value);
+  const safeValue = Number.isFinite(rawValue) ? Math.max(0, rawValue) : 0;
+  const rawTotal = Number(total);
+  const safeTotal = Number.isFinite(rawTotal) && rawTotal > 0 ? rawTotal : Math.max(safeValue, 1);
+  const ratio = Math.min(1, safeValue / safeTotal);
+
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset = circumference * (1 - ratio);
+
+  return (
+    <div className="rounded-xl border border-[#d5e2f4] bg-white p-3 text-black">
+      <div className="relative mx-auto h-28 w-28">
+        <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+          <circle cx="50" cy="50" r={radius} stroke="#e6eef9" strokeWidth="8" fill="none" />
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            stroke={strokeColor}
+            strokeWidth="8"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={dashOffset}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-lg font-extrabold text-black">{Math.round(safeValue).toLocaleString()}</span>
+          <span className="text-[10px] font-semibold text-slate-500">{Math.round(ratio * 100)}%</span>
+        </div>
+      </div>
+      <p className="mt-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-600">{label}</p>
     </div>
   );
 }
@@ -1006,7 +1108,7 @@ function AgentWorkspaceSkeleton({ isDark }) {
 export function AgentDashboardPage() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { language, isRTL } = useLanguage();
+  const { language, setLanguage, isRTL } = useLanguage();
 
   const ui = copyByLanguage[getLangKey(language)] || copyByLanguage.fr;
   const complaintsUi = complaintsUiByLanguage[getLangKey(language)] || complaintsUiByLanguage.fr;
@@ -1046,7 +1148,9 @@ export function AgentDashboardPage() {
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [reportFeedback, setReportFeedback] = useState("");
   const [reportFeedbackError, setReportFeedbackError] = useState(false);
-  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState("portfolio");
+  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState("ultra");
+  const [activeUltraPage, setActiveUltraPage] = useState(0);
+  const [hideWorkspaceNavOnScroll, setHideWorkspaceNavOnScroll] = useState(false);
 
   const loadDashboardSnapshot = useCallback(async () => {
     try {
@@ -1375,6 +1479,23 @@ export function AgentDashboardPage() {
     loadAgentComplaints(agentComplaintFilter);
   }, [activeWorkspaceTab, agentComplaintFilter, loadAgentComplaints]);
 
+  useEffect(() => {
+    if (activeWorkspaceTab !== "agencies") {
+      setHideWorkspaceNavOnScroll(false);
+      return;
+    }
+
+    const onScroll = () => {
+      setHideWorkspaceNavOnScroll(window.scrollY > 280);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [activeWorkspaceTab]);
+
   const clientName = clientSummary?.client_name || creditAnalysis?.client_name || "Client";
   const clientInitials = useMemo(() => getInitials(clientName), [clientName]);
   const clientPhotoSrc = useMemo(
@@ -1410,7 +1531,10 @@ export function AgentDashboardPage() {
   const accountInfo = creditAnalysis?.account_info || clientSummary?.account_snapshot || {};
   const reasons = Array.isArray(loanDecision?.reasons) ? loanDecision.reasons : [];
 
-  const agencyRows = Array.isArray(dashboardData?.agencies) ? dashboardData.agencies : [];
+  const agencyRows = useMemo(
+    () => (Array.isArray(dashboardData?.agencies) ? dashboardData.agencies : []),
+    [dashboardData?.agencies],
+  );
   const agenciesWithClients = useMemo(
     () => agencyRows.filter((agency) => Number(agency?.count || 0) > 0),
     [agencyRows],
@@ -1594,159 +1718,166 @@ export function AgentDashboardPage() {
     topRecommendedProducts,
   ].some((rows) => rows.length > 0);
   const hasUltraData = hasUltraFinanceData || hasUltraBreakdownData;
-  const isAdminAgent = String(agentProfile?.role || "").toLowerCase() === "admin";
+  const agentDisplayName = agentProfile?.full_name || agentProfile?.agent_id || ui.agentFallbackName;
+  const ultraClientTarget = 5000;
+  const eligibilityBase = Math.max(
+    totalClients,
+    loanEligibleCount + loanPartialCount + loanNotEligibleCount,
+    1,
+  );
+  const clientsTargetBase = Math.max(ultraClientTarget, totalClients, 1);
+  const ultraEligibilityCircles = [
+    {
+      key: "eligible",
+      label: ui.eligibleCircleLabel,
+      value: loanEligibleCount,
+      total: eligibilityBase,
+      strokeColor: "#0A4DB3",
+    },
+    {
+      key: "partial",
+      label: ui.partiallyCircleLabel,
+      value: loanPartialCount,
+      total: eligibilityBase,
+      strokeColor: "#2d73da",
+    },
+    {
+      key: "not-eligible",
+      label: ui.notEligibleCircleLabel,
+      value: loanNotEligibleCount,
+      total: eligibilityBase,
+      strokeColor: "#dc2626",
+    },
+    {
+      key: "clients-target",
+      label: ui.clientsTargetCircleLabel,
+      value: totalClients,
+      total: clientsTargetBase,
+      strokeColor: "#1e3a8a",
+    },
+  ];
 
-  const syncButtonLabel = missingAgencies > 0 ? ui.syncAgenciesMissing : ui.syncAgenciesRefresh;
+  const showSyncAction = missingAgencies > 0;
+  const syncButtonLabel = ui.syncAgenciesMissing;
+  const ultraPageItems = [
+    { key: "finance", label: ui.ultraTitle, tone: "finance" },
+    { key: "demographics", label: ui.demographicsTitle, tone: "demographics" },
+    { key: "products", label: ui.productsInsightsTitle, tone: "products" },
+    { key: "objectives", label: ui.objectivesRiskTitle, tone: "objectives" },
+    { key: "quality", label: ui.dataQualityTitle, tone: "quality" },
+  ];
+  const ultraPageCount = ultraPageItems.length;
+  const activeUltraItem = ultraPageItems[activeUltraPage] || ultraPageItems[0];
+  const ultraMutedTextClass = "text-slate-700";
 
-  const pageBg = theme === "dark" ? "bg-[#0f172a] text-white" : "bg-surface-alt text-text";
+  const goPrevUltraPage = () => {
+    setActiveUltraPage((previous) => Math.max(0, previous - 1));
+  };
+
+  const goNextUltraPage = () => {
+    setActiveUltraPage((previous) => Math.min(ultraPageCount - 1, previous + 1));
+  };
+
+  const pageBg = theme === "dark" ? "bg-[#0f172a] text-white" : "bg-white text-black";
   const navbarClass =
-    theme === "dark" ? "border-white/10 bg-[#101b31]" : "border-border bg-surface";
+    theme === "dark" ? "border-white/10 bg-[#101b31]" : "border-slate-200 bg-white";
   const panelClass =
     theme === "dark"
       ? "rounded-2xl border border-white/10 bg-[#14233b] p-5"
-      : "rounded-2xl border border-border bg-surface p-5";
+      : "rounded-2xl border border-slate-200 bg-white p-5 text-black";
   const softCardClass =
     theme === "dark"
       ? "rounded-xl border border-white/10 bg-white/5 p-3"
-      : "rounded-xl border border-border bg-surface-alt p-3";
+      : "rounded-xl border border-slate-200 bg-white p-3 text-black";
   const sectionCardClass =
     theme === "dark"
       ? "rounded-2xl border border-white/10 bg-[#0f1d33] p-4"
-      : "rounded-2xl border border-border bg-surface-alt p-4";
+      : "rounded-2xl border border-slate-200 bg-white p-4 text-black";
   const importantSectionClass =
     theme === "dark"
-      ? "rounded-2xl border border-amber-300/45 bg-amber-300/12 p-4"
-      : "rounded-2xl border border-amber-300 bg-amber-50 p-4";
+      ? "rounded-2xl border border-red-300/40 bg-red-500/10 p-4"
+      : "rounded-2xl border border-red-300 bg-red-50 p-4";
   const importantItemClass =
     theme === "dark"
-      ? "rounded-xl border border-amber-300/35 bg-black/20 p-3"
-      : "rounded-xl border border-amber-200 bg-white/90 p-3";
-  const importantLabelClass = theme === "dark" ? "text-amber-200/90" : "text-amber-800";
-  const mutedTextClass = theme === "dark" ? "text-white/65" : "text-text-muted";
+      ? "rounded-xl border border-red-300/35 bg-red-500/10 p-3"
+      : "rounded-xl border border-red-200 bg-white p-3";
+  const importantLabelClass = theme === "dark" ? "text-red-100" : "text-red-700";
+  const mutedTextClass = theme === "dark" ? "text-white/65" : "text-slate-600";
 
   const inputClass =
     theme === "dark"
       ? "w-full rounded-xl border border-white/15 bg-[#0d192c] px-3 py-2.5 text-sm text-white placeholder:text-white/40"
-      : "w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-text placeholder:text-text-muted";
+      : "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-black placeholder:text-slate-400";
 
   const primaryButtonClass =
-    "inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60";
+    "inline-flex items-center justify-center gap-2 rounded-xl bg-[#0A4DB3] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#083f94] disabled:cursor-not-allowed disabled:opacity-60";
   const secondaryButtonClass =
-    theme === "dark"
-      ? "inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300/40 bg-cyan-500/20 px-4 py-2.5 text-sm font-extrabold text-cyan-100 hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-60"
-      : "inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300 bg-cyan-50 px-4 py-2.5 text-sm font-extrabold text-cyan-800 hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-60";
+    "inline-flex items-center justify-center gap-2 rounded-xl border border-[#0A4DB3] bg-[#0A4DB3] px-4 py-2.5 text-sm font-extrabold text-white hover:bg-[#083f94] disabled:cursor-not-allowed disabled:opacity-60";
 
   const workspaceTabs = [
-    { key: "portfolio", label: ui.tabPortfolio, Icon: Users },
     { key: "ultra", label: ui.tabUltra, Icon: FileCheck2 },
     { key: "agencies", label: ui.tabAgencies, Icon: MapPinned },
     { key: "complaints", label: ui.tabComplaints, Icon: AlertCircle },
     { key: "clients", label: ui.tabClients, Icon: Search },
   ];
 
-  const tabAccentByKey = {
-    portfolio: {
-      light: "border-[#7ac6f5] bg-[#ebf8ff] text-[#0d5d8f]",
-      dark: "border-cyan-300/55 bg-cyan-500/20 text-cyan-100",
-    },
-    ultra: {
-      light: "border-[#9bb9ff] bg-[#eef3ff] text-[#2e4a88]",
-      dark: "border-indigo-300/55 bg-indigo-500/20 text-indigo-100",
-    },
-    agencies: {
-      light: "border-[#8cb8f7] bg-[#edf5ff] text-[#1f4f86]",
-      dark: "border-sky-300/55 bg-sky-500/20 text-sky-100",
-    },
-    complaints: {
-      light: "border-[#f2b779] bg-[#fff2e5] text-[#9a4f00]",
-      dark: "border-amber-300/55 bg-amber-500/20 text-amber-100",
-    },
-    clients: {
-      light: "border-[#b3a8ff] bg-[#f1efff] text-[#44348f]",
-      dark: "border-violet-300/55 bg-violet-500/20 text-violet-100",
-    },
-  };
-
-  const getWorkspaceTabClass = (tabKey, isActive) => {
-    const accent = tabAccentByKey[tabKey] || tabAccentByKey.portfolio;
-
+  const getWorkspaceTabClass = (isActive) => {
     if (isActive) {
-      return `flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-extrabold uppercase tracking-wide shadow-sm transition ${
-        theme === "dark" ? accent.dark : accent.light
-      }`;
+      return "flex w-full items-center justify-center gap-2 rounded-xl border border-[#0A4DB3] bg-[#0A4DB3] px-3 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-sm transition";
     }
 
     return `flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-bold uppercase tracking-wide transition ${
       theme === "dark"
-        ? "border-white/10 bg-[#0f1d33] text-white/80 hover:border-white/20 hover:bg-[#12233d]"
-        : "border-[#d5e0ef] bg-white text-[#375272] hover:border-[#c4d4e8] hover:bg-[#f7fbff]"
+        ? "border-white/10 bg-[#0f1d33] text-white/85 hover:border-blue-300/50 hover:bg-[#12233d]"
+        : "border-slate-300 bg-white text-black hover:border-blue-300 hover:bg-blue-50"
     }`;
   };
 
   const getUltraPanelClass = (tone) => {
-    if (theme === "dark") {
-      const darkTones = {
-        finance: "rounded-2xl border border-sky-300/35 bg-sky-500/10 p-4",
-        demographics: "rounded-2xl border border-blue-300/35 bg-blue-500/10 p-4",
-        products: "rounded-2xl border border-indigo-300/35 bg-indigo-500/10 p-4",
-        objectives: "rounded-2xl border border-cyan-300/35 bg-cyan-500/10 p-4",
-        quality: "rounded-2xl border border-violet-300/35 bg-violet-500/10 p-4",
-      };
-      return darkTones[tone] || panelClass;
-    }
-
-    const lightTones = {
-      finance: "rounded-2xl border border-sky-200 bg-[#eef8ff] p-4",
-      demographics: "rounded-2xl border border-blue-200 bg-[#eef4ff] p-4",
-      products: "rounded-2xl border border-indigo-200 bg-[#f0f3ff] p-4",
-      objectives: "rounded-2xl border border-cyan-200 bg-[#ecf9ff] p-4",
-      quality: "rounded-2xl border border-violet-200 bg-[#f3f0ff] p-4",
-    };
-    return lightTones[tone] || panelClass;
+    void tone;
+    return "rounded-2xl border border-[#c9d8ec] bg-white p-4 text-black";
   };
 
-  const getPortfolioKpiClass = (tone) => {
-    if (theme === "dark") {
-      const darkTones = {
-        total: "rounded-xl border border-sky-300/35 bg-sky-500/10 p-3",
-        forms: "rounded-xl border border-blue-300/35 bg-blue-500/10 p-3",
-        missing: "rounded-xl border border-indigo-300/35 bg-indigo-500/10 p-3",
-        eligibility: "rounded-xl border border-cyan-300/35 bg-cyan-500/10 p-3",
-      };
-      return darkTones[tone] || softCardClass;
-    }
-
-    const lightTones = {
-      total: "rounded-xl border border-sky-200 bg-[#eef8ff] p-3",
-      forms: "rounded-xl border border-blue-200 bg-[#edf3ff] p-3",
-      missing: "rounded-xl border border-indigo-200 bg-[#f0f2ff] p-3",
-      eligibility: "rounded-xl border border-cyan-200 bg-[#ecf9ff] p-3",
-    };
-    return lightTones[tone] || softCardClass;
-  };
-
-  const renderCounterRows = (rows, limit = 5) => {
+  const renderCounterRows = (rows, limit = 5, variant = "default") => {
+    const isUltraVariant = variant === "ultra";
     const normalizedRows = normalizeCounterRows(rows);
 
     if (!normalizedRows.length) {
-      return <p className={`rounded-xl border px-3 py-2 text-sm ${mutedTextClass}`}>{ui.noStatsYet}</p>;
+      return (
+        <p
+          className={`rounded-xl border px-3 py-2 text-sm ${
+            isUltraVariant ? "border-[#d5e2f4] bg-white text-slate-700" : mutedTextClass
+          }`}
+        >
+          {ui.noStatsYet}
+        </p>
+      );
     }
 
     return (
       <div className="space-y-2">
         {normalizedRows.slice(0, limit).map((item, index) => (
-          <div key={`${item.name}-${item.count}`} className={`${softCardClass} flex items-center justify-between gap-3`}>
+          <div
+            key={`${item.name}-${item.count}`}
+            className={`${
+              isUltraVariant ? "rounded-xl border border-[#d5e2f4] bg-white p-3" : softCardClass
+            } flex items-center justify-between gap-3`}
+          >
             <div className="flex items-center gap-2 text-sm">
               <span
                 className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full text-[10px] font-extrabold ${
-                  theme === "dark" ? "bg-white/12 text-white/85" : "bg-[#dde9f9] text-[#2f4a70]"
+                  isUltraVariant
+                    ? "bg-[#eaf2ff] text-[#214b89]"
+                    : theme === "dark"
+                      ? "bg-white/12 text-white/85"
+                      : "bg-[#dde9f9] text-[#2f4a70]"
                 }`}
               >
                 {index + 1}
               </span>
-              <span className="font-medium">{item.name}</span>
+              <span className={`font-medium ${isUltraVariant ? "text-black" : ""}`}>{item.name}</span>
             </div>
-            <div className="text-sm">
+            <div className={`text-sm ${isUltraVariant ? "text-black" : ""}`}>
               <span className="font-bold">{item.count.toLocaleString()}</span>
             </div>
           </div>
@@ -1755,23 +1886,14 @@ export function AgentDashboardPage() {
     );
   };
 
-  const clientSectionTabs = [
-    { key: 0, label: ui.clientTabSummary },
-    { key: 1, label: ui.clientTabDecision },
-    { key: 2, label: ui.clientTabAdvanced },
-    { key: 3, label: complaintsUi.tab },
-  ];
+  const clientSectionCount = 4;
 
-  const getClientSectionTabClass = (isActive) => {
-    if (isActive) {
-      return theme === "dark"
-        ? "w-full rounded-xl border border-blue-300/60 bg-blue-500/20 px-3 py-2 text-sm font-extrabold text-blue-100"
-        : "w-full rounded-xl border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-extrabold text-blue-800";
-    }
+  const goPrevClientSection = () => {
+    setActiveFeaturePage((previous) => Math.max(0, previous - 1));
+  };
 
-    return theme === "dark"
-      ? "w-full rounded-xl border border-white/10 bg-[#0f1d33] px-3 py-2 text-sm font-semibold text-white/85 hover:bg-[#12233d]"
-      : "w-full rounded-xl border border-[#d5e0ef] bg-white px-3 py-2 text-sm font-semibold text-[#375272] hover:bg-[#f7fbff]";
+  const goNextClientSection = () => {
+    setActiveFeaturePage((previous) => Math.min(clientSectionCount - 1, previous + 1));
   };
 
   const searchForm = () => (
@@ -1796,6 +1918,13 @@ export function AgentDashboardPage() {
     </div>
   );
 
+  const renderUltraFieldCard = (label, value) => (
+    <div className="rounded-xl border border-[#d5e2f4] bg-white p-3">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-black">{value}</p>
+    </div>
+  );
+
   const renderImportantCard = (label, value) => (
     <div className={importantItemClass}>
       <p className={`text-[11px] font-semibold uppercase tracking-wide ${importantLabelClass}`}>{label}</p>
@@ -1805,28 +1934,48 @@ export function AgentDashboardPage() {
 
   return (
     <div className={`min-h-screen ${pageBg}`} dir={isRTL ? "rtl" : "ltr"}>
+      <div className="fixed left-3 top-1/2 z-30 -translate-y-1/2 sm:left-5">
+        <div
+          className={`inline-flex flex-col items-stretch gap-1 rounded-2xl border p-1.5 ${
+            theme === "dark" ? "border-white/20 bg-[#0f1d34]" : "border-[#d4ddec] bg-[#f4f7fc]"
+          }`}
+        >
+          {languageOptions.map((item) => {
+            const isActive = language === item.code;
+            return (
+              <button
+                key={item.code}
+                type="button"
+                onClick={() => setLanguage(item.code)}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-semibold transition ${
+                  isActive
+                    ? theme === "dark"
+                      ? "bg-[#1f4b8f] text-white"
+                      : "bg-[#0A2240] text-white"
+                    : theme === "dark"
+                      ? "text-white/85 hover:bg-white/10"
+                      : "text-[#3d5174] hover:bg-[#e7eef9]"
+                }`}
+                aria-pressed={isActive}
+                aria-label={item.aria}
+              >
+                <img src={item.flag} alt={item.flagAlt} className="h-4 w-4 rounded-full object-cover" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <header className={`border-b px-5 py-4 sm:px-8 ${navbarClass}`}>
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
-          <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <div />
+
+          <div className="flex justify-center">
             <img src={logoExpanded} alt="BH Bank" className="h-10 w-auto sm:h-11" />
-            <div className={isRTL ? "text-right" : "text-left"}>
-              <h1 className="text-xl font-bold sm:text-2xl">{ui.title}</h1>
-              <p className={`text-xs sm:text-sm ${mutedTextClass}`}>{ui.subtitle}</p>
-            </div>
           </div>
 
-          <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <div className={softCardClass}>{agentProfile?.full_name || agentProfile?.agent_id || "Agent"}</div>
-            {isAdminAgent && (
-              <button
-                type="button"
-                onClick={() => navigate("/agent/admin")}
-                className="inline-flex items-center gap-2 rounded-xl border border-cyan-300 bg-cyan-50 px-3 py-2 text-sm font-semibold text-cyan-800 hover:bg-cyan-100"
-              >
-                <Users size={16} />
-                Admin
-              </button>
-            )}
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
+            
             <button
               type="button"
               onClick={handleLogout}
@@ -1840,6 +1989,11 @@ export function AgentDashboardPage() {
       </header>
 
       <main className="mx-auto w-full max-w-7xl px-5 py-6 sm:px-8">
+        <section className={`${panelClass} mb-4`}>
+          <p className={`text-sm font-semibold ${mutedTextClass}`}>{ui.welcomeLabel}</p>
+          <p className="mt-1 text-xl font-bold">{agentDisplayName}</p>
+        </section>
+
         {pageError && (
           <div
             className={`mb-4 rounded-xl border px-4 py-3 text-sm ${
@@ -1857,14 +2011,8 @@ export function AgentDashboardPage() {
         ) : (
           <>
             <section className={`${panelClass} mb-6`}>
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <h2 className="text-lg font-bold">{ui.portfolioTitle}</h2>
-                  <p className={`mt-1 text-sm ${mutedTextClass}`}>{ui.portfolioSubtitle}</p>
-                </div>
-
-                <div className={`flex flex-col gap-2 sm:flex-row sm:items-end ${isRTL ? "sm:flex-row-reverse" : ""}`}>
-                  <label className="space-y-1">
+              <div className="flex flex-col items-center gap-2">
+                <label className="w-full sm:w-52 space-y-1">
                     <span className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
                       {ui.reportMonthLabel}
                     </span>
@@ -1872,34 +2020,37 @@ export function AgentDashboardPage() {
                       type="month"
                       value={reportMonth}
                       onChange={(event) => setReportMonth(event.target.value)}
-                      className={`${inputClass} sm:w-44`}
+                      className={`${inputClass} h-11 w-full`}
                     />
-                  </label>
+                </label>
 
-                  <label className="space-y-1">
-                    <span className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                      {ui.reportFormatLabel}
-                    </span>
-                    <select
-                      value={reportFormat}
-                      onChange={(event) => setReportFormat(event.target.value)}
-                      className={`${inputClass} sm:w-40`}
-                    >
-                      <option value="xlsx">{ui.reportFormatXlsx}</option>
-                      <option value="pdf">{ui.reportFormatPdf}</option>
-                    </select>
-                  </label>
+                <div className={`flex w-full max-w-md flex-col items-center justify-center gap-2 sm:flex-row sm:items-end ${isRTL ? "sm:flex-row-reverse" : ""}`}>
+                  <label className="w-full sm:w-52 space-y-1">
+                      <span className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
+                        {ui.reportFormatLabel}
+                      </span>
+                      <select
+                        value={reportFormat}
+                        onChange={(event) => setReportFormat(event.target.value)}
+                        className={`${inputClass} h-11 w-full`}
+                      >
+                        <option value="xlsx">{ui.reportFormatXlsx}</option>
+                        <option value="pdf">{ui.reportFormatPdf}</option>
+                      </select>
+                    </label>
 
                   <button
                     type="button"
                     onClick={handleDownloadMonthlyReport}
                     disabled={downloadingReport || dashboardLoading}
-                    className={primaryButtonClass}
+                    className={`${primaryButtonClass} h-11 w-full sm:w-52 justify-center px-3`}
                   >
                     <Download size={16} className={downloadingReport ? "animate-pulse" : ""} />
                     {downloadingReport ? ui.downloadingMonthlyReport : ui.downloadMonthlyReport}
                   </button>
+                </div>
 
+                {showSyncAction && (
                   <button
                     type="button"
                     onClick={handleSyncAgencies}
@@ -1909,12 +2060,8 @@ export function AgentDashboardPage() {
                     <RefreshCw size={16} className={syncingAgencies ? "animate-spin" : ""} />
                     {syncingAgencies ? ui.syncingAgencies : syncButtonLabel}
                   </button>
-                </div>
+                )}
               </div>
-
-              {!dashboardLoading && missingAgencies === 0 && (
-                <p className={`mt-3 text-xs font-semibold ${mutedTextClass}`}>{ui.agenciesUpToDate}</p>
-              )}
 
               {dashboardLoading && <p className={`mt-3 text-sm ${mutedTextClass}`}>{ui.loadingPortfolio}</p>}
 
@@ -1950,8 +2097,8 @@ export function AgentDashboardPage() {
                         ? "border-red-900/60 bg-red-950/40 text-red-300"
                         : "border-red-200 bg-red-50 text-red-700"
                       : theme === "dark"
-                        ? "border-cyan-800/60 bg-cyan-950/35 text-cyan-200"
-                        : "border-cyan-200 bg-cyan-50 text-cyan-700"
+                        ? "border-blue-800/60 bg-blue-950/35 text-blue-200"
+                        : "border-blue-200 bg-blue-50 text-blue-700"
                   }`}
                 >
                   {reportFeedback}
@@ -1960,13 +2107,17 @@ export function AgentDashboardPage() {
             </section>
 
             <section
-              className={`sticky top-3 z-20 mb-6 rounded-2xl border p-2 backdrop-blur ${
+              className={`${activeWorkspaceTab === "agencies" ? "relative" : "sticky top-3 z-20"} mb-6 rounded-2xl border p-2 backdrop-blur transition-all duration-200 ${
+                activeWorkspaceTab === "agencies" && hideWorkspaceNavOnScroll
+                  ? "pointer-events-none -translate-y-3 opacity-0"
+                  : "opacity-100"
+              } ${
                 theme === "dark"
                   ? "border-white/10 bg-linear-to-r from-[#0d1c30] via-[#102645] to-[#112d55]"
                   : "border-[#c9d8ec] bg-linear-to-r from-[#f4f9ff] via-[#edf5ff] to-[#e8f1ff]"
               }`}
             >
-              <div className="grid gap-2 sm:grid-cols-5">
+              <div className="grid gap-2 sm:grid-cols-4">
                 {workspaceTabs.map((tab) => {
                   const isActive = activeWorkspaceTab === tab.key;
                   const Icon = tab.Icon;
@@ -1975,7 +2126,7 @@ export function AgentDashboardPage() {
                       key={tab.key}
                       type="button"
                       onClick={() => setActiveWorkspaceTab(tab.key)}
-                      className={getWorkspaceTabClass(tab.key, isActive)}
+                      className={getWorkspaceTabClass(isActive)}
                     >
                       <Icon size={15} />
                       {tab.label}
@@ -1987,54 +2138,6 @@ export function AgentDashboardPage() {
                 {ui.workspaceNavHint}
               </p>
             </section>
-
-            {activeWorkspaceTab === "portfolio" && (
-              <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <article className={getPortfolioKpiClass("total")}>
-                <div className="flex items-center justify-between">
-                  <p className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.totalClientsLabel}
-                  </p>
-                  <Users size={15} className={theme === "dark" ? "text-sky-300" : "text-sky-700"} />
-                </div>
-                <p className="mt-2 text-2xl font-extrabold">{totalClients.toLocaleString()}</p>
-              </article>
-
-              <article className={getPortfolioKpiClass("forms")}>
-                <div className="flex items-center justify-between">
-                  <p className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.formsCompletedLabel}
-                  </p>
-                  <FileCheck2 size={15} className={theme === "dark" ? "text-blue-300" : "text-blue-700"} />
-                </div>
-                <p className="mt-2 text-2xl font-extrabold">{formsCompleted.toLocaleString()}</p>
-                <p className={`mt-1 text-xs ${mutedTextClass}`}>{formsCompletionRate.toFixed(1)}%</p>
-              </article>
-
-              <article className={getPortfolioKpiClass("missing")}>
-                <div className="flex items-center justify-between">
-                  <p className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.missingAgenciesLabel}
-                  </p>
-                  <Building2 size={15} className={theme === "dark" ? "text-indigo-300" : "text-indigo-700"} />
-                </div>
-                <p className="mt-2 text-2xl font-extrabold">{missingAgencies.toLocaleString()}</p>
-              </article>
-
-              <article className={getPortfolioKpiClass("eligibility")}>
-                <div className="flex items-center justify-between">
-                  <p className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.eligibilityLabel}
-                  </p>
-                  <MapPinned size={15} className={theme === "dark" ? "text-cyan-300" : "text-cyan-700"} />
-                </div>
-                <p className="mt-2 text-lg font-extrabold">
-                  {loanEligibleCount.toLocaleString()} / {loanPartialCount.toLocaleString()} / {loanNotEligibleCount.toLocaleString()}
-                </p>
-                <p className={`mt-1 text-xs ${mutedTextClass}`}>Eligible / Partially / Not eligible</p>
-              </article>
-              </section>
-            )}
 
             {activeWorkspaceTab === "ultra" && !hasUltraData && (
               <section
@@ -2050,144 +2153,192 @@ export function AgentDashboardPage() {
             )}
 
             {activeWorkspaceTab === "ultra" && (
-              <section className="mb-6 grid gap-6 xl:grid-cols-2">
-              <article className={getUltraPanelClass("finance")}>
-                <h3 className="text-lg font-bold">{ui.ultraTitle}</h3>
-                <p className={`mt-1 text-sm ${mutedTextClass}`}>{ui.ultraSubtitle}</p>
+              <section className="mb-6">
+                <article className="mb-4 rounded-2xl border border-[#c9d8ec] bg-white p-4">
+                  <h3 className="text-lg font-bold text-black">{ui.eligibilityCirclesTitle}</h3>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {ultraEligibilityCircles.map((item) => (
+                      <CircleStatCard
+                        key={item.key}
+                        label={item.label}
+                        value={item.value}
+                        total={item.total}
+                        strokeColor={item.strokeColor}
+                      />
+                    ))}
+                  </div>
+                </article>
 
-                <h4 className="mt-4 text-sm font-semibold">{ui.financeSnapshotTitle}</h4>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {renderFieldCard(ui.avgSalaryLabel, avgMonthlySalary === null ? ui.noData : formatMoney(avgMonthlySalary))}
-                  {renderFieldCard(ui.avgExpensesLabel, avgMonthlyExpenses === null ? ui.noData : formatMoney(avgMonthlyExpenses))}
-                  {renderFieldCard(ui.avgSavingsLabel, avgMonthlySavings === null ? ui.noData : formatMoney(avgMonthlySavings))}
-                  {renderFieldCard(ui.avgBalanceLabel, avgEstimatedBalance === null ? ui.noData : formatMoney(avgEstimatedBalance))}
-                  {renderFieldCard(ui.avgScoreLabel, avgFinancialScore === null ? ui.noData : `${avgFinancialScore.toFixed(1)}/100`)}
-                  {renderFieldCard(ui.regularIncomeRateLabel, regularIncomeRate === null ? ui.noData : `${regularIncomeRate.toFixed(1)}%`)}
-                </div>
-              </article>
+                <div className={`mb-4 flex items-center justify-between gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <button
+                    type="button"
+                    onClick={goPrevUltraPage}
+                    disabled={activeUltraPage === 0}
+                    className="inline-flex min-w-24 items-center justify-center rounded-xl border border-blue-700 bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {ui.ultraPrev}
+                  </button>
 
-              <article className={getUltraPanelClass("demographics")}>
-                <h3 className="text-lg font-bold">{ui.demographicsTitle}</h3>
-
-                <div className="mt-3 grid gap-4 md:grid-cols-2">
-                  <div>
-                    <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                      {ui.topAgeRangesLabel}
+                  <div className="rounded-xl border border-[#c9d8ec] bg-white px-3 py-2 text-center">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                      {ui.ultraPageLabel} {activeUltraPage + 1} / {ultraPageCount}
                     </p>
-                    {renderCounterRows(ageRanges, 4)}
+                    <p className="text-sm font-bold text-black">{activeUltraItem.label}</p>
                   </div>
 
-                  <div>
-                    <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                      {ui.topFamilyStatusLabel}
-                    </p>
-                    {renderCounterRows(familyStatuses, 4)}
-                  </div>
-
-                  <div>
-                    <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                      {ui.topEmploymentStatusLabel}
-                    </p>
-                    {renderCounterRows(employmentStatuses, 4)}
-                  </div>
-
-                  <div>
-                    <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                      {ui.topEducationLabel}
-                    </p>
-                    {renderCounterRows(educationLevels, 4)}
-                  </div>
-                </div>
-              </article>
-              </section>
-            )}
-
-            {activeWorkspaceTab === "ultra" && (
-              <section className="mb-6 grid gap-6 xl:grid-cols-3">
-              <article className={getUltraPanelClass("products")}>
-                <h3 className="text-lg font-bold">{ui.productsInsightsTitle}</h3>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-                  {renderFieldCard(
-                    ui.clientsWithProductsLabel,
-                    clientsWithExistingProducts === null ? ui.noData : Math.round(clientsWithExistingProducts).toLocaleString(),
-                  )}
-                  {renderFieldCard(
-                    ui.clientsWithRecommendationsLabel,
-                    clientsWithRecommendations === null ? ui.noData : Math.round(clientsWithRecommendations).toLocaleString(),
-                  )}
+                  <button
+                    type="button"
+                    onClick={goNextUltraPage}
+                    disabled={activeUltraPage === ultraPageCount - 1}
+                    className="inline-flex min-w-24 items-center justify-center rounded-xl border border-blue-700 bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {ui.ultraNext}
+                  </button>
                 </div>
 
-                <div className="mt-4">
-                  <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.topExistingProductsLabel}
-                  </p>
-                  {renderCounterRows(topExistingProducts, 5)}
-                </div>
+                {activeUltraItem.key === "finance" && (
+                  <article className={getUltraPanelClass("finance")}>
+                    <h3 className="text-lg font-bold text-black">{ui.ultraTitle}</h3>
+                    <p className="mt-1 text-base font-semibold text-black">{ui.ultraSubtitle}</p>
 
-                <div className="mt-4">
-                  <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.topRecommendedProductsLabel}
-                  </p>
-                  {renderCounterRows(topRecommendedProducts, 5)}
-                </div>
-              </article>
+                    <h4 className="mt-4 text-sm font-semibold text-black">{ui.financeSnapshotTitle}</h4>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                      {renderUltraFieldCard(ui.avgSalaryLabel, avgMonthlySalary === null ? ui.noData : formatMoney(avgMonthlySalary))}
+                      {renderUltraFieldCard(ui.avgExpensesLabel, avgMonthlyExpenses === null ? ui.noData : formatMoney(avgMonthlyExpenses))}
+                      {renderUltraFieldCard(ui.avgSavingsLabel, avgMonthlySavings === null ? ui.noData : formatMoney(avgMonthlySavings))}
+                      {renderUltraFieldCard(ui.avgBalanceLabel, avgEstimatedBalance === null ? ui.noData : formatMoney(avgEstimatedBalance))}
+                      {renderUltraFieldCard(ui.avgScoreLabel, avgFinancialScore === null ? ui.noData : `${avgFinancialScore.toFixed(1)}/100`)}
+                      {renderUltraFieldCard(ui.regularIncomeRateLabel, regularIncomeRate === null ? ui.noData : `${regularIncomeRate.toFixed(1)}%`)}
+                    </div>
+                  </article>
+                )}
 
-              <article className={getUltraPanelClass("objectives")}>
-                <h3 className="text-lg font-bold">{ui.objectivesRiskTitle}</h3>
+                {activeUltraItem.key === "demographics" && (
+                  <article className={getUltraPanelClass("demographics")}>
+                    <h3 className="text-lg font-bold text-black">{ui.demographicsTitle}</h3>
 
-                <div className="mt-3">
-                  <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.topObjectivesLabel}
-                  </p>
-                  {renderCounterRows(financialObjectives, 5)}
-                </div>
+                    <div className="mt-3 grid gap-4 md:grid-cols-2">
+                      <div>
+                        <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                          {ui.topAgeRangesLabel}
+                        </p>
+                        {renderCounterRows(ageRanges, 4, "ultra")}
+                      </div>
 
-                <div className="mt-4">
-                  <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${mutedTextClass}`}>
-                    {ui.topRiskToleranceLabel}
-                  </p>
-                  {renderCounterRows(riskToleranceRows, 5)}
-                </div>
-              </article>
+                      <div>
+                        <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                          {ui.topFamilyStatusLabel}
+                        </p>
+                        {renderCounterRows(familyStatuses, 4, "ultra")}
+                      </div>
 
-              <article className={getUltraPanelClass("quality")}>
-                <h3 className="text-lg font-bold">{ui.dataQualityTitle}</h3>
-                <div className="mt-3 grid gap-2">
-                  {renderFieldCard(
-                    ui.formCompletionRateLabel,
-                    formCompletionRateUltra === null ? ui.noData : `${formCompletionRateUltra.toFixed(1)}%`,
-                  )}
-                  {renderFieldCard(ui.missingAgenciesLabel, missingAgencies.toLocaleString())}
-                  {renderFieldCard(
-                    ui.missingGovernorateLabel,
-                    missingGovernorate === null ? ui.noData : Math.round(missingGovernorate).toLocaleString(),
-                  )}
-                  {renderFieldCard(
-                    ui.missingPostalCodeLabel,
-                    missingPostalCode === null ? ui.noData : Math.round(missingPostalCode).toLocaleString(),
-                  )}
-                  {renderFieldCard(
-                    ui.unknownAgencyLabelsLabel,
-                    unknownAgencyLabels === null ? ui.noData : Math.round(unknownAgencyLabels).toLocaleString(),
-                  )}
-                </div>
+                      <div>
+                        <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                          {ui.topEmploymentStatusLabel}
+                        </p>
+                        {renderCounterRows(employmentStatuses, 4, "ultra")}
+                      </div>
 
-                <h4 className="mt-5 text-sm font-semibold">{ui.complaintsTitle}</h4>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3 xl:grid-cols-1">
-                  {renderFieldCard(
-                    ui.totalComplaintsLabel,
-                    complaintsTotal === null ? ui.noData : Math.round(complaintsTotal).toLocaleString(),
-                  )}
-                  {renderFieldCard(
-                    ui.openComplaintsLabel,
-                    complaintsOpen === null ? ui.noData : Math.round(complaintsOpen).toLocaleString(),
-                  )}
-                  {renderFieldCard(
-                    ui.closedComplaintsLabel,
-                    complaintsClosed === null ? ui.noData : Math.round(complaintsClosed).toLocaleString(),
-                  )}
-                </div>
-              </article>
+                      <div>
+                        <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                          {ui.topEducationLabel}
+                        </p>
+                        {renderCounterRows(educationLevels, 4, "ultra")}
+                      </div>
+                    </div>
+                  </article>
+                )}
+
+                {activeUltraItem.key === "products" && (
+                  <article className={getUltraPanelClass("products")}>
+                    <h3 className="text-lg font-bold text-black">{ui.productsInsightsTitle}</h3>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                      {renderUltraFieldCard(
+                        ui.clientsWithProductsLabel,
+                        clientsWithExistingProducts === null ? ui.noData : Math.round(clientsWithExistingProducts).toLocaleString(),
+                      )}
+                      {renderUltraFieldCard(
+                        ui.clientsWithRecommendationsLabel,
+                        clientsWithRecommendations === null ? ui.noData : Math.round(clientsWithRecommendations).toLocaleString(),
+                      )}
+                    </div>
+
+                    <div className="mt-4">
+                      <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                        {ui.topExistingProductsLabel}
+                      </p>
+                      {renderCounterRows(topExistingProducts, 5, "ultra")}
+                    </div>
+
+                    <div className="mt-4">
+                      <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                        {ui.topRecommendedProductsLabel}
+                      </p>
+                      {renderCounterRows(topRecommendedProducts, 5, "ultra")}
+                    </div>
+                  </article>
+                )}
+
+                {activeUltraItem.key === "objectives" && (
+                  <article className={getUltraPanelClass("objectives")}>
+                    <h3 className="text-lg font-bold text-black">{ui.objectivesRiskTitle}</h3>
+
+                    <div className="mt-3">
+                      <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                        {ui.topObjectivesLabel}
+                      </p>
+                      {renderCounterRows(financialObjectives, 5, "ultra")}
+                    </div>
+
+                    <div className="mt-4">
+                      <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${ultraMutedTextClass}`}>
+                        {ui.topRiskToleranceLabel}
+                      </p>
+                      {renderCounterRows(riskToleranceRows, 5, "ultra")}
+                    </div>
+                  </article>
+                )}
+
+                {activeUltraItem.key === "quality" && (
+                  <article className={getUltraPanelClass("quality")}>
+                    <h3 className="text-lg font-bold text-black">{ui.dataQualityTitle}</h3>
+                    <div className="mt-3 grid gap-2">
+                      {renderUltraFieldCard(
+                        ui.formCompletionRateLabel,
+                        formCompletionRateUltra === null ? ui.noData : `${formCompletionRateUltra.toFixed(1)}%`,
+                      )}
+                      {renderUltraFieldCard(ui.missingAgenciesLabel, missingAgencies.toLocaleString())}
+                      {renderUltraFieldCard(
+                        ui.missingGovernorateLabel,
+                        missingGovernorate === null ? ui.noData : Math.round(missingGovernorate).toLocaleString(),
+                      )}
+                      {renderUltraFieldCard(
+                        ui.missingPostalCodeLabel,
+                        missingPostalCode === null ? ui.noData : Math.round(missingPostalCode).toLocaleString(),
+                      )}
+                      {renderUltraFieldCard(
+                        ui.unknownAgencyLabelsLabel,
+                        unknownAgencyLabels === null ? ui.noData : Math.round(unknownAgencyLabels).toLocaleString(),
+                      )}
+                    </div>
+
+                    <h4 className="mt-5 text-sm font-semibold text-black">{ui.complaintsTitle}</h4>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-3 xl:grid-cols-1">
+                      {renderUltraFieldCard(
+                        ui.totalComplaintsLabel,
+                        complaintsTotal === null ? ui.noData : Math.round(complaintsTotal).toLocaleString(),
+                      )}
+                      {renderUltraFieldCard(
+                        ui.openComplaintsLabel,
+                        complaintsOpen === null ? ui.noData : Math.round(complaintsOpen).toLocaleString(),
+                      )}
+                      {renderUltraFieldCard(
+                        ui.closedComplaintsLabel,
+                        complaintsClosed === null ? ui.noData : Math.round(complaintsClosed).toLocaleString(),
+                      )}
+                    </div>
+                  </article>
+                )}
               </section>
             )}
 
@@ -2234,7 +2385,7 @@ export function AgentDashboardPage() {
                                 : "border-sky-300 bg-sky-50"
                               : theme === "dark"
                                 ? "border-white/10 bg-[#0f1d33] hover:bg-[#12233d]"
-                                : "border-border bg-surface-alt hover:bg-surface"
+                                : "border-slate-200 bg-white hover:bg-blue-50"
                           }`}
                         >
                           <span>{agency?.name}</span>
@@ -2355,7 +2506,7 @@ export function AgentDashboardPage() {
                   ) : agentComplaints.length === 0 ? (
                     <p className={`mt-4 text-sm ${mutedTextClass}`}>{complaintsUi.inboxEmpty}</p>
                   ) : (
-                    <div className="mt-4 space-y-3">
+                    <div className="mt-4 grid gap-3 xl:grid-cols-2">
                       {agentComplaints.map((complaint, index) => {
                         const complaintId = String(complaint?.id || "").trim();
                         const cardKey = complaintId || `inbox-row-${index}`;
@@ -2378,7 +2529,7 @@ export function AgentDashboardPage() {
                           <article
                             key={cardKey}
                             className={`rounded-2xl border p-4 ${
-                              theme === "dark" ? "border-white/10 bg-[#0f1d33]" : "border-border bg-surface-alt"
+                              theme === "dark" ? "border-white/10 bg-[#0f1d33]" : "border-slate-200 bg-white"
                             }`}
                           >
                             <div className="flex flex-wrap items-start justify-between gap-2">
@@ -2421,7 +2572,7 @@ export function AgentDashboardPage() {
                               <p className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
                                 {complaintsUi.message}
                               </p>
-                              <p className="mt-1 text-sm leading-relaxed">{messageText}</p>
+                              <p className={`mt-1 text-sm leading-relaxed ${theme === "dark" ? "text-white" : "text-black"}`}>{messageText}</p>
                             </div>
 
                             <div className="mt-3 grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)]">
@@ -2526,20 +2677,30 @@ export function AgentDashboardPage() {
                 ) : (
                   <section className="space-y-6">
                     <article className={panelClass}>
-                      <div className="grid gap-2 sm:grid-cols-3">
-                        {clientSectionTabs.map((tab) => {
-                          const isActive = activeFeaturePage === tab.key;
-                          return (
-                            <button
-                              key={`client-section-tab-${tab.key}`}
-                              type="button"
-                              onClick={() => setActiveFeaturePage(tab.key)}
-                              className={getClientSectionTabClass(isActive)}
-                            >
-                              {tab.label}
-                            </button>
-                          );
-                        })}
+                      <div className={`flex items-center justify-between gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <button
+                          type="button"
+                          onClick={goPrevClientSection}
+                          disabled={activeFeaturePage === 0}
+                          className="inline-flex min-w-24 items-center justify-center rounded-xl border border-[#0A4DB3] bg-[#0A4DB3] px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {ui.clientPrev}
+                        </button>
+
+                        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-center">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                            {ui.clientPageLabel} {activeFeaturePage + 1} / {clientSectionCount}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={goNextClientSection}
+                          disabled={activeFeaturePage === clientSectionCount - 1}
+                          className="inline-flex min-w-24 items-center justify-center rounded-xl border border-[#0A4DB3] bg-[#0A4DB3] px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {ui.clientNext}
+                        </button>
                       </div>
                       <p className={`mt-2 text-xs font-semibold ${mutedTextClass}`}>{ui.clientViewSectionHint}</p>
                     </article>
@@ -2549,7 +2710,7 @@ export function AgentDashboardPage() {
                         <h2 className="text-lg font-bold">{ui.clientCardTitle}</h2>
                         <div className="mt-4">
                           <div className="flex flex-col items-center gap-3 text-center">
-                            <div className="h-24 w-24 overflow-hidden rounded-2xl border border-border bg-surface-alt">
+                            <div className="h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 bg-white">
                               {clientPhotoSrc && !photoFailed ? (
                                 <img
                                   src={clientPhotoSrc}
@@ -2760,7 +2921,7 @@ export function AgentDashboardPage() {
                             {clientComplaints.length === 0 ? (
                               <p className={`mt-4 text-sm ${mutedTextClass}`}>{complaintsUi.empty}</p>
                             ) : (
-                              <div className="mt-4 space-y-3">
+                              <div className="mt-4 grid gap-3 xl:grid-cols-2">
                                 {clientComplaints.map((complaint, index) => {
                                   const complaintId = String(complaint?.id || `row-${index}`);
                                   const draft = complaintDrafts[complaintId] || {};
@@ -2783,7 +2944,7 @@ export function AgentDashboardPage() {
                                     <article
                                       key={complaintId}
                                       className={`rounded-2xl border p-4 ${
-                                        theme === "dark" ? "border-white/10 bg-[#0f1d33]" : "border-border bg-surface-alt"
+                                        theme === "dark" ? "border-white/10 bg-[#0f1d33]" : "border-slate-200 bg-white"
                                       }`}
                                     >
                                       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -2806,7 +2967,7 @@ export function AgentDashboardPage() {
                                         <p className={`text-[11px] font-semibold uppercase tracking-wide ${mutedTextClass}`}>
                                           {complaintsUi.message}
                                         </p>
-                                        <p className="mt-1 text-sm leading-relaxed">{messageText}</p>
+                                        <p className={`mt-1 text-sm leading-relaxed ${theme === "dark" ? "text-white" : "text-black"}`}>{messageText}</p>
                                       </div>
 
                                       <div className="mt-3 grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)]">

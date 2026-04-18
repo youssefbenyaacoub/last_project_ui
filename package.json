@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "images:webp": "node scripts/convert-product-images-to-webp.mjs"
+    "images:webp": "node scripts/convert-product-images-to-webp.mjs",
+    "audit:lighthouse": "node scripts/lighthouse-all-pages.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
@@ -39,6 +40,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "lighthouse": "^13.1.0",
     "sharp": "^0.34.5",
     "vite": "^8.0.0"
   }

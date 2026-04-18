@@ -1976,7 +1976,12 @@ export function Products({ showComparator = false } = {}) {
 
                   return (
                     <div key={`comparison-slot-${slotIndex}`}>
+                      <label htmlFor={`comparison-slot-${slotIndex}`} className="sr-only">
+                        {`${ui.compareSelectPlaceholder} ${slotIndex + 1}`}
+                      </label>
                       <select
+                        id={`comparison-slot-${slotIndex}`}
+                        aria-label={`${ui.compareSelectPlaceholder} ${slotIndex + 1}`}
                         value={currentValue}
                         onChange={(event) => updateComparisonSlot(slotIndex, event.target.value)}
                         className={`w-full rounded-full border px-5 py-3 text-lg ${
@@ -2067,6 +2072,9 @@ export function Products({ showComparator = false } = {}) {
                         <img
                           src={productImageSource(product)}
                           alt={product.displayName}
+                          width={960}
+                          height={540}
+                          decoding="async"
                           className="h-full w-full object-cover"
                           loading="lazy"
                           onError={(event) => {
@@ -2075,7 +2083,7 @@ export function Products({ showComparator = false } = {}) {
                           }}
                         />
                         <div className={`absolute top-3 z-20 rounded-lg bg-white/90 p-1.5 shadow-sm ${isRTL ? "right-3" : "left-3"}`}>
-                          <img src={bhLogo} alt="BH Bank" className="h-4 w-auto object-contain" />
+                          <img src={bhLogo} alt="BH Bank" width={84} height={20} className="h-4 w-auto object-contain" />
                         </div>
                         <button
                           type="button"
@@ -2097,7 +2105,7 @@ export function Products({ showComparator = false } = {}) {
                           </p>
                         </div>
                         <div className={`flex items-center justify-center px-5 ${isDark ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-[#0A2240]"}`}>
-                          <img src={bhLogo} alt="BH Bank" className="h-11 w-auto object-contain" />
+                          <img src={bhLogo} alt="BH Bank" width={154} height={44} className="h-11 w-auto object-contain" />
                         </div>
                       </div>
                     </article>
@@ -2266,7 +2274,12 @@ export function Products({ showComparator = false } = {}) {
           />
         </div>
 
+        <label htmlFor="products-category-filter" className="sr-only">
+          {ui.allCategories}
+        </label>
         <select
+          id="products-category-filter"
+          aria-label={ui.allCategories}
           value={selectedCategory}
           onChange={(event) => setSelectedCategory(event.target.value)}
           className={`rounded-xl border px-4 py-3 ${
@@ -2542,6 +2555,9 @@ export function Products({ showComparator = false } = {}) {
                 <img
                   src={productImageSource(product)}
                   alt={product.displayName}
+                  width={960}
+                  height={360}
+                  decoding="async"
                   className="h-full w-full object-cover"
                   loading="lazy"
                   onError={(event) => {
@@ -2550,7 +2566,7 @@ export function Products({ showComparator = false } = {}) {
                   }}
                 />
                 <div className={`absolute top-3 z-20 rounded-lg bg-white/90 p-1.5 shadow-sm ${isRTL ? "right-3" : "left-3"}`}>
-                  <img src={bhLogo} alt="BH Bank" className="h-4 w-auto object-contain" />
+                  <img src={bhLogo} alt="BH Bank" width={84} height={20} className="h-4 w-auto object-contain" />
                 </div>
                 <div className="absolute inset-0 bg-linear-to-r from-black/50 via-black/20 to-transparent" />
                 <div className={`absolute inset-x-0 bottom-0 p-3 ${isRTL ? "text-right" : "text-left"}`}>
@@ -2645,6 +2661,9 @@ export function Products({ showComparator = false } = {}) {
               <img
                 src={productImageSource(selectedProduct)}
                 alt={selectedProduct.displayName}
+                width={960}
+                height={520}
+                decoding="async"
                 className="h-full w-full object-cover"
                 loading="lazy"
                 onError={(event) => {
@@ -2653,7 +2672,7 @@ export function Products({ showComparator = false } = {}) {
                 }}
               />
               <div className={`absolute top-3 z-20 rounded-lg bg-white/90 p-1.5 shadow-sm ${isRTL ? "right-3" : "left-3"}`}>
-                <img src={bhLogo} alt="BH Bank" className="h-4 w-auto object-contain" />
+                <img src={bhLogo} alt="BH Bank" width={84} height={20} className="h-4 w-auto object-contain" />
               </div>
               <div className="absolute inset-0 bg-linear-to-r from-black/55 via-black/20 to-transparent" />
               <div className={`absolute inset-x-0 bottom-0 p-5 ${isRTL ? "text-right" : "text-left"}`}>

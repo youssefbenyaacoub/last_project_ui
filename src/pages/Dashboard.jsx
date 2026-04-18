@@ -964,7 +964,9 @@ export function Dashboard() {
               <button
                 type="button"
                 onClick={() => setShowAmounts((prev) => !prev)}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border ${
+                aria-label={showAmounts ? "Hide amounts" : "Show amounts"}
+                title={showAmounts ? "Hide amounts" : "Show amounts"}
+                className={`inline-flex h-10 w-10 items-center justify-center rounded-lg border ${
                   isDark ? "border-gray-600 text-gray-200" : "border-gray-300 text-gray-500"
                 }`}
               >

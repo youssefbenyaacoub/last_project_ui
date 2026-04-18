@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ScreenReaderDock } from "./ScreenReaderDock";
+
+const LazyScreenReaderDock = lazy(() =>
+  import("./ScreenReaderDock").then((module) => ({ default: module.ScreenReaderDock })),
+);
 
 const SETTINGS_STORAGE_KEY = "bh_dashboard_settings";
 
@@ -97,7 +100,9 @@ export function AppShell() {
   return (
     <>
       <Outlet />
-      <ScreenReaderDock />
+      <Suspense fallback={null}>
+        <LazyScreenReaderDock />
+      </Suspense>
     </>
   );
 }

@@ -506,7 +506,9 @@ export function Layout() {
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className={`mx-3 mb-6 rounded-lg p-2 transition-colors ${theme === "dark" ? "text-gray-300 hover:bg-white/10" : "text-[#214b89] hover:bg-[#e4ecfb]"}`}
+              aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+              title={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+              className={`mx-3 mb-6 inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${theme === "dark" ? "text-gray-300 hover:bg-white/10" : "text-[#214b89] hover:bg-[#e4ecfb]"}`}
             >
               {isExpanded ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
             </button>

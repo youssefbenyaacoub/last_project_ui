@@ -464,6 +464,7 @@ export function LoginPage() {
                   {/* Email */}
                   <div>
                     <label
+                      htmlFor="client-login-email"
                       className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"} ${
                         isRTL ? "text-right" : "text-left"
                       }`}
@@ -477,6 +478,7 @@ export function LoginPage() {
                         <Mail size={20} />
                       </div>
                       <input
+                        id="client-login-email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -495,6 +497,7 @@ export function LoginPage() {
                   {/* Password */}
                   <div>
                     <label
+                      htmlFor="client-login-password"
                       className={`block text-sm mb-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"} ${
                         isRTL ? "text-right" : "text-left"
                       }`}
@@ -508,6 +511,7 @@ export function LoginPage() {
                         <Lock size={20} />
                       </div>
                       <input
+                        id="client-login-password"
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -521,7 +525,9 @@ export function LoginPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className={`absolute ${isRTL ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 cursor-pointer ${
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        title={showPassword ? "Hide password" : "Show password"}
+                        className={`absolute ${isRTL ? "left-2" : "right-2"} top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-lg cursor-pointer ${
                           theme === "dark"
                             ? "text-gray-500 hover:text-gray-400"
                             : "text-gray-400 hover:text-gray-600"
