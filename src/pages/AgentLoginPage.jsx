@@ -403,10 +403,82 @@ export function AgentLoginPage() {
     }
   };
 
+  const organicShapes = [
+    {
+      top: "7%",
+      left: "4%",
+      size: 74,
+      rotate: -18,
+      radius: "46% 54% 58% 42% / 40% 44% 56% 60%",
+      light: "radial-gradient(circle at 28% 26%, rgba(255, 230, 176, 0.95), rgba(198, 109, 214, 0.8) 52%, rgba(127, 73, 203, 0.7))",
+      dark: "radial-gradient(circle at 30% 25%, rgba(255, 208, 140, 0.78), rgba(184, 90, 203, 0.68) 50%, rgba(99, 63, 188, 0.62))",
+    },
+    {
+      top: "24%",
+      left: "10%",
+      size: 58,
+      rotate: 12,
+      radius: "54% 46% 42% 58% / 45% 58% 42% 55%",
+      light: "radial-gradient(circle at 26% 24%, rgba(255, 222, 170, 0.92), rgba(220, 118, 206, 0.76) 56%, rgba(152, 88, 212, 0.66))",
+      dark: "radial-gradient(circle at 26% 24%, rgba(255, 196, 132, 0.74), rgba(208, 98, 189, 0.62) 54%, rgba(118, 77, 204, 0.56))",
+    },
+    {
+      bottom: "12%",
+      left: "7%",
+      size: 72,
+      rotate: -8,
+      radius: "44% 56% 50% 50% / 58% 40% 60% 42%",
+      light: "radial-gradient(circle at 34% 24%, rgba(255, 230, 180, 0.88), rgba(211, 115, 209, 0.74) 52%, rgba(138, 82, 205, 0.64))",
+      dark: "radial-gradient(circle at 34% 24%, rgba(250, 196, 136, 0.72), rgba(191, 94, 193, 0.6) 52%, rgba(102, 70, 186, 0.56))",
+    },
+    {
+      top: "10%",
+      right: "18%",
+      size: 44,
+      rotate: 18,
+      radius: "60% 40% 55% 45% / 38% 62% 38% 62%",
+      light: "radial-gradient(circle at 30% 26%, rgba(255, 236, 196, 0.9), rgba(199, 119, 220, 0.68) 50%, rgba(96, 145, 238, 0.6))",
+      dark: "radial-gradient(circle at 30% 26%, rgba(255, 210, 152, 0.74), rgba(184, 102, 207, 0.56) 52%, rgba(84, 127, 210, 0.52))",
+    },
+  ];
+
   return (
     <div className={`relative min-h-screen overflow-hidden ${theme === "dark" ? "bg-[#0d1628]" : "bg-[#edf2f9]"}`} dir={isRTL ? "rtl" : "ltr"}>
-      <div className="pointer-events-none absolute -left-12 top-0 h-72 w-72 rounded-full bg-[#0A2240]/15 blur-3xl" />
-      <div className="pointer-events-none absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[#D71920]/10 blur-3xl" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            theme === "dark"
+              ? "radial-gradient(circle at 10% 16%, rgba(10,77,179,0.14) 0%, rgba(10,77,179,0) 44%), radial-gradient(circle at 90% 10%, rgba(215,25,32,0.10) 0%, rgba(215,25,32,0) 40%), radial-gradient(circle at 84% 84%, rgba(10,34,64,0.16) 0%, rgba(10,34,64,0) 48%)"
+              : "radial-gradient(circle at 11% 18%, rgba(10,77,179,0.10) 0%, rgba(10,77,179,0) 44%), radial-gradient(circle at 91% 11%, rgba(215,25,32,0.08) 0%, rgba(215,25,32,0) 40%), radial-gradient(circle at 84% 86%, rgba(10,34,64,0.08) 0%, rgba(10,34,64,0) 48%)",
+        }}
+      />
+
+      {organicShapes.map((shape, index) => (
+        <div
+          key={`organic-shape-${index}`}
+          className="pointer-events-none absolute hidden lg:block shadow-[0_10px_25px_rgba(10,34,64,0.18)]"
+          style={{
+            top: shape.top,
+            right: shape.right,
+            bottom: shape.bottom,
+            left: shape.left,
+            width: shape.size,
+            height: shape.size,
+            borderRadius: shape.radius,
+            background: theme === "dark" ? shape.dark : shape.light,
+            transform: `rotate(${shape.rotate}deg)`,
+            opacity: theme === "dark" ? 0.68 : 0.58,
+          }}
+        />
+      ))}
+
+      <div className={`pointer-events-none absolute -left-36 top-6 h-104 w-104 rounded-full border ${theme === "dark" ? "border-blue-200/15" : "border-[#0A2240]/10"}`} />
+      <div className={`pointer-events-none absolute -right-28 -bottom-28 h-80 w-80 rounded-[5rem] border ${theme === "dark" ? "border-red-200/15" : "border-[#D71920]/12"}`} />
+      <div className={`pointer-events-none absolute right-[15%] top-[16%] h-16 w-16 rotate-45 rounded-xl border ${theme === "dark" ? "border-slate-200/20" : "border-[#0A4DB3]/14"}`} />
+
+      <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-[#0A2240]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-[#D71920]/7 blur-3xl" />
 
       <div className="fixed right-3 top-1/2 z-30 -translate-y-1/2 sm:right-5">
         <div
@@ -440,7 +512,7 @@ export function AgentLoginPage() {
         </div>
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center px-4 py-6 sm:px-6">
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center px-4 py-6 sm:px-6">
         <div className="grid w-full max-w-2xl gap-6">
           <section
             className={`rounded-3xl border p-6 sm:p-7 ${
