@@ -17,7 +17,7 @@ const AGENT_AUTH_KEYS = {
   agence: "bh_agent_agence",
 };
 
-export function getAuthToken() {
+function getAuthToken() {
   return localStorage.getItem(CLIENT_AUTH_KEYS.token) || "";
 }
 
@@ -46,10 +46,6 @@ export function clearAuthSession() {
 
 export function getAgentAuthToken() {
   return localStorage.getItem(AGENT_AUTH_KEYS.token) || "";
-}
-
-export function getAgentId() {
-  return localStorage.getItem(AGENT_AUTH_KEYS.agentId) || "";
 }
 
 export function setAgentAuthSession(payload) {
@@ -312,9 +308,6 @@ export const updateAgentClientComplaint = (idPiece, complaintId, payload) =>
     },
   );
 
-export const getAgentActivityLog = (limit = 50) =>
-  requestAgent(`/agent/activity-log?limit=${encodeURIComponent(limit)}`);
-
 export const getAdminPlatformOverview = (days = 30, failedThreshold = 3) =>
   requestAgent(
     `/admin/platform-overview?days=${encodeURIComponent(days)}&failed_threshold=${encodeURIComponent(
@@ -326,18 +319,6 @@ export const listAdminAgents = () => requestAgent("/admin/agents");
 
 export const createAdminAgent = (payload) =>
   requestAgent("/admin/agents", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const resetAdminAgentPassword = (agentId, payload = {}) =>
-  requestAgent(`/admin/agents/${encodeURIComponent(agentId)}/reset-password`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const sendOfferEmailCampaign = (payload) =>
-  requestAgent("/auth/agent/campaigns/offer-email", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -374,36 +355,6 @@ export const decideAdminClientPasswordResetRequest = (requestId, payload) =>
     },
   );
 
-export const verifyCard = (payload) =>
-  request("/auth/verify-card", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const verifyOTP = (payload) =>
-  request("/auth/verify-otp", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const registerAccount = (payload) =>
-  request("/auth/register", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const verifyEmail = (payload) =>
-  request("/auth/verify-email", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const saveSecurityProof = (payload) =>
-  request("/auth/security-proof", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
 export const requestSigninEmailCode = (payload) =>
   request("/auth/signin/request-email-code", {
     method: "POST",
@@ -422,30 +373,7 @@ export const completeSigninRegistration = (payload) =>
     body: JSON.stringify(payload),
   });
 
-export const resendEmailOTP = async (payload) => {
-  try {
-    return await request("/auth/resend-email-otp", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  } catch (error) {
-    if (error?.status === 404) {
-      return request("/auth/resend-email-code", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-    }
-    throw error;
-  }
-};
-
 export const getMe = () => request("/auth/me");
-
-export const revealMyCardInfo = (code) =>
-  request("/auth/me/card/reveal", {
-    method: "POST",
-    body: JSON.stringify({ code }),
-  });
 
 export const updateProfilePhoto = (profilePhoto) =>
   request("/auth/me/photo", {
@@ -479,11 +407,6 @@ export const upsertBudget = (payload) =>
     method: "POST",
     body: JSON.stringify(payload),
   });
-
-export const getMonthlyFinancialHealthReport = (month) =>
-  request(
-    `/auth/financial-health/monthly${month ? `?month=${encodeURIComponent(month)}` : ""}`
-  );
 
 export const getComplaints = () => request("/auth/complaints");
 

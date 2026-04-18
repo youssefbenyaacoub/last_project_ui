@@ -113,7 +113,6 @@ export function LoginPage() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { language, setLanguage, isRTL } = useLanguage();
-  const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -126,12 +125,8 @@ export function LoginPage() {
   const [forgotError, setForgotError] = useState("");
   const [helloIndex, setHelloIndex] = useState(0);
 
-  // Step 1: Login
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Step 2: Phone Verification
-  const [phoneCode, setPhoneCode] = useState(["", "", "", "", "", ""]);
 
   const languageOptions = [
     {
@@ -193,12 +188,6 @@ export function LoginPage() {
       forgotTooManyRequests: "Too many reset requests. Please wait before trying again.",
       forgotRequestFailed: "Unable to submit your reset request right now.",
       signIn: "Sign in",
-      verificationTitle: "Verification",
-      verificationSubtitle: "6-digit code sent to your phone",
-      codeNotReceived: "Didn't receive the code? ",
-      resend: "Resend",
-      back: "Back",
-      verify: "Verify",
       noAccount: "Don't have an account? ",
       signUp: "Sign up",
       faq: "FAQ",
@@ -238,12 +227,6 @@ export function LoginPage() {
       forgotTooManyRequests: "Trop de demandes de reinitialisation. Reessayez plus tard.",
       forgotRequestFailed: "Impossible d'envoyer la demande de reinitialisation pour le moment.",
       signIn: "Se connecter",
-      verificationTitle: "Verification",
-      verificationSubtitle: "Code a 6 chiffres envoye a votre telephone",
-      codeNotReceived: "Code non recu? ",
-      resend: "Renvoyer",
-      back: "Retour",
-      verify: "Verifier",
       noAccount: "Vous n'avez pas de compte? ",
       signUp: "S'inscrire",
       faq: "FAQ",
@@ -283,12 +266,6 @@ export function LoginPage() {
       forgotTooManyRequests: "طلبات إعادة التعيين كثيرة جدا. حاول لاحقا.",
       forgotRequestFailed: "تعذر إرسال طلب إعادة التعيين حاليا.",
       signIn: "دخول",
-      verificationTitle: "التحقق",
-      verificationSubtitle: "تم إرسال رمز من 6 أرقام إلى هاتفك",
-      codeNotReceived: "لم يصلك الرمز؟ ",
-      resend: "إعادة الإرسال",
-      back: "رجوع",
-      verify: "تحقق",
       noAccount: "ليس لديك حساب؟ ",
       signUp: "إنشاء حساب",
       faq: "الأسئلة الشائعة",
@@ -312,24 +289,8 @@ export function LoginPage() {
     };
   }, []);
 
-  const handlePhoneCodeChange = (index, value) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newCode = [...phoneCode];
-      newCode[index] = value;
-      setPhoneCode(newCode);
-
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`phone-code-${index + 1}`);
-        nextInput?.focus();
-      }
-    }
-  };
-
-  const handleNextStep = async () => {
-    if (currentStep !== 1) {
-      navigate("/dashboard");
-      return;
-    }
+  const handleLoginSubmit = async (event) => {
+    event.preventDefault();
 
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail || !password.trim()) {
@@ -356,12 +317,6 @@ export function LoginPage() {
       setErrorMessage(resolved.message);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handlePreviousStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -433,18 +388,11 @@ export function LoginPage() {
             </button>
           </div>
 
-          {/* Step Indicator */}
-
-          <AnimatePresence mode="wait">
-            {/* Step 1: Login with email and password */}
-            {currentStep === 1 && (
-              <Motion.div
-                key="step1"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-              >
+          <Motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
                 <h1
                   className={`mb-2 text-[36px] font-bold ${theme === "dark" ? "text-white" : "text-gray-900"} ${
                     isRTL ? "text-right" : "text-left"
@@ -460,7 +408,7 @@ export function LoginPage() {
                   {ui.loginSubtitle}
                 </p>
 
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleLoginSubmit}>
                   {/* Email */}
                   <div>
                     <label
@@ -689,101 +637,14 @@ export function LoginPage() {
 
                   {/* Submit Button */}
                   <button
-                    type="button"
-                    onClick={handleNextStep}
+                    type="submit"
                     disabled={isSubmitting}
                     className="w-full bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? ui.signingIn : ui.signIn}
                   </button>
                 </form>
-              </Motion.div>
-            )}
-
-            {/* Step 2: Phone Verification */}
-            {currentStep === 2 && (
-              <Motion.div
-                key="step2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h1
-                  className={`text-4xl mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
-                >
-                  {ui.verificationTitle}
-                </h1>
-                <p
-                  className={`mb-8 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                >
-                  {ui.verificationSubtitle}
-                </p>
-
-                <div className="space-y-6">
-                  {/* Phone Code Input */}
-                  <div className="flex gap-3 justify-center">
-                    {phoneCode.map((digit, index) => (
-                      <input
-                        key={index}
-                        id={`phone-code-${index}`}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) =>
-                          handlePhoneCodeChange(index, e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !digit && index > 0) {
-                            document
-                              .getElementById(`phone-code-${index - 1}`)
-                              ?.focus();
-                          }
-                        }}
-                        className={`w-14 h-14 text-center border rounded-xl text-2xl focus:outline-none focus:border-[#242f54] focus:ring-2 focus:ring-[#242f54]/20 transition-all cursor-text ${
-                          theme === "dark"
-                            ? "bg-gray-800 border-gray-700 text-white"
-                            : "bg-white border-gray-300 text-gray-900"
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <p
-                    className={`text-center text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {ui.codeNotReceived}
-                    <button className="text-[#242f54] hover:underline cursor-pointer">
-                      {ui.resend}
-                    </button>
-                  </p>
-
-                  {/* Buttons */}
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={handlePreviousStep}
-                      className={`flex-1 border rounded-xl py-4 transition-colors cursor-pointer ${
-                        theme === "dark"
-                          ? "border-gray-700 text-gray-300 hover:bg-gray-800"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {ui.back}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleNextStep}
-                      className="flex-1 bg-[#242f54] text-white rounded-xl py-4 hover:bg-[#1a2340] transition-colors cursor-pointer"
-                    >
-                      {ui.verify}
-                    </button>
-                  </div>
-                </div>
-              </Motion.div>
-            )}
-          </AnimatePresence>
+          </Motion.div>
 
           {/* Sign up link */}
           <p

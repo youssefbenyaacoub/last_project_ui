@@ -1,6 +1,6 @@
 const CLIENT_CACHE_PREFIX = "bh_client_offline_cache_v1_";
 
-export const OFFLINE_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const OFFLINE_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 const hasStorage = () => typeof window !== "undefined" && !!window.localStorage;
 

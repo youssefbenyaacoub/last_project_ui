@@ -61,7 +61,7 @@ const normalizeResetToken = (value) => {
   let token = String(value || "").trim();
   if (!token) return "";
 
-  token = token.replace(/^['\"]+|['\"]+$/g, "");
+  token = token.replace(/^['"]+|['"]+$/g, "");
   token = token.replace(/\s+/g, "");
   token = token.replace(/=/g, "");
   if (token.startsWith("=3D")) token = token.slice(3);

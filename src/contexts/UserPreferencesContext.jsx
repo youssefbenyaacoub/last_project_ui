@@ -1,5 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 
 const STORAGE_KEY = "bh_user_ui_preferences";
 
@@ -52,12 +51,4 @@ export function UserPreferencesProvider({ children }) {
   );
 
   return <UserPreferencesContext.Provider value={value}>{children}</UserPreferencesContext.Provider>;
-}
-
-export function useUserPreferences() {
-  const context = useContext(UserPreferencesContext);
-  if (!context) {
-    throw new Error("useUserPreferences must be used within UserPreferencesProvider");
-  }
-  return context;
 }
