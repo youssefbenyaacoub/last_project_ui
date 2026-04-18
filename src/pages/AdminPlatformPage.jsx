@@ -153,8 +153,8 @@ const copyByLanguage = {
   ar: {
     title: "منصة الادارة",
     subtitle: "متابعة الزيارات ومخاطر تسجيل الدخول وادارة الوكلاء",
-    
-    logout: "Log out",
+
+    logout: "تسجيل الخروج",
     loading: "Loading admin platform...",
     notAdmin: "Admin access only.",
     refresh: "Refresh",
@@ -527,42 +527,45 @@ export function AdminPlatformPage() {
       className={`min-h-screen ${isDark ? "bg-[#0f172a] text-white" : "bg-[#edf3fb] text-[#10203c]"}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <header className={`border-b ${isDark ? "border-white/10 bg-[#101b31]" : "border-[#d8e3f3] bg-white"}`}>
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-6 py-4">
-          <div className={`${isRTL ? "text-right" : "text-left"}`}>
-            <p className="text-sm font-bold">{ui.title}</p>
-            <p className={`text-xs ${isDark ? "text-white/70" : "text-[#5e7393]"}`}>{ui.subtitle}</p>
-          </div>
+      <div className="fixed left-3 top-1/2 z-30 -translate-y-1/2 sm:left-5">
+        <div
+          className={`inline-flex flex-col items-stretch gap-1 rounded-2xl border p-1.5 ${
+            isDark ? "border-white/20 bg-[#0f1d34]" : "border-[#d4ddec] bg-[#f4f7fc]"
+          }`}
+        >
+          {languageOptions.map((item) => {
+            const isActive = language === item.code;
+            return (
+              <button
+                key={item.code}
+                type="button"
+                onClick={() => setLanguage(item.code)}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-semibold transition ${
+                  isActive
+                    ? isDark
+                      ? "bg-[#1f4b8f] text-white"
+                      : "bg-[#0A2240] text-white"
+                    : isDark
+                      ? "text-white/85 hover:bg-white/10"
+                      : "text-[#3d5174] hover:bg-[#e7eef9]"
+                }`}
+                aria-pressed={isActive}
+                aria-label={item.aria}
+              >
+                <img src={item.flag} alt={item.flagAlt} className="h-4 w-4 rounded-full object-cover" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
+      <header className={`border-b ${isDark ? "border-white/10 bg-[#101b31]" : "border-[#d8e3f3] bg-white"}`}>
+        <div className="mx-auto relative w-full max-w-6xl px-6 py-4">
           <div className="flex justify-center">
             <img src={logoExpanded} alt="BH Bank" className="h-10 w-auto sm:h-11" />
           </div>
 
-          <div className={`flex items-center justify-end gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-            {languageOptions.map((item) => {
-              const isActive = language === item.code;
-              return (
-                <button
-                  key={item.code}
-                  type="button"
-                  onClick={() => setLanguage(item.code)}
-                  className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-semibold transition ${
-                    isActive
-                      ? isDark
-                        ? "bg-[#1f4b8f] text-white"
-                        : "bg-[#0A2240] text-white"
-                      : isDark
-                        ? "text-white/85 hover:bg-white/10"
-                        : "text-[#3d5174] hover:bg-[#e7eef9]"
-                  }`}
-                  aria-pressed={isActive}
-                  aria-label={item.aria}
-                >
-                  <img src={item.flag} alt={item.flagAlt} className="h-4 w-4 rounded-full object-cover" />
-                </button>
-              );
-            })}
-
+          <div className="absolute right-6 top-1/2 -translate-y-1/2">
             <button
               type="button"
               onClick={handleUnauthorized}
